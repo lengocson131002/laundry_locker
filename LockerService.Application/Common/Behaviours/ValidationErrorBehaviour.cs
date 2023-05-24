@@ -1,6 +1,3 @@
-using FluentValidation;
-using MediatR;
-
 namespace LockerService.Application.Common.Behaviours;
 
 public class ValidationErrorBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>

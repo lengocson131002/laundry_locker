@@ -1,7 +1,4 @@
 using System.Net;
-using FluentValidation;
-using LockerService.Application.Common.Enums;
-using LockerService.Application.Common.Exceptions;
 using LockerService.Application.Common.Extensions;
 
 namespace LockerService.Application.Common.Models.Response;
@@ -10,9 +7,9 @@ public class ExceptionResponse
 {
     public ExceptionResponse()
     {
-        ErrorCode = (int)ResponseCode.ErrorCommon;
-        Error = ResponseCode.ErrorCommon.ToString();
-        Message = ResponseCode.ErrorCommon.GetDescription();
+        ErrorCode = (int)ResponseCode.CommonError;
+        Error = ResponseCode.CommonError.ToString();
+        Message = ResponseCode.CommonError.GetDescription();
     }
 
     public ExceptionResponse(ApiException apiException)
@@ -31,8 +28,8 @@ public class ExceptionResponse
 
     public ExceptionResponse(ValidationException exception)
     {
-        ErrorCode = (int)ResponseCode.ErrorValidation;
-        Error = ResponseCode.ErrorValidation.GetDescription();
+        ErrorCode = (int)ResponseCode.ValidationError;
+        Error = ResponseCode.ValidationError.GetDescription();
         Message = exception.Message;
         Details ??= new Dictionary<string, List<string>>();
 

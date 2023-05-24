@@ -1,5 +1,3 @@
-using LockerService.Domain.Enums;
-
 namespace LockerService.Application.EventBus.Mqtt.Events;
 
 public class MqttUpdateLockerStatusEvent : MqttBaseMessage

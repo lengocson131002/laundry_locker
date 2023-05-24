@@ -1,6 +1,4 @@
-using FluentValidation;
 using LockerService.Application.Files.Models;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 
 namespace LockerService.Application.Files.Commands;

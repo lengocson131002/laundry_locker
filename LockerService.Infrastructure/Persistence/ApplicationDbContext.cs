@@ -22,4 +22,19 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<Account> Accounts => Set<Account>();
     
+    public DbSet<Address> Addresses => Set<Address>();
+    
+    public DbSet<Hardware> Hardwares => Set<Hardware>();
+    
+    public DbSet<Location> Locations => Set<Location>();
+
+    public DbSet<Locker> Lockers => Set<Locker>();
+
+    public DbSet<LockerTimeline> LockerTimelines => Set<LockerTimeline>();
+    
+    public DbSet<Order> Orders => Set<Order>();
+
+    public DbSet<OrderTimeline> OrderTimelines => Set<OrderTimeline>();
+
+    public DbSet<Service> Services => Set<Service>();
 }

@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LockerService.Application\LockerService.Application.csproj" />
+        <ProjectReference Include="..\LockerService.Application\LockerService.Application.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -36,7 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Persistence\Migrations" />
+        <Folder Include="Persistence\Migrations" />
     </ItemGroup>
 
 </Project>

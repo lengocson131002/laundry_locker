@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using LockerService.Domain.Enums;
 
@@ -6,7 +7,8 @@ namespace LockerService.Domain.Entities;
 [Table("Account")]
 public class Account : BaseAuditableEntity
 {
-    public long Id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
     public string? Email { get; set; }
     

@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Enums;
 using LockerService.Application.Common.Extensions;
 
 namespace LockerService.Application.Common.Exceptions

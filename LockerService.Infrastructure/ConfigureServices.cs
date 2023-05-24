@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Quartz;
 
 namespace LockerService.Infrastructure;
 
@@ -20,7 +21,7 @@ public static class ConfigureServices
     public static IServiceCollection ConfigureInfrastructureServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Testing
+
         services.AddHttpContextAccessor();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICurrentPrincipalService, CurrentPrincipalService>();
@@ -76,6 +77,31 @@ public static class ConfigureServices
             var mqttClientServiceProvider = new MqttClientServiceProvider(mqttClientService);
             return mqttClientServiceProvider;
         });
+        
+        // Quartz
+        services.AddScoped<IOrderTimeoutService, OrderTimeoutService>();
+        services.AddQuartz(q =>
+        {
+            q.UseMicrosoftDependencyInjectionJobFactory();
+            q.UsePersistentStore(options =>
+            {
+                // options.UseProperties = true;
+                options.UsePostgres(configuration["Quartz:ConnectionString"] ?? "");
+                options.UseJsonSerializer();
+            });
+        });
+
+        services.AddQuartzServer(options =>
+        {
+            // options.WaitForJobsToComplete = true;
+        });
+        
+        // Fee
+        services.AddScoped<IFeeService, FeeService>();
+        
+        // Address
+        services.AddHostedService<ImportAddressService>();
+        
         
         return services;
     }

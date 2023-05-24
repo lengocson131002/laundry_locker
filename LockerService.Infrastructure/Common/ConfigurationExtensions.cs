@@ -11,7 +11,7 @@ public static class ConfigurationExtensions
             var value = configuration.GetValue<T>(key);
             return value ?? defaultValue;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return defaultValue;
         }

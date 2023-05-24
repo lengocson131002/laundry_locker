@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LockerService.Domain\LockerService.Domain.csproj" />
+        <ProjectReference Include="..\LockerService.Domain\LockerService.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -18,20 +18,23 @@
         <PackageReference Include="LinqKit" />
         <PackageReference Include="MediatR" />
         <PackageReference Include="Microsoft.AspNetCore.Http" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.Extensions.Configuration" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
+        <PackageReference Include="Quartz.AspNetCore" />
+        <PackageReference Include="Quartz.Serialization.Json" />
         <PackageReference Include="System.Linq.Dynamic.Core" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Auth\Queries" />
-      <Folder Include="Common\Interfaces" />
-      <Folder Include="Locations" />
-      <Folder Include="Lockers" />
-      <Folder Include="Orders" />
-      <Folder Include="Services" />
+        <Folder Include="Auth\Queries" />
+        <Folder Include="Common\Commands" />
+        <Folder Include="Common\Interfaces" />
+        <Folder Include="Common\Queries" />
+        <Folder Include="Dashboard\Commands" />
     </ItemGroup>
-    
+
 </Project>

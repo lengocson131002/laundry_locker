@@ -1,6 +1,4 @@
-using FluentValidation;
 using LockerService.Application.Auth.Models;
-using MediatR;
 
 namespace LockerService.Application.Auth.Commands;
 

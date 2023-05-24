@@ -1,5 +1,6 @@
 using LockerService.API;
 using LockerService.API.Filters;
+using LockerService.API.Middlewares;
 using LockerService.Application;
 using LockerService.Application.Common.Exceptions;
 using LockerService.Infrastructure;
@@ -7,9 +8,6 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
@@ -17,7 +15,7 @@ builder.Services.AddSwaggerGen(opt =>
     // Swagger doc
     opt.SwaggerDoc("v1", new OpenApiInfo()
     {
-        Title = "P2C Api",
+        Title = "AT Locker Api",
         Version = "v1"
     });
 
@@ -71,6 +69,8 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<LoggingMiddleware>();
 
 app.MapControllers();
 

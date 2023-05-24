@@ -1,9 +1,6 @@
 using System.Net;
 using System.Text.Json;
-using FluentValidation;
-using LockerService.Application.Common.Models.Response;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace LockerService.Application.Common.Exceptions;
 
@@ -11,7 +8,6 @@ public class ExceptionMiddleware
 {
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly RequestDelegate _next;
-
     public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         _next = next;

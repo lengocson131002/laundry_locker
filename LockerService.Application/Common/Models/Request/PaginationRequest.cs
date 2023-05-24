@@ -1,7 +1,5 @@
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
 using LockerService.Application.Common.Constants;
-using LockerService.Application.Common.Enums;
 
 namespace LockerService.Application.Common.Models.Request;
 
@@ -30,6 +28,8 @@ public abstract class PaginationRequest<T> where T : class
     public string? SortColumn { get; set; }
 
     public SortDirection SortDir { get; set; } = SortDirection.Asc;
+    
+    protected Expression<Func<T, bool>> Expression = PredicateBuilder.New<T>(true);
 
     public abstract Expression<Func<T, bool>> GetExpressions();
 

@@ -1,8 +1,5 @@
-using LockerService.Application.Common.Services;
 using LockerService.Application.Files.Commands;
 using LockerService.Application.Files.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace LockerService.Application.Files.Handlers;
 

@@ -44,7 +44,7 @@ public class StorageService : IStorageService
         using var response = await _s3Client.GetObjectAsync(getObjectRequest);
         if (response.HttpStatusCode != HttpStatusCode.OK)
         {
-            throw new ApiException(ResponseCode.ErrorFileNotFound);
+            throw new ApiException(ResponseCode.FileErrorNotFound);
         }
         
         using var ms = new MemoryStream();
@@ -64,7 +64,7 @@ public class StorageService : IStorageService
         using var response = await _s3Client.GetObjectAsync(getObjectRequest);
         if (response.HttpStatusCode != HttpStatusCode.OK)
         {
-            throw new ApiException(ResponseCode.ErrorFileNotFound);
+            throw new ApiException(ResponseCode.FileErrorNotFound);
         }
 
         return response.Headers.ContentType;
@@ -108,7 +108,7 @@ public class StorageService : IStorageService
         var response = await _s3Client.DeleteObjectAsync(deleteFileRequest);
         if (response.HttpStatusCode != HttpStatusCode.OK)
         {
-            throw new ApiException(ResponseCode.ErrorDeleteFileFailed);
+            throw new ApiException(ResponseCode.FileErrorDeleteFailed);
         }
         
         return true;

@@ -1,11 +1,5 @@
 using LockerService.Application.Auth.Commands;
 using LockerService.Application.Auth.Models;
-using LockerService.Application.Common.Enums;
-using LockerService.Application.Common.Exceptions;
-using LockerService.Application.Common.Persistence;
-using LockerService.Application.Common.Services;
-using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace LockerService.Application.Auth.Handlers;
 

@@ -9,12 +9,17 @@ public static class StringExtensions
     {
         var regex = new Regex("\\p{IsCombiningDiacriticalMarks}+");
         var temp = input.Normalize(NormalizationForm.FormD);
-        return regex.Replace(temp, String.Empty).Replace('\u0111', 'd').Replace('\u0110', 'D');
+        return regex.Replace(temp, string.Empty).Replace('\u0111', 'd').Replace('\u0110', 'D').Trim();
     }
     
     public static string ToCode(this string input)
     {
         return Regex.Replace(input.ToNormalize().ToLower().Trim(), "\\s+", "-");
     }
-    
+
+    public static bool ContainsSubstring(this string src, string subString, bool isRelative = false)
+    {
+        return !isRelative ? src.Contains(subString) : src.ToNormalize().Contains(subString.ToNormalize());
+    }
+
 }

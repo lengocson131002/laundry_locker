@@ -1,5 +1,4 @@
 using LockerService.Application.Files.Models;
-using MediatR;
 
 namespace LockerService.Application.Files.Queries;
 

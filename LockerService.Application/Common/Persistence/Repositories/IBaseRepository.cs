@@ -1,6 +1,4 @@
-using System.Linq.Expressions;
-
-namespace LockerService.Application.Common.Persistence;
+namespace LockerService.Application.Common.Persistence.Repositories;
 
 public interface IBaseRepository<T> where T : class
 {

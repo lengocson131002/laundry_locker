@@ -1,9 +1,6 @@
 using System.Reflection;
-using FluentValidation;
 using LockerService.Application.Common.Behaviours;
 using LockerService.Application.Common.Mappings;
-using MediatR;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LockerService.Application;

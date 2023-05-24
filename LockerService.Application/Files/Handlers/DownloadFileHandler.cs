@@ -1,7 +1,5 @@
-using LockerService.Application.Common.Services;
 using LockerService.Application.Files.Models;
 using LockerService.Application.Files.Queries;
-using MediatR;
 
 namespace LockerService.Application.Files.Handlers;
 

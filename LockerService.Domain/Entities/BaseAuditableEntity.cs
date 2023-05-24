@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LockerService.Domain.Entities;
 
 public class BaseAuditableEntity

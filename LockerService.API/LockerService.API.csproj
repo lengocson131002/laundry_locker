@@ -11,21 +11,21 @@
         <PackageReference Include="MediatR" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LockerService.Application\LockerService.Application.csproj" />
-      <ProjectReference Include="..\LockerService.Infrastructure\LockerService.Infrastructure.csproj" />
+        <ProjectReference Include="..\LockerService.Application\LockerService.Application.csproj" />
+        <ProjectReference Include="..\LockerService.Infrastructure\LockerService.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

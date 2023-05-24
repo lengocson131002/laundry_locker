@@ -4,7 +4,6 @@ using System.Text;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Common.Exceptions;
 using LockerService.Application.Common.Services;
-using LockerService.Infrastructure.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -22,23 +21,24 @@ public class CurrentPrincipalService : ICurrentPrincipalService
         _configuration = configuration;
     }
 
-    // Get current login email
+    // Get current login acc Id
     public string? CurrentPrincipal
     {
         get
         {
             var identity = _accessor?.HttpContext?.User.Identity as ClaimsIdentity;
+                
             if (identity == null || !identity.IsAuthenticated) return null;
 
             var claims = identity.Claims;
 
-            var id = claims.FirstOrDefault(o => o.Type == JwtClaims.Sub)?.Value ?? null;
+            var id = claims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value ?? null;
 
             return id;
         }
     }
 
-    public long? CurrentSubjectId => CurrentPrincipal != null ? long.Parse(CurrentPrincipal) : null;
+    public int? CurrentSubjectId => CurrentPrincipal != null ? int.Parse(CurrentPrincipal) : null;
     
     public ClaimsPrincipal GetCurrentPrincipalFromToken(string token)
     {

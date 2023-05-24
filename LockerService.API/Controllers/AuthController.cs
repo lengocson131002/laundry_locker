@@ -1,7 +1,5 @@
-using LockerService.Application.Auth.Commands;
-using LockerService.Application.Auth.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using LockerService.Application.Common.Extensions;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
@@ -17,9 +15,9 @@ public class AuthController : ApiControllerBase
     }
     
     [HttpPost("refresh")]
-    [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<TokenResponse>> RefreshToken()
     {
-        return await Mediator.Send(request);
+        return await Mediator.Send(new RefreshTokenRequest());
     }
 }

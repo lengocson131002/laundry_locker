@@ -4,21 +4,21 @@ namespace LockerService.Application.Common.Enums;
 
 public enum ResponseCode
 {
-    [Description("Common Error")] ErrorCommon = 1,
+    [Description("Common Error")] CommonError = 1,
 
-    [Description("Validation Error")] ErrorValidation = 2,
+    [Description("Validation Error")] ValidationError = 2,
 
-    [Description("Mapping Error")] ErrorMapping = 3,
+    [Description("Mapping Error")] MappingError = 3,
     
     [Description("Unauthorized")] Unauthorized = 4,
 
     // File 
     
-    [Description("File not found")] ErrorFileNotFound = 10,
+    [Description("File not found")] FileErrorNotFound = 10,
 
-    [Description("Delete file failed")] ErrorDeleteFileFailed = 11,
+    [Description("Delete file failed")] FileErrorDeleteFailed = 11,
     
-    [Description("Upload file failed")] ErrorUploadFileFailed = 12,
+    [Description("Upload file failed")] FileErrorUploadFailed = 12,
     
     // Auth
         
@@ -27,21 +27,55 @@ public enum ResponseCode
     [Description("Invalid refresh token")] AuthErrorInvalidRefreshToken = 21,
     
     [Description("Invalid google ID token")] AuthErrorInvalidGoogleIdToken = 22,
-
     
-    // Account
-    [Description("Username existed")] AccountErrorEmailExisted = 30,
+        // Locker
+    [Description("Locker not found")] LockerErrorNotFound = 101,
     
-    [Description("Password and Confirm password are not matched")] AccountErrorPasswordNotMatched = 31,
+    [Description("Locker status invalid")] LockerErrorInvalidStatus = 102,
 
-    [Description("Account not found")] AccountErrorNotFound = 32,
-
-    // Review
-    [Description("You had reviewed this account before")] ReviewErrorExisted = 40,
-
-    [Description("Review not found")] ReviewErrorNotFound = 41,
+    [Description("Update boxes failed, please scan enough box")] LockerErrorInvalidNumberOfBoxes = 103,
     
-    [Description("Can not review yourself")] ReviewErrorCannotReviewYourself = 42
+    [Description("Add new box failed, scan enough box!")] LockerErrorOverBoxCount = 104,
+    
+    [Description("Config locker service before being active")] LockerErrorServiceRequired = 105,
 
+    [Description("Existed locker's MAC address")] LockerErrorExistedMacAddress = 106,
+    
+    [Description("Existed locker's name")] LockerErrorExistedName = 107,
+    
+    [Description("Locker is currently not active")] LockerErrorNotActive = 108,
+    
+    [Description("No any available box. Please try later")] LockerErrorNoAvailableBox = 109,
+
+    // Service
+    [Description("Service not found")] ServiceErrorNotFound = 201,
+    
+    [Description("Service's fee is required")] ServiceErrorMissingFee = 202,
+
+    // Order
+    [Description("Service is not available")] OrderErrorServiceIsNotAvailable = 403,
+    
+    [Description("Order is not found")] OrderErrorNotFound = 404,
+    
+    [Description("Order'status is not allowed to do this function")] OrderErrorInvalidStatus = 405,
+    
+    [Description("Order'amount is required for ByUnitPrice Service")] OrderErrorAmountIsRequired = 406,
+    
+    [Description("Order'fee is required for ByInputPrice Service")] OrderErrorFeeIsRequired = 407,
+    
+    [Description("Fee of this order's service is missing")] OrderErrorServiceFeeIsMissing = 408,
+    
+    [Description("FeeType of this order's service is missing")] OrderErrorServiceFeeTypeIsMissing = 409,
+
+    // Address
+    [Description("Province not found")] AddressErrorProvinceNotFound = 501,
+    
+    [Description("District not found")] AddressErrorDistrictNotFound = 502,
+
+    [Description("Ward not found")] AddressErrorWardNotFound = 503,
+
+
+    // Hardware
+    [Description("Hardware not found")] HardwareErrorNotFound = 601,
     
 }

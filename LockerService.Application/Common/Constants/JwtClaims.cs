@@ -1,4 +1,4 @@
-namespace LockerService.Infrastructure.Common;
+namespace LockerService.Application.Common.Constants;
 
 public static class JwtClaims
 {

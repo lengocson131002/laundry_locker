@@ -1,5 +1,3 @@
-using LockerService.Domain.Entities;
-
 namespace LockerService.Application.Common.Services;
 
 public interface IJwtService

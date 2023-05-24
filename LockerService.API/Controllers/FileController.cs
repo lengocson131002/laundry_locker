@@ -1,7 +1,6 @@
 using LockerService.Application.Files.Commands;
 using LockerService.Application.Files.Models;
 using LockerService.Application.Files.Queries;
-using Microsoft.AspNetCore.Mvc;
 
 namespace LockerService.API.Controllers;
 

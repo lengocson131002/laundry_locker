@@ -3,9 +3,9 @@ using System.Security.Claims;
 using System.Text;
 using LockerService.Application.Common.Services;
 using LockerService.Domain.Entities;
-using LockerService.Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using JwtClaims = LockerService.Application.Common.Constants.JwtClaims;
 
 namespace LockerService.Infrastructure.Services;
 
@@ -41,8 +41,7 @@ public class JwtService : IJwtService
 
         var claims = new[]
         {
-            new Claim(JwtClaims.Sub, account.Id.ToString()),
-            new Claim(ClaimTypes.NameIdentifier, account.PhoneNumber),
+            new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
             new Claim(ClaimTypes.Email, account.Email ?? string.Empty),
             new Claim(ClaimTypes.Name, account.FullName ?? string.Empty),
             new Claim(ClaimTypes.Role, account.Role.ToString())
