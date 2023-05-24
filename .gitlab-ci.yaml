@@ -1,0 +1,76 @@
+variables:
+  SERVICE_PATH: LockerService.API
+  SERVICE_FILE: LockerService.API.csproj
+  SERVICE_NAME: locker-api
+  NUGET_PACKAGES: $CI_PROJECT_DIR/.nuget/packages
+  NUGET_HTTP_CACHE_PATH: $CI_PROJECT_DIR/.nuget/cache
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  PORT: $API_PORT
+  DEVELOP_BRANCH: develop
+
+workflow:
+  rules:
+    - if: "$CI_MERGE_REQUEST_IID"
+    - if: "$CI_COMMIT_BRANCH == $DEVELOP_BRANCH"
+
+stages:
+  - build-code
+  - build-image
+  - deploy
+
+build-code-locker:
+  stage: build-code
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  allow_failure: false
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .nuget
+  script:
+    - dotnet restore $SERVICE_PATH/$SERVICE_FILE
+    - dotnet publish $SERVICE_PATH/$SERVICE_FILE -o publish/ -c release/
+  artifacts:
+    paths:
+      - publish
+    expire_in: 2 hrs
+  tags:
+    - docker
+
+build-image-locker:
+  stage: build-image
+  image: docker:20.10.16
+  allow_failure: false
+  services:
+    - docker:20.10.16-dind
+
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $IMAGE_TAG -f $SERVICE_PATH/Dockerfile .
+    - docker push $IMAGE_TAG
+  needs:
+    - build-code-locker
+  dependencies:
+    - build-code-locker
+  tags:
+    - docker
+  only:
+    - develop
+
+deploy-locker:
+  stage: deploy
+  allow_failure: false
+  script:
+    - cp $ENV_FILE .env
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker stop $SERVICE_NAME || true;
+    - docker system prune -a -f;
+    - docker pull $IMAGE_TAG;
+    - docker container run -d --restart unless-stopped --env-file .env --name $SERVICE_NAME -p $PORT:80 $IMAGE_TAG;
+  needs:
+    - build-image-locker
+  dependencies:
+    - build-image-locker
+  tags:
+    - shell
+  only:
+    - develop
