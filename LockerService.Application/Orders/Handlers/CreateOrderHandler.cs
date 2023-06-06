@@ -1,5 +1,7 @@
 using LockerService.Application.Common.Extensions;
+using LockerService.Application.EventBus.RabbitMq.Events;
 using LockerService.Domain.Events;
+using MassTransit;
 
 namespace LockerService.Application.Orders.Handlers;
 
@@ -12,12 +14,13 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
     private readonly IOrderTimeoutService _orderTimeoutService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMqttBus _mqttBus;
-
     public CreateOrderHandler(
         ILogger<CreateOrderHandler> logger,
         IConfiguration configuration,
         IMapper mapper,
-        IUnitOfWork unitOfWork, IMqttBus mqttBus, IOrderTimeoutService orderTimeoutService)
+        IUnitOfWork unitOfWork, 
+        IMqttBus mqttBus, 
+        IOrderTimeoutService orderTimeoutService)
     {
         _logger = logger;
         _configuration = configuration;
@@ -88,7 +91,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
             
             // MQTT open box
             await _mqttBus.PublishAsync(new MqttOpenBoxEvent(locker.Id, (int)availableBox));
-            
+
             // response
             return _mapper.Map<OrderResponse>(savedOrder);
         }

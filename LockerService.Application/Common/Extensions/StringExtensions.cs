@@ -22,4 +22,14 @@ public static class StringExtensions
         return !isRelative ? src.Contains(subString) : src.ToNormalize().Contains(subString.ToNormalize());
     }
 
+    public static string ToVietnamesePhoneNumber(this string src)
+    {
+        if (!src.IsValidPhoneNumber())
+        {
+            return string.Empty;
+        }
+
+        return Regex.Replace(src, "^(84|0)", "+84");
+    }
+
 }

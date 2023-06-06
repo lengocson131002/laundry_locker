@@ -1,4 +1,7 @@
+using LockerService.Application.EventBus.RabbitMq.Consumers;
+using LockerService.Application.EventBus.RabbitMq.Events;
 using LockerService.Domain.Events;
+using MassTransit;
 
 namespace LockerService.Application.Orders.Handlers;
 
@@ -9,19 +12,20 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
     private readonly IMapper _mapper;
     private readonly IMqttBus _mqttBus;
     private readonly IFeeService _feeService;
-    
+    private readonly IPublishEndpoint _rabbitMqBus;
     public ReturnOrderHandler(
         ILogger<ReturnOrderHandler> logger,
         IUnitOfWork unitOfWork,
         IMapper mapper, 
         IMqttBus mqttBus, 
-        IFeeService feeService)
+        IFeeService feeService, IPublishEndpoint rabbitMqBus)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _mqttBus = mqttBus;
         _feeService = feeService;
+        _rabbitMqBus = rabbitMqBus;
     }
     
     public async Task<OrderResponse> Handle(ReturnOrderCommand request, CancellationToken cancellationToken)
@@ -77,6 +81,9 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
             // Mqtt Open Box
             await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBoxOrder));
 
+            // Push rabbit MQ
+            await _rabbitMqBus.Publish(_mapper.Map<OrderReturnedEvent>(order), cancellationToken);
+            
             return _mapper.Map<OrderResponse>(order);
         } 
         catch (ApiException ex)

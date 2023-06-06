@@ -60,7 +60,7 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
                               && !OrderStatus.Waiting.Equals(order.Status)
                               && !OrderStatus.Returned.Equals(order.Status)),
                 OrderStatus = order?.Status,
-                OrderId = order?.Id
+                OrderId = order?.Id,
             })
             .ToList();
     }

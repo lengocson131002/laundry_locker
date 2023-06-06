@@ -1,3 +1,6 @@
+using LockerService.Application.EventBus.RabbitMq.Events;
+using MassTransit;
+
 namespace LockerService.Application.Orders.Handlers;
 
 public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderResponse>
@@ -8,15 +11,18 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
 
     private readonly IMapper _mapper;
 
+    private readonly IPublishEndpoint _rabbitMqBus;
+
 
     public ConfirmOrderHandler(
         ILogger<ConfirmOrderHandler> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper)
+        IMapper mapper, IPublishEndpoint rabbitMqBus)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _rabbitMqBus = rabbitMqBus;
     }
 
     public async Task<OrderResponse> Handle(ConfirmOrderCommand command, CancellationToken cancellationToken)
@@ -55,7 +61,10 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
         await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
         
         await _unitOfWork.SaveChangesAsync();
-
+    
+        // Push rabbit MQ
+        await _rabbitMqBus.Publish(_mapper.Map<OrderCreatedEvent>(order), cancellationToken);
+        
         return _mapper.Map<OrderResponse>(order);
     }
 }

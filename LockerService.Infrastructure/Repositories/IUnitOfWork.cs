@@ -5,7 +5,7 @@ using LockerService.Infrastructure.Persistence;
 
 namespace LockerService.Infrastructure.Repositories;
 
-public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
+public class IUnitOfWork :  BaseUnitOfWork, Application.Common.Persistence.IUnitOfWork
 {
     private IAccountRepository? _accountRepository;
     
@@ -27,7 +27,7 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     
     private readonly ApplicationDbContext _dbContext;
     
-    public UnitOfWork(ApplicationDbContext dbContext) : base(dbContext)
+    public IUnitOfWork(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
     }
