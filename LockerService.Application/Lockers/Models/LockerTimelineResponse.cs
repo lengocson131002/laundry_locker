@@ -14,7 +14,7 @@ public class LockerTimelineResponse
     
     public int? ErrorCode { get; set; }
     
-    public int? Error { get; set; }
+    public string? Error { get; set; }
     
     public DateTimeOffset Time { get; set; }
 }

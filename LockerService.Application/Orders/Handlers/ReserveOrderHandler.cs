@@ -3,31 +3,32 @@ using LockerService.Domain.Events;
 
 namespace LockerService.Application.Orders.Handlers;
 
-public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderResponse>
+public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderResponse>
 {
-    private const int DefaultOrderTimeoutInMinutes = 5;
+    private const int DefaultReservationTimeoutInMinutes = 10;
     private readonly IConfiguration _configuration;
     private readonly ILogger<CreateOrderHandler> _logger;
     private readonly IMapper _mapper;
+    private readonly IMqttBus _mqttBus;
     private readonly IOrderTimeoutService _orderTimeoutService;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMqttBus _mqttBus;
 
-    public CreateOrderHandler(
+    public ReserveOrderHandler(IConfiguration configuration,
         ILogger<CreateOrderHandler> logger,
-        IConfiguration configuration,
         IMapper mapper,
-        IUnitOfWork unitOfWork, IMqttBus mqttBus, IOrderTimeoutService orderTimeoutService)
+        IOrderTimeoutService orderTimeoutService,
+        IUnitOfWork unitOfWork,
+        IMqttBus mqttBus)
     {
-        _logger = logger;
         _configuration = configuration;
+        _logger = logger;
         _mapper = mapper;
+        _orderTimeoutService = orderTimeoutService;
         _unitOfWork = unitOfWork;
         _mqttBus = mqttBus;
-        _orderTimeoutService = orderTimeoutService;
     }
 
-    public async Task<OrderResponse> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
+    public async Task<OrderResponse> Handle(ReserveOrderCommand command, CancellationToken cancellationToken)
     {
         var locker = await _unitOfWork.LockerRepository.GetByIdAsync(command.LockerId);
         if (locker == null) throw new ApiException(ResponseCode.LockerErrorNotFound);
@@ -59,7 +60,9 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
                 ReceiveTime = command.ReceiveTime,
                 SendBoxOrder = (int)availableBox,
                 ReceiveBoxOrder = (int)availableBox,
-                Status = OrderStatus.Initialized
+                Status = OrderStatus.Initialized,
+                PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode(),
+                PinCodeIssuedAt = DateTimeOffset.UtcNow
             };
 
             // Save order
@@ -82,7 +85,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
 
             // Set timeout for initialized order
             var cancelTime = DateTimeOffset.Now
-                .AddMinutes(_configuration.GetValueOrDefault<int>("Order:TimeoutInMinutes", DefaultOrderTimeoutInMinutes));
+                .AddMinutes(_configuration.GetValueOrDefault("Order:ReservationTimeOutInMinutes", DefaultReservationTimeoutInMinutes));
 
             await _orderTimeoutService.CancelExpiredOrder(order.Id, cancelTime);
             

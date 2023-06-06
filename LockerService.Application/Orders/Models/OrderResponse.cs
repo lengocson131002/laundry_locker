@@ -3,6 +3,10 @@ namespace LockerService.Application.Orders.Models;
 public class OrderResponse
 {
     public int Id { get; set; }
+    
+    public string? PinCode { get; set; }
+    
+    public DateTimeOffset? PinCodeIssuedAt { get; set; } 
 
     public string OrderPhone { get; set; } = default!;
 

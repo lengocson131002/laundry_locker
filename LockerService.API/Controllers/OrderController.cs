@@ -15,6 +15,18 @@ public class OrderController : ApiControllerBase
     {
         return await Mediator.Send(command);
     }
+    
+    [HttpPost("reservations")]
+    public async Task<ActionResult<OrderResponse>> ReserveOrder([FromBody] ReserveOrderCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
+    [HttpPut("reservations")]
+    public async Task<ActionResult<OrderResponse>> TakeReservationOrder([FromQuery] TakeReservationCommand command)
+    {
+        return await Mediator.Send(command);
+    }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<OrderResponse>> UpdateOrder([FromRoute] int id,
@@ -47,14 +59,10 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPut("{id:int}/return")]
-    public async Task<ActionResult<OrderResponse>> ReturnOrder([FromRoute] int id)
+    public async Task<ActionResult<OrderResponse>> ReturnOrder([FromRoute] int id, [FromBody] ReturnOrderCommand request)
     {
-        var returnOrderRequest = new ReturnOrderCommand
-        {
-            Id = id
-        };
-
-        return await Mediator.Send(returnOrderRequest);
+        request.Id = id;
+        return await Mediator.Send(request);
     }
     
     [HttpPut("checkout")]

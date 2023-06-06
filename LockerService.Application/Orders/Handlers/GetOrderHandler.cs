@@ -22,7 +22,11 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
             {
                 order => order.Service,
                 order => order.Locker,
-                order => order.Timelines
+                order => order.Timelines,
+                order => order.Locker.Location,
+                order => order.Locker.Location.Ward,
+                order => order.Locker.Location.District,
+                order => order.Locker.Location.Province,
             });
         
         var order = orderQuery.FirstOrDefault();

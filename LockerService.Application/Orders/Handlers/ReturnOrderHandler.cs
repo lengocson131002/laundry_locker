@@ -53,10 +53,15 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
             {
                 throw new ApiException(ResponseCode.LockerErrorNoAvailableBox);
             }
-
-            order.Status = OrderStatus.Returned;
-            order.Fee = _feeService.CalculateFree(order);
+            
             order.ReceiveBoxOrder = (int)availableBox;
+            order.Status = OrderStatus.Returned;
+            order.Amount ??= request.Amount;
+            order.Fee ??= request.Fee;
+            order.Description ??= request.Description;
+            
+            // Calculate fee
+            order.Fee = _feeService.CalculateFree(order);
 
             await _unitOfWork.OrderRepository.UpdateAsync(order);
 

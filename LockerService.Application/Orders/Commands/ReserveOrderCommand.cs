@@ -2,9 +2,9 @@ using LockerService.Application.Common.Extensions;
 
 namespace LockerService.Application.Orders.Commands;
 
-public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
+public class ReserveOrderCommandValidator : AbstractValidator<ReserveOrderCommand>
 {
-    public CreateOrderValidation()
+    public ReserveOrderCommandValidator()
     {
         RuleFor(req => req.LockerId).NotNull();
         RuleFor(req => req.ServiceId).NotNull();
@@ -23,7 +23,7 @@ public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
     }
 }
 
-public class CreateOrderCommand : IRequest<OrderResponse>
+public class ReserveOrderCommand : IRequest<OrderResponse>
 {
     public int LockerId { get; set; }
     
