@@ -83,12 +83,12 @@ public static class ConfigureServices
         services.AddQuartz(q =>
         {
             q.UseMicrosoftDependencyInjectionJobFactory();
-            q.UsePersistentStore(options =>
-            {
-                // options.UseProperties = true;
-                options.UsePostgres(configuration["Quartz:ConnectionString"] ?? "");
-                options.UseJsonSerializer();
-            });
+            // q.UsePersistentStore(options =>
+            // {
+            //     // options.UseProperties = true;
+            //     // options.UsePostgres(configuration["Quartz:ConnectionString"] ?? "");
+            //     options.UseJsonSerializer();
+            // });
         });
 
         services.AddQuartzServer(options =>

@@ -66,4 +66,5 @@ public class CurrentPrincipalService : ICurrentPrincipalService
 
         return principal;
     }
+    
 }

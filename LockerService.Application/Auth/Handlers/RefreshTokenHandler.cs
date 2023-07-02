@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using LockerService.Application.Auth.Commands;
 using LockerService.Application.Auth.Models;
 
@@ -10,8 +11,8 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenRequest, TokenRes
     private readonly IUnitOfWork _unitOfWork;
 
     public RefreshTokenHandler(
-        ICurrentPrincipalService currentUserService, 
-        IJwtService jwtService, 
+        ICurrentPrincipalService currentUserService,
+        IJwtService jwtService,
         IUnitOfWork unitOfWork)
     {
         _currentUserService = currentUserService;
@@ -21,13 +22,16 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenRequest, TokenRes
 
     public async Task<TokenResponse> Handle(RefreshTokenRequest request, CancellationToken cancellationToken)
     {
-        var accId = _currentUserService.CurrentSubjectId;
-        if (accId == null)
+        var principal = _currentUserService.GetCurrentPrincipalFromToken(request.RefreshToken);
+        var accountId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (accountId == null)
         {
             throw new ApiException(ResponseCode.AuthErrorInvalidRefreshToken);
         }
-        
-        var accountQuery = await _unitOfWork.AccountRepository.GetAsync(account => account.Id == accId);
+
+        var accountQuery = await _unitOfWork.AccountRepository.GetAsync(
+            account => Equals(accountId, account.Id.ToString())
+        );
 
         var account = accountQuery.FirstOrDefault();
         if (account == null)

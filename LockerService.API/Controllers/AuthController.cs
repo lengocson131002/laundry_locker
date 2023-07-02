@@ -1,6 +1,3 @@
-using LockerService.Application.Common.Extensions;
-using LockerService.Domain.Enums;
-
 namespace LockerService.API.Controllers;
 
 [ApiController]
@@ -15,9 +12,9 @@ public class AuthController : ApiControllerBase
     }
     
     [HttpPost("refresh")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<TokenResponse>> RefreshToken()
+    [AllowAnonymous]
+    public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        return await Mediator.Send(new RefreshTokenRequest());
+        return await Mediator.Send(request);
     }
 }
