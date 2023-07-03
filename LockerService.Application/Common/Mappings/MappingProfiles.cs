@@ -1,5 +1,6 @@
 using LockerService.Application.Locations.Commands;
 using LockerService.Application.Services.Commands;
+using LockerService.Application.Stores.Commands;
 
 namespace LockerService.Application.Common.Mappings;
 
@@ -41,5 +42,13 @@ public class MappingProfiles : Profile
         
         // Order timeline
         CreateMap<OrderTimeline, OrderTimelineResponse>();
+        
+        // Account
+        CreateMap<Account, AccountResponse>();
+        
+        // Store
+        CreateMap<AddStoreRequest, Store>();
+        CreateMap<Store, StoreResponse>();
+
     }
 }

@@ -5,5 +5,8 @@ global using LockerService.Application.Auth.Models;
 global using LockerService.Application.Common.Models.Response;
 global using LockerService.Application.Locations.Models;
 global using LockerService.Application.Locations.Queries;
+global using LockerService.Application.Accounts.Commands;
+global using LockerService.Application.Accounts.Handlers;
+global using LockerService.Application.Accounts.Models;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;

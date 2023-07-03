@@ -78,4 +78,7 @@ public enum ResponseCode
     // Hardware
     [Description("Hardware not found")] HardwareErrorNotFound = 601,
     
+    // Account
+    [Description("Staff is existed")] AccountErrorExistedStaff = 701,
+    
 }
