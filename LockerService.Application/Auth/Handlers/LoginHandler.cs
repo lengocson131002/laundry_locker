@@ -19,7 +19,7 @@ public class LoginHandler : IRequestHandler<LoginRequest, TokenResponse>
     public async Task<TokenResponse> Handle(LoginRequest request, CancellationToken cancellationToken)
     {
         var userQuery = await _unitOfWork.AccountRepository.GetAsync(
-                predicate: account => account.PhoneNumber.ToLower().Equals(request.Username.ToLower()) 
+                predicate: account => account.Username.ToLower().Equals(request.Username.ToLower()) 
                                       && account.Password != null 
                                       && account.Password.Equals(request.Password)
             );
