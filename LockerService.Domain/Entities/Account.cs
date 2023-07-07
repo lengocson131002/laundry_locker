@@ -21,4 +21,7 @@ public class Account : BaseAuditableEntity
 
     public string? Description { get; set; }
     public string? Avatar { get; set; }
+
+    public int? StoreId { get; set; }
+    public Store? Store { get; set; }
 }

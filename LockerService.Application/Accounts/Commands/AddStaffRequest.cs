@@ -12,4 +12,5 @@ public class AddStaffRequestValidator : AbstractValidator<AddStaffRequest>
 public class AddStaffRequest : IRequest<AccountResponse>
 {
     public string PhoneNumber { get; set; } = default!;
+    public int? StoreId { get; set; }
 }

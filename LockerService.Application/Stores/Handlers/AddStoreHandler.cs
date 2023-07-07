@@ -2,14 +2,14 @@ using LockerService.Application.Stores.Commands;
 
 namespace LockerService.Application.Stores.Handlers;
 
-public class AddStoreHandler : IRequestHandler<AddStoreRequest, StoreResponse>
+public class AddStoreHandler : IRequestHandler<AddStoreCommand, StoreResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
-    private readonly ILogger<AddStaffHandler> _logger;
+    private readonly ILogger<AddStoreHandler> _logger;
     private readonly IMapper _mapper;
 
-    public AddStoreHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<AddStaffHandler> logger,
+    public AddStoreHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<AddStoreHandler> logger,
         IJwtService jwtService)
     {
         _mapper = mapper;
@@ -17,11 +17,11 @@ public class AddStoreHandler : IRequestHandler<AddStoreRequest, StoreResponse>
         _logger = logger;
     }
 
-    public async Task<StoreResponse> Handle(AddStoreRequest request, CancellationToken cancellationToken)
+    public async Task<StoreResponse> Handle(AddStoreCommand request, CancellationToken cancellationToken)
     {
         var store = _mapper.Map<Store>(request);
 
-        if (store == null)
+        if (store is null)
         {
             throw new ApiException(ResponseCode.MappingError);
         }
@@ -31,7 +31,7 @@ public class AddStoreHandler : IRequestHandler<AddStoreRequest, StoreResponse>
         var provinceQuery =
             await _unitOfWork.AddressRepository.GetAsync(p => p.Code != null && p.Code.Equals(location.ProvinceCode));
         var province = provinceQuery.FirstOrDefault();
-        if (province == null)
+        if (province is null)
         {
             throw new ApiException(ResponseCode.AddressErrorProvinceNotFound);
         }
@@ -39,7 +39,7 @@ public class AddStoreHandler : IRequestHandler<AddStoreRequest, StoreResponse>
         var districtQuery =
             await _unitOfWork.AddressRepository.GetAsync(d => d.Code != null && d.Code.Equals(location.DistrictCode));
         var district = districtQuery.FirstOrDefault();
-        if (district == null || district.ParentCode != province.Code)
+        if (district is null || district.ParentCode != province.Code)
         {
             throw new ApiException(ResponseCode.AddressErrorDistrictNotFound);
         }

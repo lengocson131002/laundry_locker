@@ -1,3 +1,5 @@
+using LockerService.Domain.Enums;
+
 namespace LockerService.API.Controllers;
 
 [ApiController]
@@ -5,7 +7,7 @@ namespace LockerService.API.Controllers;
 public class AccountController : ApiControllerBase
 {
     [HttpPost("staffs")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<AccountResponse>> AddStaff([FromBody] AddStaffRequest request)
     {
         return await Mediator.Send(request);

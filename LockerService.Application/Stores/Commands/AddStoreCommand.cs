@@ -1,10 +1,8 @@
-using LockerService.Application.Locations.Commands;
-
 namespace LockerService.Application.Stores.Commands;
 
-public class AddStoreRequestValidator : AbstractValidator<AddStoreRequest>
+public class AddStoreCommandValidator : AbstractValidator<AddStoreCommand>
 {
-    public AddStoreRequestValidator()
+    public AddStoreCommandValidator()
     {
         RuleFor(model => model.Name)
             .MaximumLength(200)
@@ -19,12 +17,12 @@ public class AddStoreRequestValidator : AbstractValidator<AddStoreRequest>
             .When(model => model is not null);
         
         RuleFor(model => model.Image)
-            .MaximumLength(000)
+            .MaximumLength(1000)
             .When(model => model is not null);
     }
 }
 
-public class AddStoreRequest : IRequest<StoreResponse>
+public class AddStoreCommand : IRequest<StoreResponse>
 {
     public string Name { get; set; }
     public string? ContactPhone { get; set; }

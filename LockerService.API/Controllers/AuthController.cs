@@ -10,7 +10,7 @@ public class AuthController : ApiControllerBase
     {
         return await Mediator.Send(request);
     }
-    
+
     [HttpPost("refresh")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)

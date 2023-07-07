@@ -18,8 +18,8 @@ public class AddStaffHandler : IRequestHandler<AddStaffRequest, AccountResponse>
     public async Task<AccountResponse> Handle(AddStaffRequest request, CancellationToken cancellationToken)
     {
         var accountQuery =
-            await _unitOfWork.AccountRepository.GetAsync(w =>
-                w.PhoneNumber != null && Equals(w.PhoneNumber, request.PhoneNumber));
+            await _unitOfWork.AccountRepository.GetAsync(a =>
+                a.PhoneNumber != null && Equals(a.PhoneNumber, request.PhoneNumber));
         if (accountQuery.FirstOrDefault() != null)
         {
             throw new ApiException(ResponseCode.AccountErrorExistedStaff);
@@ -33,7 +33,21 @@ public class AddStaffHandler : IRequestHandler<AddStaffRequest, AccountResponse>
             Status = AccountStatus.Active,
             Role = Role.Staff,
         };
-        
+
+        if (request.StoreId != null)
+        {
+            var storeQuery =
+                await _unitOfWork.StoreRepository.GetAsync(s =>
+                    Equals(s.Id, request.StoreId));
+            var store = storeQuery.FirstOrDefault();
+            if (store == null)
+            {
+                throw new ApiException(ResponseCode.StoreErrorNotFound);
+            }
+
+            account.Store = store;
+        }
+
         await _unitOfWork.AccountRepository.AddAsync(account);
 
         // Save changes

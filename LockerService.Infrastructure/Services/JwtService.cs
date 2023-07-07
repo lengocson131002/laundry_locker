@@ -66,4 +66,9 @@ public class JwtService : IJwtService
     {
         return GenerateJwtToken(account, _refreshTokenExpireInMinutes);
     }
+
+    public string RevokeJwtRefreshToken(Account account)
+    {
+        throw new NotImplementedException();
+    }
 }

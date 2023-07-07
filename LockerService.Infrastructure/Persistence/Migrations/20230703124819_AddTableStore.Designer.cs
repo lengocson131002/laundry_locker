@@ -3,6 +3,7 @@ using System;
 using LockerService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LockerService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230703124819_AddTableStore")]
+    partial class AddTableStore
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +67,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("StoreId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -78,8 +78,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StoreId");
 
                     b.ToTable("Account");
                 });
@@ -547,15 +545,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("Store");
-                });
-
-            modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
-                {
-                    b.HasOne("LockerService.Domain.Entities.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId");
-
-                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Hardware", b =>

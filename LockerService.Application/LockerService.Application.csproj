@@ -36,7 +36,6 @@
         <Folder Include="Common\Queries" />
         <Folder Include="Dashboard\Commands" />
         <Folder Include="Accounts\Queries" />
-        <Folder Include="Stores\Queries" />
     </ItemGroup>
 
 </Project>

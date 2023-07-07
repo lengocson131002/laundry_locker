@@ -19,5 +19,6 @@ public interface IApplicationDbContext
     DbSet<OrderTimeline> OrderTimelines { get; }
     
     DbSet<Service> Services { get; }
+    DbSet<Store> Stores { get; }
 
 }

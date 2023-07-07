@@ -57,11 +57,11 @@ public enum ResponseCode
     
     [Description("Order is not found")] OrderErrorNotFound = 404,
     
-    [Description("Order'status is not allowed to do this function")] OrderErrorInvalidStatus = 405,
+    [Description("Order's status is not allowed to do this function")] OrderErrorInvalidStatus = 405,
     
-    [Description("Order'amount is required for ByUnitPrice Service")] OrderErrorAmountIsRequired = 406,
+    [Description("Order's amount is required for ByUnitPrice Service")] OrderErrorAmountIsRequired = 406,
     
-    [Description("Order'fee is required for ByInputPrice Service")] OrderErrorFeeIsRequired = 407,
+    [Description("Order's fee is required for ByInputPrice Service")] OrderErrorFeeIsRequired = 407,
     
     [Description("Fee of this order's service is missing")] OrderErrorServiceFeeIsMissing = 408,
     
@@ -80,5 +80,9 @@ public enum ResponseCode
     
     // Account
     [Description("Staff is existed")] AccountErrorExistedStaff = 701,
+    
+    // Account
+    [Description("Store not found")] StoreErrorNotFound = 801,
+    [Description("Store's status is not allowed to do this function")] StoreErrorInvalidStatus = 802,
     
 }
