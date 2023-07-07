@@ -7,30 +7,38 @@ public class OrderResponse
     public string? PinCode { get; set; }
     
     public DateTimeOffset? PinCodeIssuedAt { get; set; } 
+    
+    public int SendBox { get; set; }
+    
+    public string SendPhone { get; set; } = default!;
 
-    public string OrderPhone { get; set; } = default!;
+    public int SenderId { get; set; }
 
-    public string ReceivePhone { get; set; } = default!;
+    public int ReceiveBox { get; set; }
+    
+    public string? ReceivePhone { get; set; }
 
-    public int? SendBoxOrder { get; set; }
+    public int? ReceiverId { get; set; }
 
-    public int? ReceiveBoxOrder { get; set; }
+    public DateTimeOffset? ReceiveAt { get; set; }
 
     public OrderStatus Status { get; set; }
-
-    public DateTimeOffset? CreatedAt { get; set; }
-
-    public DateTimeOffset? UpdatedAt { get; set; }
     
-    public double? Amount { get; set; }
-
-    public double? Fee { get; set; }
-
     public int LockerId { get; set; }
-
+    
     public string LockerName { get; set; } = default!;
 
-    public int ServiceId { get; set; }
+    public decimal Price { get; set; }
 
-    public string ServiceName { get; set; } = default!;
+    public float? ExtraCount { get; set; }
+
+    public decimal? ExtraFee { get; set; }
+
+    public decimal? Discount { get; set; }
+    
+    public string? Description { get; set; }
+    
+    public DateTimeOffset? CreatedAt { get; set; }
+    
+    public DateTimeOffset? UpdatedAt { get; set; }
 }

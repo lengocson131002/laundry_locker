@@ -29,8 +29,7 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<OrderResponse>> UpdateOrder([FromRoute] int id,
-        [FromBody] UpdateOrderCommand request)
+    public async Task<ActionResult<OrderResponse>> UpdateOrder([FromRoute] int id, [FromBody] UpdateOrderCommand request)
     {
         request.Id = id;
         return await Mediator.Send(request);
@@ -47,22 +46,16 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(confirmOrderRequest);
     }
 
-    [HttpPut("{id:int}/process")]
-    public async Task<ActionResult<OrderResponse>> ProcessOrder([FromRoute] int id)
+    [HttpPut("process")]
+    public async Task<ActionResult<OrderResponse>> ProcessOrder([FromQuery] ProcessOrderCommand command)
     {
-        var processOrderRequest = new ProcessOrderCommand
-        {
-            Id = id
-        };
-
-        return await Mediator.Send(processOrderRequest);
+        return await Mediator.Send(command);
     }
 
-    [HttpPut("{id:int}/return")]
-    public async Task<ActionResult<OrderResponse>> ReturnOrder([FromRoute] int id, [FromBody] ReturnOrderCommand request)
+    [HttpPut("return")]
+    public async Task<ActionResult<OrderResponse>> ReturnOrder([FromRoute] ReturnOrderCommand command)
     {
-        request.Id = id;
-        return await Mediator.Send(request);
+        return await Mediator.Send(command);
     }
     
     [HttpPut("checkout")]
@@ -81,6 +74,14 @@ public class OrderController : ApiControllerBase
 
         return await Mediator.Send(getOrderRequest);
     }
+    
+    [HttpGet]
+    public async Task<ActionResult<OrderDetailResponse>> GetOrder([FromQuery] string pinCode)
+    {
+        var getOrderRequest = new GetOrderByPinCodeQuery(pinCode);
+        return await Mediator.Send(getOrderRequest);
+    }
+
 
     [HttpGet]
     public async Task<ActionResult<PaginationResponse<Order, OrderResponse>>> GetOrders(
@@ -91,6 +92,27 @@ public class OrderController : ApiControllerBase
             request.SortColumn = "CreatedAt";
             request.SortDir = SortDirection.Desc;
         }
+        return await Mediator.Send(request);
+    }
+    
+    [HttpGet("{id:int}/details/{detailId:int}")]
+    public async Task<ActionResult<OrderItemResponse>> GetOrderDetail([FromRoute] int id, [FromRoute] int detailId)
+    {
+        var request = new GetOrderDetailQuery(id, detailId);
+        return await Mediator.Send(request);
+    }
+    
+    [HttpDelete("{id:int}/details/{detailId:int}")]
+    public async Task<ActionResult<OrderItemResponse>> RemoveOrderDetail([FromRoute] int id, [FromRoute] int detailId)
+    {
+        var request = new RemoveOrderDetailCommand(id, detailId);
+        return await Mediator.Send(request);
+    }
+    
+    [HttpDelete("{id:int}/details/{detailId:int}")]
+    public async Task<ActionResult<OrderItemResponse>> UpdateOrderDetail([FromRoute] int id, [FromRoute] int detailId)
+    {
+        var request = new RemoveOrderDetailCommand(id, detailId);
         return await Mediator.Send(request);
     }
 }

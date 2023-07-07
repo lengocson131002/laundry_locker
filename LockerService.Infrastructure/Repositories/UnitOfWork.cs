@@ -24,9 +24,13 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     private IOrderTimelineRepository? _orderTimelineRepository;
 
     private IServiceRepository? _serviceRepository;
+
+    private IOrderDetailRepository? _orderDetailRepository;
+
+    private IBillRepository? _billRepository;
     
     private readonly ApplicationDbContext _dbContext;
-    
+
     public UnitOfWork(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
@@ -52,4 +56,9 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
         _orderTimelineRepository ??= new OrderTimelineRepository(_dbContext);
 
     public IServiceRepository ServiceRepository => _serviceRepository ??= new ServiceRepository(_dbContext);
+
+    public IOrderDetailRepository OrderDetailRepository =>
+        _orderDetailRepository ??= new OrderDetailRepository(_dbContext);
+
+    public IBillRepository BillRepository => _billRepository ??= new BillRepository(_dbContext);
 }

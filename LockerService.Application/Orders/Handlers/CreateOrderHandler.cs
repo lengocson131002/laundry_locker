@@ -30,11 +30,16 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
     public async Task<OrderResponse> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
         var locker = await _unitOfWork.LockerRepository.GetByIdAsync(command.LockerId);
-        if (locker == null) throw new ApiException(ResponseCode.LockerErrorNotFound);
+        if (locker == null)
+        {
+            throw new ApiException(ResponseCode.LockerErrorNotFound);
+        }
             
         // Check Locker status
         if (!LockerStatus.Active.Equals(locker.Status))
+        {
             throw new ApiException(ResponseCode.LockerErrorNotActive);
+        }
         
         try
         {
@@ -46,19 +51,34 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
             }
 
             // Check service
-            var service = await _unitOfWork.ServiceRepository.GetByIdAsync(command.ServiceId);
-            if (service == null || service.LockerId != locker.Id || !service.IsActive)
-                throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
+            var details = new List<OrderDetail>();
+            foreach (var serviceId in command.ServiceIds)
+            {
+                var service = await _unitOfWork.ServiceRepository.GetByIdAsync(serviceId);
+                if (service == null || !service.IsActive)
+                {
+                    throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
+                }
 
+                var orderDetail = new OrderDetail
+                {
+                    Service = service,
+                };
+                
+                details.Add(orderDetail);
+            }
+
+            // Check sender and receiver
+            
             var order = new Order
             {
                 LockerId = command.LockerId,
-                ServiceId = command.ServiceId,
-                OrderPhone = command.OrderPhone,
-                ReceivePhone = !string.IsNullOrWhiteSpace(command.ReceivePhone) ? command.ReceivePhone : null,
-                ReceiveTime = command.ReceiveTime,
-                SendBoxOrder = (int)availableBox,
-                ReceiveBoxOrder = (int)availableBox,
+                Type = command.Type,
+                Details = details,
+                SendPhone = command.OrderPhone,
+                ReceivePhone = command.ReceivePhone,
+                SendBox = (int)availableBox,
+                ReceiveBox = (int)availableBox,
                 Status = OrderStatus.Initialized
             };
 

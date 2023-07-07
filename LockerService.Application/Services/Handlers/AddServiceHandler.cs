@@ -21,15 +21,18 @@ public class AddServiceHandler : IRequestHandler<AddServiceCommand, ServiceRespo
 
     public async Task<ServiceResponse> Handle(AddServiceCommand request, CancellationToken cancellationToken)
     {
-        var locker = await _unitOfWork.LockerRepository.GetByIdAsync(request.LockerId);
-        if (locker is null)
-        {
-            throw new ApiException(ResponseCode.LockerErrorNotFound);
-        }
-
         var service = _mapper.Map<Service>(request);
-        service.Locker = locker;
-        service.LockerId = request.LockerId;
+        
+        // check exist name
+        var query = await _unitOfWork.ServiceRepository.GetAsync(
+            predicate: ser => ser.Name.Equals(service.Name, StringComparison.OrdinalIgnoreCase)
+        );
+
+        if (query.Any())
+        {
+            throw new ApiException(ResponseCode.ServiceErrorExistedName);
+        }
+        
         service = await _unitOfWork.ServiceRepository.AddAsync(service);
         
         // Save changes 

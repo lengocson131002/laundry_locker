@@ -15,14 +15,8 @@ public class GetServiceHandler : IRequestHandler<GetServiceQuery, ServiceDetailR
 
     public async Task<ServiceDetailResponse> Handle(GetServiceQuery request, CancellationToken cancellationToken)
     {
-        var locker = await _unitOfWork.LockerRepository.GetByIdAsync(request.LockerId);
-        if (locker == null)
-        {
-            throw new ApiException(ResponseCode.LockerErrorNotFound);
-        }
-
         var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
-        if (service == null || service.LockerId != locker.Id)
+        if (service == null)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);
         }

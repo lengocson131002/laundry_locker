@@ -6,8 +6,10 @@ public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
 {
     public CreateOrderValidation()
     {
-        RuleFor(req => req.LockerId).NotNull();
-        RuleFor(req => req.ServiceId).NotNull();
+        RuleFor(req => req.LockerId)
+            .NotNull();
+        RuleFor(req => req.Type)
+            .NotNull();
         RuleFor(req => req.OrderPhone)
             .NotNull()
             .Must(x => x.IsValidPhoneNumber())
@@ -17,9 +19,10 @@ public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
             .Must(x => x == null || x.IsValidPhoneNumber())
             .WithMessage("Invalid receive phone number");
 
-        RuleFor(req => req.ReceiveTime)
-            .Must(x => x == null || ((DateTimeOffset)x).UtcDateTime > DateTimeOffset.UtcNow)
-            .WithMessage("Received time must be later than current now");
+        RuleFor(model => model.ServiceIds)
+            .Must(serviceIds => serviceIds.Any())
+            .When(order => OrderType.Laundry.Equals(order.Type))
+            .WithMessage("Services is required for landry type");
     }
 }
 
@@ -27,8 +30,8 @@ public class CreateOrderCommand : IRequest<OrderResponse>
 {
     public int LockerId { get; set; }
     
-    public int ServiceId { get; set; }
-
+    public OrderType Type { get; set; }
+    
     private string _oPhone = default!;
     
     public string OrderPhone
@@ -45,11 +48,5 @@ public class CreateOrderCommand : IRequest<OrderResponse>
         set => this._rPhone = value?.Trim();
     }
 
-    private DateTimeOffset? _receiveTime;
-    
-    public DateTimeOffset? ReceiveTime
-    {
-        get => this._receiveTime;
-        set => this._receiveTime = value?.ToUniversalTime();
-    }
+    public IList<int> ServiceIds { get; set; } = new List<int>();
 }

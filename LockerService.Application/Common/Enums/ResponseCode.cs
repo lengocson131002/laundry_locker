@@ -52,6 +52,9 @@ public enum ResponseCode
     
     [Description("Service's fee is required")] ServiceErrorMissingFee = 202,
 
+    [Description("Existed service name")] ServiceErrorExistedName = 203,
+    
+
     // Order
     [Description("Service is not available")] OrderErrorServiceIsNotAvailable = 403,
     
@@ -66,6 +69,8 @@ public enum ResponseCode
     [Description("Fee of this order's service is missing")] OrderErrorServiceFeeIsMissing = 408,
     
     [Description("FeeType of this order's service is missing")] OrderErrorServiceFeeTypeIsMissing = 409,
+
+    [Description("Order item detail not found")] OrderErrorDetailNotFound = 410,
 
     // Address
     [Description("Province not found")] AddressErrorProvinceNotFound = 501,

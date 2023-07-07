@@ -31,6 +31,9 @@
 
     <ItemGroup>
         <Folder Include="Auth\Queries" />
+        <Folder Include="Bills\Commands" />
+        <Folder Include="Bills\Handlers" />
+        <Folder Include="Bills\Queries" />
         <Folder Include="Common\Commands" />
         <Folder Include="Common\Interfaces" />
         <Folder Include="Common\Queries" />

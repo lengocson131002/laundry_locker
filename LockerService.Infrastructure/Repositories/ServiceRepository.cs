@@ -22,14 +22,17 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
         while (true)
         {
             var pinCode = GeneratePinCode(length);
-            
-            var order = await _dbContext.Orders.FirstOrDefaultAsync(
-                order => pinCode.Equals(order.PinCode)
-                         && !OrderStatus.Completed.Equals(order.Status)
-                         && !OrderStatus.Canceled.Equals(order.Status));
-
+            var order = await GetOrderByPinCode(pinCode);
             if (order  == null) return pinCode;
         }
+    }
+
+    public async Task<Order?> GetOrderByPinCode(string pinCode)
+    {
+        return await _dbContext.Orders.FirstOrDefaultAsync(
+            order => pinCode.Equals(order.PinCode)
+                     && !OrderStatus.Completed.Equals(order.Status)
+                     && !OrderStatus.Canceled.Equals(order.Status));
     }
 
     private string GeneratePinCode(int length)

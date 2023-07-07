@@ -29,5 +29,13 @@ namespace LockerService.Application.Common.Exceptions
         public string Error => _error;
 
         public string ErrorMessage => _message;
+        
+        public ApiException(ResponseCode responseCode, string message)
+        {
+            _errorCode = (int) responseCode;
+            _error = responseCode.ToString();
+            _message = message;
+        }
+
     }
 }

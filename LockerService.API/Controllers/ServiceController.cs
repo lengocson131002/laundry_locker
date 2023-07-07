@@ -7,71 +7,46 @@ using LockerService.Domain.Entities;
 namespace LockerService.API.Controllers;
 
 [ApiController]
-[Route("/api/v1/lockers/{lockerId:int}/services")]
+[Route("/api/v1/services")]
 public class ServiceController : ApiControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse>> AddService(
-        [FromRoute] int lockerId,
-        [FromBody] AddServiceCommand command)
+    public async Task<ActionResult<ServiceResponse>> AddService([FromBody] AddServiceCommand command)
     {
-        command.LockerId = lockerId;
         return await Mediator.Send(command);
     }
 
-
     [HttpGet]
-    public async Task<ActionResult<PaginationResponse<Service, ServiceResponse>>> GetAllServices(
-        [FromRoute] int lockerId,
-        [FromQuery] GetAllServicesQuery query)
+    public async Task<ActionResult<PaginationResponse<Service, ServiceResponse>>> GetAllServices([FromQuery] GetAllServicesQuery query)
     {
         if (string.IsNullOrWhiteSpace(query.SortColumn))
         {
-            query.SortColumn = "CreatedAt";
+            query.SortColumn = "UpdatedAt";
             query.SortDir = SortDirection.Desc;
         }
         
-        query.LockerId = lockerId;
         return await Mediator.Send(query);
     }
 
     [HttpPut("{serviceId:int}")]
-    public async Task<ActionResult<StatusResponse>> UpdateService(
-        [FromRoute] int lockerId,
-        [FromRoute] int serviceId,
-        [FromBody] UpdateServiceCommand command)
+    public async Task<ActionResult<StatusResponse>> UpdateService([FromRoute] int serviceId, [FromBody] UpdateServiceCommand command)
     {
-        command.LockerId = lockerId;
         command.ServiceId = serviceId;
         await Mediator.Send(command);
         return new StatusResponse(true);
     }
     
     [HttpGet("{serviceId:int}")]
-    public async Task<ActionResult<ServiceDetailResponse>> GetService(
-        [FromRoute] int lockerId,
-        [FromRoute] int serviceId)
+    public async Task<ActionResult<ServiceDetailResponse>> GetService([FromRoute] int serviceId)
     {
-        var query = new GetServiceQuery()
-        {
-            LockerId = lockerId,
-            ServiceId = serviceId
-        };
-        
-       return await Mediator.Send(query);
-    }
-    
-    [HttpDelete("{serviceId:int}")]
-    public async Task<ActionResult<StatusResponse>> RemoveService(
-        [FromRoute] int lockerId,
-        [FromRoute] int serviceId)
-    {
-        var query = new RemoveServiceCommand()
-        {
-            LockerId = lockerId,
-            ServiceId = serviceId
-        };
-        
+        var query = new GetServiceQuery(serviceId);
         return await Mediator.Send(query);
+    }
+
+    [HttpPut("{serviceId:int}/status")]
+    public async Task<ActionResult<StatusResponse>> UpdateServiceStatus([FromBody] UpdateServiceCommand command)
+    {
+        await Mediator.Send(command);
+        return new StatusResponse(true);
     }
 }

@@ -2,28 +2,20 @@ namespace LockerService.Application.Services.Queries;
 
 public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<PaginationResponse<Service, ServiceResponse>>
 {
-    [BindNever] 
-    public int? LockerId { get; set; }
-    
-    public string? Name { get; set; }
+    public string? Query { get; set; }
 
-    public bool? IsActive { get; set; }
+    public ServiceStatus? Status { get; set; }
     
     public override Expression<Func<Service, bool>> GetExpressions()
     {
-        if (LockerId != null)
+        if (!string.IsNullOrWhiteSpace(Query))
         {
-            Expression = Expression.And(service => service.LockerId == LockerId);
-        }
-
-        if (!string.IsNullOrWhiteSpace(Name))
-        {
-            Expression = Expression.And(service => service.Name.ToLower().Contains(Name.Trim().ToLower()));
+            Expression = Expression.And(service => service.Name.ToLower().Contains(Query.Trim().ToLower()));
         }
         
-        if (IsActive != null)
+        if (Status != null)
         {
-            Expression = Expression.And(service => IsActive == true ? service.DeletedAt == null : service.DeletedAt != null);
+            Expression = Expression.And(service => Status.Equals(service.Status));
         }
 
         return Expression;

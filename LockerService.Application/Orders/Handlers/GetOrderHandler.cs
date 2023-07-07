@@ -20,7 +20,6 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
             predicate: order => order.Id == request.Id,
             includes: new List<Expression<Func<Order, object>>>
             {
-                order => order.Service,
                 order => order.Locker,
                 order => order.Timelines,
                 order => order.Locker.Location,

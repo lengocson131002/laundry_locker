@@ -21,8 +21,8 @@ public class ProcessOrderHandler : IRequestHandler<ProcessOrderCommand, OrderRes
 
     public async Task<OrderResponse> Handle(ProcessOrderCommand request, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(request.Id);
-        if (order == null)
+        var order = await _unitOfWork.OrderRepository.GetOrderByPinCode(request.PinCode);
+        if (order == null || !OrderType.Laundry.Equals(order.Type))
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
@@ -53,7 +53,7 @@ public class ProcessOrderHandler : IRequestHandler<ProcessOrderCommand, OrderRes
         _logger.LogInformation("Processing order {orderId}", order.Id);
         
         // Mqtt Open Box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBoxOrder));
+        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox));
         
         return _mapper.Map<OrderResponse>(order);
     }

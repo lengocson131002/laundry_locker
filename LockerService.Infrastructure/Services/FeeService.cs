@@ -17,13 +17,13 @@ public class FeeService : IFeeService
             {
                 var  timespan = DateTimeOffset.Now - order.CreatedAt;
                 var orderTimeInHours = Round(timespan.TotalHours);
-                if (service.Fee == null)
+                if (service.Price == null)
                 {
                     throw new ApiException(ResponseCode.OrderErrorServiceFeeIsMissing);
                 }
 
                 order.Amount = orderTimeInHours;
-                return Round(orderTimeInHours * (double)service.Fee);
+                return Round(orderTimeInHours * (double)service.Price);
             }
             
             case FeeType.ByUnitPrice:
@@ -32,12 +32,12 @@ public class FeeService : IFeeService
                     throw new ApiException(ResponseCode.OrderErrorAmountIsRequired);
                 }
                 
-                if (service.Fee == null)
+                if (service.Price == null)
                 {
                     throw new ApiException(ResponseCode.OrderErrorServiceFeeIsMissing);
                 }
                 
-                return Round((double) order.Amount * (double) service.Fee);
+                return Round((double) order.Amount * (double) service.Price);
             
             case FeeType.ByInputPrice:
                 if (order.Fee == null || order.Fee <= 0)

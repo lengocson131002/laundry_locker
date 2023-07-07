@@ -22,18 +22,7 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, OrderR
 
     public async Task<OrderResponse> Handle(CheckoutOrderCommand command, CancellationToken cancellationToken)
     {
-        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
-            predicate: order => command.PinCode.Equals(order.PinCode)
-                        && !OrderStatus.Completed.Equals(order.Status)
-                        && !OrderStatus.Canceled.Equals(order.Status),
-            includes: new List<Expression<Func<Order, object>>>
-            {
-                order => order.Service,
-                order => order.Locker
-            });
-
-        var order = orderQuery.FirstOrDefault();
-    
+        var order = await _unitOfWork.OrderRepository.GetOrderByPinCode(command.PinCode);
         if (order == null)
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
@@ -47,9 +36,7 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, OrderR
         }
 
         order.Status = OrderStatus.Completed;
-        order.ActualReceiveTime = DateTimeOffset.UtcNow;
-        order.Fee = _feeService.CalculateFree(order);
-        
+        order.ReceiveAt = DateTimeOffset.UtcNow;
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         
         // Save timeline
@@ -65,7 +52,7 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, OrderR
         await _unitOfWork.SaveChangesAsync();
         
         // Mqtt Open Box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBoxOrder));
+        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox));
         
         return _mapper.Map<OrderResponse>(order);
     }

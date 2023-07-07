@@ -8,13 +8,20 @@ public class ServiceResponse
 
     public string Image { get; set; } = default!;
 
-    public double? Fee { get; set; }
-
-    public FeeType FeeType { get; set; }
+    public decimal Price { get; set; }
 
     public string? Description { get; set; }
     
     public string? Unit { get; set; }
     
-    public bool IsActive { get; set; }
+    public ServiceStatus Status { get; set; }
+    
+    public DateTimeOffset CreatedAt { get; set; }
+    
+    public long? CreatedBy { get; set; }
+    
+    public DateTimeOffset UpdatedAt { get; set; }
+    
+    public long? UpdatedBy { get; set; }
+
 }

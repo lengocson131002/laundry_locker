@@ -21,5 +21,9 @@ public interface IUnitOfWork : IBaseUnitOfWork
     IOrderTimelineRepository OrderTimelineRepository { get; }
 
     IServiceRepository ServiceRepository { get; }
+    
+    IOrderDetailRepository OrderDetailRepository { get; }
+    
+    IBillRepository BillRepository { get; }
 
 }

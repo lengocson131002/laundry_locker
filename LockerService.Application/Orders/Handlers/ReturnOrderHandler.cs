@@ -5,37 +5,23 @@ namespace LockerService.Application.Orders.Handlers;
 public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<ReturnOrderHandler> _logger;
     private readonly IMapper _mapper;
     private readonly IMqttBus _mqttBus;
-    private readonly IFeeService _feeService;
     
     public ReturnOrderHandler(
-        ILogger<ReturnOrderHandler> logger,
         IUnitOfWork unitOfWork,
         IMapper mapper, 
-        IMqttBus mqttBus, 
-        IFeeService feeService)
+        IMqttBus mqttBus)
     {
-        _logger = logger;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _mqttBus = mqttBus;
-        _feeService = feeService;
     }
     
     public async Task<OrderResponse> Handle(ReturnOrderCommand request, CancellationToken cancellationToken)
     {
-        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
-                predicate: order => order.Id == request.Id,
-                includes: new List<Expression<Func<Order, object>>>()
-                {
-                    order => order.Service,
-                    order => order.Locker 
-                }
-        );
-        var order = orderQuery.FirstOrDefault();
-        if (order == null)
+        var order = await _unitOfWork.OrderRepository.GetOrderByPinCode(request.PinCode);
+        if (order == null || !OrderType.Laundry.Equals(order.Type)) 
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
@@ -54,15 +40,8 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
                 throw new ApiException(ResponseCode.LockerErrorNoAvailableBox);
             }
             
-            order.ReceiveBoxOrder = (int)availableBox;
+            order.ReceiveBox = (int)availableBox;
             order.Status = OrderStatus.Returned;
-            order.Amount ??= request.Amount;
-            order.Fee ??= request.Fee;
-            order.Description ??= request.Description;
-            
-            // Calculate fee
-            order.Fee = _feeService.CalculateFree(order);
-
             await _unitOfWork.OrderRepository.UpdateAsync(order);
 
             // Save timeline
@@ -76,11 +55,8 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
             await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
             await _unitOfWork.SaveChangesAsync();
 
-            //notify user
-            _logger.LogInformation("Order {orderId} returned to the locker", order.Id);
-
             // Mqtt Open Box
-            await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBoxOrder));
+            await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox));
 
             return _mapper.Map<OrderResponse>(order);
         } 

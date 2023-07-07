@@ -30,12 +30,12 @@ public class MappingProfiles : Profile
         
         // Order
         CreateMap<CreateOrderCommand, Order>();
-
-        CreateMap<Order, OrderResponse>()
-            .ForMember(dest => dest.LockerName,
-                opt => opt.MapFrom(src => src.Locker.Name))
-            .ForMember(dest => dest.ServiceName,
-                opt => opt.MapFrom(src => src.Service.Name));
+        CreateMap<Order, OrderResponse>();
+        
+        // Bill
+        
+        // OrderDetail
+        CreateMap<OrderDetail, OrderItemResponse>();
 
         CreateMap<Order, OrderDetailResponse>();
         

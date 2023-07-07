@@ -4,44 +4,40 @@ namespace LockerService.Application.Services.Handlers;
 
 public class UpdateServiceHandler : IRequestHandler<UpdateServiceCommand>
 {
-    private readonly ILogger<UpdateServiceHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public UpdateServiceHandler(
-        ILogger<UpdateServiceHandler> logger,
-        IUnitOfWork unitOfWork, 
-        IMapper mapper)
+    public UpdateServiceHandler(IUnitOfWork unitOfWork)
     {
-        _logger = logger;
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
 
     public async Task Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
     {
-        if (request.ServiceId is null)
-        {
-            throw new ApiException(ResponseCode.ServiceErrorNotFound);
-        }
 
         var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
-        if (service is null || !Equals(service.LockerId, request.LockerId))
+        if (service is null)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);
         }
 
-        if (!string.IsNullOrEmpty(request.Name))
+        if (!string.IsNullOrEmpty(request.Name) && !service.Name.Equals(request.Name, StringComparison.OrdinalIgnoreCase))
         {
+            var query = await _unitOfWork.ServiceRepository.GetAsync(
+                predicate: ser => ser.Name.Equals(service.Name, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (query.Any())
+            {
+                throw new ApiException(ResponseCode.ServiceErrorExistedName);
+            }
+            
             service.Name = request.Name;
         }
 
-        service.Fee = request.Fee;
-
-        if (request.FeeType is not null)
+        if (request.Price != null)
         {
-            service.FeeType = (FeeType)request.FeeType;
+            service.Price = (decimal) request.Price;
         }
 
         if (!string.IsNullOrEmpty(request.Description))
@@ -53,10 +49,10 @@ public class UpdateServiceHandler : IRequestHandler<UpdateServiceCommand>
         {
             service.Image = request.Image;
         }
-        
-        if (!FeeType.ByInputPrice.Equals(service.FeeType) && service.Fee == null)
+
+        if (!string.IsNullOrEmpty(request.Unit))
         {
-            throw new ApiException(ResponseCode.ServiceErrorMissingFee);
+            service.Unit = request.Unit;
         }
         
         await _unitOfWork.ServiceRepository.UpdateAsync(service);

@@ -43,7 +43,7 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
         var latestOrders = await _dbContext.Orders
             .AsNoTracking()
             .Where(order => order.LockerId == lockerId)
-            .GroupBy(order => order.ReceiveBoxOrder)
+            .GroupBy(order => order.ReceiveBox)
             .Select(group => group.OrderByDescending(order => order.CreatedAt).First())
             .ToListAsync();
 
@@ -51,7 +51,7 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
             .GroupJoin(
                 latestOrders,
                 boxOrder => boxOrder,
-                order => order.ReceiveBoxOrder,
+                order => order.ReceiveBox,
                 (boxOrder, order) => new { boxOrder, order })
             .SelectMany(item => item.order.DefaultIfEmpty(), (boxOrder, order) => new BoxStatus
             {

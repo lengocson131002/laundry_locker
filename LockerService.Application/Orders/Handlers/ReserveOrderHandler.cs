@@ -55,11 +55,11 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
             {
                 LockerId = command.LockerId,
                 ServiceId = command.ServiceId,
-                OrderPhone = command.OrderPhone,
+                SendPhone = command.OrderPhone,
                 ReceivePhone = !string.IsNullOrWhiteSpace(command.ReceivePhone) ? command.ReceivePhone : null,
-                ReceiveTime = command.ReceiveTime,
-                SendBoxOrder = (int)availableBox,
-                ReceiveBoxOrder = (int)availableBox,
+                ReceiveAt = command.ReceiveTime,
+                SendBox = (int)availableBox,
+                ReceiveBox = (int)availableBox,
                 Status = OrderStatus.Initialized,
                 PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode(),
                 PinCodeIssuedAt = DateTimeOffset.UtcNow

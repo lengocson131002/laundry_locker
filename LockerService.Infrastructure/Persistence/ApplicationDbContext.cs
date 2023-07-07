@@ -37,4 +37,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<OrderTimeline> OrderTimelines => Set<OrderTimeline>();
 
     public DbSet<Service> Services => Set<Service>();
+
+    public DbSet<OrderDetail> OrderDetails => Set<OrderDetail>();
+
+    public DbSet<Bill> Bills => Set<Bill>();
 }

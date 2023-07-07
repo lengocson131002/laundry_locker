@@ -36,8 +36,6 @@ public class Locker : BaseAuditableEntity
     public string MacAddress { get; set; } = default!;
     
     public IList<Hardware> Hardwares { get; private set; } = new List<Hardware>();
-    
-    public IList<Service> Services { get; private set; } = new List<Service>();
 
     public IList<LockerTimeline> Timelines { get; private set; } = new List<LockerTimeline>();
 
