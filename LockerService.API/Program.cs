@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen(opt =>
         Version = "v1"
     });
 
-    //Security Definition
+    //Security Definition JWT
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -29,9 +29,19 @@ builder.Services.AddSwaggerGen(opt =>
         BearerFormat = "JWT",
         Scheme = "bearer"
     });
+    
+    // Security Definition X-API-KEY
+    opt.AddSecurityDefinition("X-API-KEY", new OpenApiSecurityScheme{
+            Name = "X-API-KEY",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "ApiKeyScheme",
+            In = ParameterLocation.Header,
+            Description = "ApiKey must appear in header"
+        });
 
     // Filter security requirement
     opt.OperationFilter<AuthorizationOperationFilter>();
+    opt.OperationFilter<ApiKeyOperationFilter>();
 });
 
 

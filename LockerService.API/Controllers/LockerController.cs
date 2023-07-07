@@ -1,3 +1,4 @@
+using LockerService.API.Attributes;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Lockers.Commands;
 using LockerService.Application.Lockers.Models;
@@ -58,6 +59,7 @@ public class LockerController : ApiControllerBase
     }
     
     [HttpPost("connect")]
+    [ApiKey]
     public async Task<ActionResult<LockerResponse>> ConnectLocker([FromBody] ConnectLockerCommand command)
     {
         return await Mediator.Send(command);

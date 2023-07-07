@@ -15,7 +15,7 @@ public class AuthorizationOperationFilter : IOperationFilter
 
         if (attributes == null || !attributes.Any())
         {
-            operation.Security.Clear();
+            // operation.Security.Clear();
             return;
         }
 
@@ -40,7 +40,8 @@ public class AuthorizationOperationFilter : IOperationFilter
                                 {
                                     Type = ReferenceType.SecurityScheme,
                                     Id = "Bearer"
-                                }
+                                },
+                                In = ParameterLocation.Header
                             },
                             securityInfos
                         },
