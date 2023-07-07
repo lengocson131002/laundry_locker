@@ -18,7 +18,7 @@ public class StaffController : ApiControllerBase
     [HttpGet("{storeId}/staffs")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<PaginationResponse<Account, AccountResponse>>> GetAllStaffs([FromRoute] int storeId,
-        GetAllStaffsQuery query)
+        [FromQuery] GetAllStaffsQuery query)
     {
         query.StoreId = storeId;
         return await Mediator.Send(query);

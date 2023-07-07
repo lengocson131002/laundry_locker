@@ -16,14 +16,23 @@ public class GetStaffHandler : IRequestHandler<GetStaffQuery, AccountDetailRespo
     public async Task<AccountDetailResponse> Handle(GetStaffQuery request,
         CancellationToken cancellationToken)
     {
+        var storeQuery =
+            await _unitOfWork.StoreRepository.GetAsync(s =>
+                Equals(s.Id, request.StoreId));
+        var store = storeQuery.FirstOrDefault();
+        if (store == null)
+        {
+            throw new ApiException(ResponseCode.StoreErrorNotFound);
+        }
+
         var staffQuery = await _unitOfWork.AccountRepository.GetAsync(
-            staff => staff.Id == request.StoreId && staff.StoreId == request.StoreId
+            staff => staff.Id == request.Id && staff.StoreId == request.StoreId
         );
 
         var staff = staffQuery.FirstOrDefault();
         if (staff is null)
         {
-            throw new ApiException(ResponseCode.StoreErrorNotFound);
+            throw new ApiException(ResponseCode.StaffErrorNotFound);
         }
 
         return _mapper.Map<AccountDetailResponse>(staff);

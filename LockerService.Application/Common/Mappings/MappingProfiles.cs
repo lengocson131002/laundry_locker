@@ -45,6 +45,7 @@ public class MappingProfiles : Profile
         
         // Account
         CreateMap<Account, AccountResponse>();
+        CreateMap<Account, AccountDetailResponse>();
         
         // Store
         CreateMap<AddStoreCommand, Store>();
