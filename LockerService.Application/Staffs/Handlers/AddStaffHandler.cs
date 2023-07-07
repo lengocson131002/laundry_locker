@@ -1,6 +1,6 @@
-namespace LockerService.Application.Accounts.Handlers;
+namespace LockerService.Application.Staffs.Handlers;
 
-public class AddStaffHandler : IRequestHandler<AddStaffRequest, AccountResponse>
+public class AddStaffHandler : IRequestHandler<AddStaffCommand, AccountResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
@@ -15,17 +15,22 @@ public class AddStaffHandler : IRequestHandler<AddStaffRequest, AccountResponse>
         _logger = logger;
     }
 
-    public async Task<AccountResponse> Handle(AddStaffRequest request, CancellationToken cancellationToken)
+    public async Task<AccountResponse> Handle(AddStaffCommand request, CancellationToken cancellationToken)
     {
+        var storeQuery =
+            await _unitOfWork.StoreRepository.GetAsync(s =>
+                Equals(s.Id, request.StoreId));
+        var store = storeQuery.FirstOrDefault();
+        if (store == null)
+        {
+            throw new ApiException(ResponseCode.StoreErrorNotFound);
+        }
+        
         var accountQuery =
             await _unitOfWork.AccountRepository.GetAsync(a =>
                 a.PhoneNumber != null && Equals(a.PhoneNumber, request.PhoneNumber));
-        if (accountQuery.FirstOrDefault() != null)
-        {
-            throw new ApiException(ResponseCode.AccountErrorExistedStaff);
-        }
 
-        var account = new Account()
+        var account = accountQuery.FirstOrDefault() ?? new Account()
         {
             Username = request.PhoneNumber,
             PhoneNumber = request.PhoneNumber,
@@ -34,25 +39,12 @@ public class AddStaffHandler : IRequestHandler<AddStaffRequest, AccountResponse>
             Role = Role.Staff,
         };
 
-        if (request.StoreId != null)
-        {
-            var storeQuery =
-                await _unitOfWork.StoreRepository.GetAsync(s =>
-                    Equals(s.Id, request.StoreId));
-            var store = storeQuery.FirstOrDefault();
-            if (store == null)
-            {
-                throw new ApiException(ResponseCode.StoreErrorNotFound);
-            }
-
-            account.Store = store;
-        }
+        account.Store = store;
 
         await _unitOfWork.AccountRepository.AddAsync(account);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
-
         return _mapper.Map<AccountResponse>(account);
     }
 }
