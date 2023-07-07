@@ -57,8 +57,8 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
             {
                 BoxOrder = boxOrder.boxOrder,
                 IsAvailable = order == null || (!OrderStatus.Initialized.Equals(order.Status)
-                              && !OrderStatus.Waiting.Equals(order.Status)
-                              && !OrderStatus.Returned.Equals(order.Status)),
+                                                && !OrderStatus.Waiting.Equals(order.Status)
+                                                && !OrderStatus.Returned.Equals(order.Status)),
                 OrderStatus = order?.Status,
                 OrderId = order?.Id
             })

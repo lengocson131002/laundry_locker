@@ -1,4 +1,6 @@
+using LockerService.Application.EventBus.RabbitMq.Events;
 using LockerService.Domain.Events;
+using MassTransit;
 
 namespace LockerService.Application.Orders.Handlers;
 
@@ -7,21 +9,23 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IMqttBus _mqttBus;
-    
+    private readonly IPublishEndpoint _rabbitMqBus;
+
     public ReturnOrderHandler(
         IUnitOfWork unitOfWork,
-        IMapper mapper, 
-        IMqttBus mqttBus)
+        IMapper mapper,
+        IMqttBus mqttBus, IPublishEndpoint rabbitMqBus)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _mqttBus = mqttBus;
+        _rabbitMqBus = rabbitMqBus;
     }
-    
+
     public async Task<OrderResponse> Handle(ReturnOrderCommand request, CancellationToken cancellationToken)
     {
         var order = await _unitOfWork.OrderRepository.GetOrderByPinCode(request.PinCode);
-        if (order == null || !OrderType.Laundry.Equals(order.Type)) 
+        if (order == null || !OrderType.Laundry.Equals(order.Type))
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
@@ -39,7 +43,7 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
             {
                 throw new ApiException(ResponseCode.LockerErrorNoAvailableBox);
             }
-            
+
             order.ReceiveBox = (int)availableBox;
             order.Status = OrderStatus.Returned;
             await _unitOfWork.OrderRepository.UpdateAsync(order);
@@ -58,8 +62,10 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
             // Mqtt Open Box
             await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox));
 
+            // Push rabbit MQ
+            await _rabbitMqBus.Publish(_mapper.Map<OrderReturnedEvent>(order), cancellationToken);
             return _mapper.Map<OrderResponse>(order);
-        } 
+        }
         catch (ApiException ex)
         {
             if (ex.ErrorCode == (int)ResponseCode.LockerErrorNoAvailableBox)
@@ -76,9 +82,8 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
                 await _unitOfWork.LockerTimelineRepository.AddAsync(overloadEvent);
                 await _unitOfWork.SaveChangesAsync();
             }
-            
+
             throw;
         }
     }
-
 }

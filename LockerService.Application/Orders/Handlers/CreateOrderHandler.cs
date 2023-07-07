@@ -102,7 +102,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
 
             // Set timeout for initialized order
             var cancelTime = DateTimeOffset.Now
-                .AddMinutes(_configuration.GetValueOrDefault<int>("Order:TimeoutInMinutes", DefaultOrderTimeoutInMinutes));
+                .AddMinutes(_configuration.GetValueOrDefault("Order:TimeoutInMinutes", DefaultOrderTimeoutInMinutes));
 
             await _orderTimeoutService.CancelExpiredOrder(order.Id, cancelTime);
             

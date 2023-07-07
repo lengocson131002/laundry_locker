@@ -10,4 +10,8 @@ public class BoxStatus
     
     public OrderStatus? OrderStatus { get; set; }
     
+    public int? ServiceId { get; set; }
+    
+    public string? ServiceName { get; set; }
+    
 }

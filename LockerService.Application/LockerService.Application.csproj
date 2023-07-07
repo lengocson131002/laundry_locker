@@ -16,6 +16,9 @@
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
         <PackageReference Include="LinqKit" />
+        <PackageReference Include="MassTransit" />
+        <PackageReference Include="MassTransit.AspNetCore" />
+        <PackageReference Include="MassTransit.RabbitMQ" />
         <PackageReference Include="MediatR" />
         <PackageReference Include="Microsoft.AspNetCore.Http" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
@@ -31,13 +34,12 @@
 
     <ItemGroup>
         <Folder Include="Auth\Queries" />
-        <Folder Include="Bills\Commands" />
-        <Folder Include="Bills\Handlers" />
-        <Folder Include="Bills\Queries" />
-        <Folder Include="Common\Commands" />
         <Folder Include="Common\Interfaces" />
-        <Folder Include="Common\Queries" />
         <Folder Include="Dashboard\Commands" />
+        <Folder Include="Notifications\Commands" />
+        <Folder Include="Notifications\Handlers" />
+        <Folder Include="Notifications\Models" />
+        <Folder Include="Notifications\Queries" />
     </ItemGroup>
 
 </Project>
