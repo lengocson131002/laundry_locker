@@ -28,7 +28,7 @@ public class ActivateStaffHandler : IRequestHandler<ActivateStaffCommand, Status
 
         var accountQuery =
             await _unitOfWork.AccountRepository.GetAsync(a =>
-                a.PhoneNumber != null && Equals(a.Id, request.Id));
+                Equals(a.Id, request.Id));
 
         var account = accountQuery.FirstOrDefault();
 

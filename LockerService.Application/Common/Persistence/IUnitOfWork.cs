@@ -5,6 +5,7 @@ namespace LockerService.Application.Common.Persistence;
 public interface IUnitOfWork : IBaseUnitOfWork
 {
     IAccountRepository AccountRepository { get; }
+    IAccountLockerRepository AccountLockerRepository { get; }
     
     IAddressRepository AddressRepository { get; }
 

@@ -3,6 +3,7 @@ namespace LockerService.Application.Common.Persistence;
 public interface IApplicationDbContext
 {
     DbSet<Account> Accounts { get; }
+    DbSet<AccountLocker> AccountLockers { get; }
     
     DbSet<Address> Addresses { get; }
 

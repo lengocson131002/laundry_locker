@@ -23,7 +23,7 @@ public class UpdateLockerCommandValidator : AbstractValidator<UpdateLockerComman
         RuleFor(model => model.Depth)
             .GreaterThan(0)
             .When(model => model.Depth != null);
-        
+
         RuleFor(model => model.RowCount)
             .GreaterThan(0)
             .When(model => model.RowCount != null);
@@ -65,5 +65,5 @@ public class UpdateLockerCommand : IRequest
     public LocationCommand? Location { get; set; }
     
     public string? MacAddress { get; set; }
-    
+    public int? StoreId { get; set; }
 }

@@ -1,13 +1,15 @@
+using System.Linq.Dynamic.Core;
+
 namespace LockerService.Application.Staffs.Handlers;
 
-public class DeactivateStaffHandler : IRequestHandler<DeactivateStaffCommand, StatusResponse>
+public class RevokeStaffHandler : IRequestHandler<RevokeStaffCommand, StatusResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
-    private readonly ILogger<DeactivateStaffHandler> _logger;
+    private readonly ILogger<RevokeStaffHandler> _logger;
     private readonly IMapper _mapper;
 
-    public DeactivateStaffHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<DeactivateStaffHandler> logger,
+    public RevokeStaffHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<RevokeStaffHandler> logger,
         IJwtService jwtService)
     {
         _mapper = mapper;
@@ -15,7 +17,7 @@ public class DeactivateStaffHandler : IRequestHandler<DeactivateStaffCommand, St
         _logger = logger;
     }
 
-    public async Task<StatusResponse> Handle(DeactivateStaffCommand request, CancellationToken cancellationToken)
+    public async Task<StatusResponse> Handle(RevokeStaffCommand request, CancellationToken cancellationToken)
     {
         var storeQuery =
             await _unitOfWork.StoreRepository.GetAsync(s =>
@@ -27,24 +29,25 @@ public class DeactivateStaffHandler : IRequestHandler<DeactivateStaffCommand, St
         }
 
         var accountQuery =
-            await _unitOfWork.AccountRepository.GetAsync(a =>
-                Equals(a.Id, request.Id));
+            await _unitOfWork.AccountRepository.GetAsync(a => Equals(a.Id, request.Id)
+            );
 
         var account = accountQuery.FirstOrDefault();
-
         if (account is null)
         {
             throw new ApiException(ResponseCode.StaffErrorNotFound);
         }
 
-        if (account.Status != AccountStatus.Active)
+        var accountLockerQuery =
+            await _unitOfWork.AccountLockerRepository.GetAsync(
+                al => Equals(al.AccountId, request.Id) && Equals(al.LockerId, request.LockerId));
+        var accountLocker = accountLockerQuery.FirstOrDefault();
+        if (accountLocker is null)
         {
-            throw new ApiException(ResponseCode.StaffErrorInvalidStatus);
+            throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
-        account.Status = AccountStatus.Inactive;
-
-        await _unitOfWork.AccountRepository.UpdateAsync(account);
+        await _unitOfWork.AccountLockerRepository.DeleteAsync(accountLocker);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();

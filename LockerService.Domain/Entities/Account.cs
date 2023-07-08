@@ -24,4 +24,5 @@ public class Account : BaseAuditableEntity
 
     public int? StoreId { get; set; }
     public Store? Store { get; set; }
+    public IList<AccountLocker> AccountLockers { get; private set; } = new List<AccountLocker>();
 }

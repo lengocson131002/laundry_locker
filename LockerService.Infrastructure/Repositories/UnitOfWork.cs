@@ -5,16 +5,17 @@ using LockerService.Infrastructure.Persistence;
 
 namespace LockerService.Infrastructure.Repositories;
 
-public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
+public class UnitOfWork : BaseUnitOfWork, IUnitOfWork
 {
     private IAccountRepository? _accountRepository;
-    
+    private IAccountLockerRepository? _accountLockerRepository;
+
     private IAddressRepository? _addressRepository;
-    
+
     private ILocationRepository? _locationRepository;
-    
+
     private IHardwareRepository? _hardwareRepository;
-    
+
     private ILockerRepository? _lockerRepository;
 
     private ILockerTimelineRepository? _lockerTimelineRepository;
@@ -25,15 +26,18 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     private IServiceRepository? _serviceRepository;
     private IStoreRepository? _storeRepository;
-    
+
     private readonly ApplicationDbContext _dbContext;
-    
+
     public UnitOfWork(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
     }
 
     public IAccountRepository AccountRepository => _accountRepository ??= new AccountRepository(_dbContext);
+
+    public IAccountLockerRepository AccountLockerRepository =>
+        _accountLockerRepository ??= new AccountLockerRepository(_dbContext);
 
     public IAddressRepository AddressRepository => _addressRepository ??= new AddressRepository(_dbContext);
 
@@ -46,7 +50,7 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     public ILockerTimelineRepository LockerTimelineRepository =>
         _lockerTimelineRepository ??= new LockerTimelineRepository(_dbContext);
-    
+
     public IOrderRepository OrderRepository => _orderRepository ??= new OrderRepository(_dbContext);
 
     public IOrderTimelineRepository OrderTimelineRepository =>
