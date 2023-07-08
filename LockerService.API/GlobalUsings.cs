@@ -12,6 +12,7 @@ global using LockerService.Application.Stores.Models;
 global using LockerService.Application.Stores.Queries;
 global using LockerService.Application.Staffs.Commands;
 global using LockerService.Application.Staffs.Handlers;
+global using LockerService.Application.Staffs.Queries;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
 global using LockerService.Domain.Entities;

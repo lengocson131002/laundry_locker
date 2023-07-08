@@ -1,6 +1,3 @@
-using LockerService.Application.Staffs.Queries;
-using LockerService.Domain.Enums;
-
 namespace LockerService.API.Controllers;
 
 [ApiController]
@@ -35,5 +32,44 @@ public class StaffController : ApiControllerBase
             StoreId = storeId
         };
         return await Mediator.Send(query);
+    }
+
+    [HttpPut("{storeId}/staffs/{id}/activate")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> ActivateStaff([FromRoute] int storeId,
+        [FromRoute] int id)
+    {
+        var command = new ActivateStaffCommand()
+        {
+            Id = id,
+            StoreId = storeId
+        };
+        return await Mediator.Send(command);
+    }
+
+    [HttpPut("{storeId}/staffs/{id}/deactivate")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> DeactivateStaff([FromRoute] int storeId,
+        [FromRoute] int id)
+    {
+        var command = new DeactivateStaffCommand()
+        {
+            Id = id,
+            StoreId = storeId
+        };
+        return await Mediator.Send(command);
+    }
+
+    [HttpDelete("{storeId}/staffs/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> DeleteStaff([FromRoute] int storeId,
+        [FromRoute] int id)
+    {
+        var command = new DeleteStaffCommand()
+        {
+            Id = id,
+            StoreId = storeId
+        };
+        return await Mediator.Send(command);
     }
 }

@@ -25,23 +25,35 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, AccountResponse>
         {
             throw new ApiException(ResponseCode.StoreErrorNotFound);
         }
-        
+
         var accountQuery =
             await _unitOfWork.AccountRepository.GetAsync(a =>
                 a.PhoneNumber != null && Equals(a.PhoneNumber, request.PhoneNumber));
 
-        var account = accountQuery.FirstOrDefault() ?? new Account()
+        var account = accountQuery.FirstOrDefault();
+        if (account is null)
         {
-            Username = request.PhoneNumber,
-            PhoneNumber = request.PhoneNumber,
-            Password = "123456",
-            Status = AccountStatus.Active,
-            Role = Role.Staff,
-        };
+            account = new Account()
+            {
+                Username = request.PhoneNumber,
+                PhoneNumber = request.PhoneNumber,
+                Password = "123456",
+                Status = AccountStatus.Active,
+                Role = Role.Staff,
+                Store = store
+            };
+            await _unitOfWork.AccountRepository.AddAsync(account);
+        }
+        else
+        {
+            if (account.Store is not null)
+            {
+                throw new ApiException(ResponseCode.StaffErrorBelongToAStore);
+            }
 
-        account.Store = store;
-
-        await _unitOfWork.AccountRepository.AddAsync(account);
+            account.Store = store;
+            await _unitOfWork.AccountRepository.UpdateAsync(account);
+        }
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
