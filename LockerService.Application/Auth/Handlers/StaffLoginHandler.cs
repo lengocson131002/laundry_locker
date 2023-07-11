@@ -1,22 +1,19 @@
-using LockerService.Application.Auth.Commands;
-using LockerService.Application.Auth.Models;
-
 namespace LockerService.Application.Auth.Handlers;
 
-public class LoginHandler : IRequestHandler<LoginRequest, TokenResponse>
+public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
-    private readonly ILogger<LoginHandler> _logger;
+    private readonly ILogger<StaffLoginHandler> _logger;
 
-    public LoginHandler(IUnitOfWork unitOfWork, ILogger<LoginHandler> logger, IJwtService jwtService)
+    public StaffLoginHandler(IUnitOfWork unitOfWork, ILogger<StaffLoginHandler> logger, IJwtService jwtService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _jwtService = jwtService;
     }
 
-    public async Task<TokenResponse> Handle(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<TokenResponse> Handle(StaffLoginRequest request, CancellationToken cancellationToken)
     {
         var userQuery = await _unitOfWork.AccountRepository.GetAsync(
                 predicate: account => account.Username.ToLower().Equals(request.Username.ToLower()) 
@@ -25,7 +22,7 @@ public class LoginHandler : IRequestHandler<LoginRequest, TokenResponse>
             );
 
         var user = userQuery.FirstOrDefault();
-        if (user == null)
+        if (user is null || !Equals(user.Role, Role.Admin))
         {
             throw new ApiException(ResponseCode.AuthErrorInvalidEmailOrPassword);
         }

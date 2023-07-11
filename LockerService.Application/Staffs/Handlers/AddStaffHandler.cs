@@ -38,7 +38,7 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, AccountResponse>
                 Username = request.PhoneNumber,
                 PhoneNumber = request.PhoneNumber,
                 Password = "123456",
-                Status = AccountStatus.Active,
+                Status = AccountStatus.Verifying,
                 Role = Role.Staff,
                 Store = store
             };

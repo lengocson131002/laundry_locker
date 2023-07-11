@@ -27,6 +27,7 @@ public enum ResponseCode
     [Description("Invalid refresh token")] AuthErrorInvalidRefreshToken = 21,
     
     [Description("Invalid google ID token")] AuthErrorInvalidGoogleIdToken = 22,
+    [Description("Account not found")] AuthErrorAccountNotFound = 23,
     
         // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,

@@ -33,7 +33,6 @@
         <Folder Include="Accounts\Commands" />
         <Folder Include="Accounts\Handlers" />
         <Folder Include="Accounts\Queries" />
-        <Folder Include="Auth\Queries" />
         <Folder Include="Common\Commands" />
         <Folder Include="Common\Interfaces" />
         <Folder Include="Common\Queries" />
