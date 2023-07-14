@@ -25,34 +25,34 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
 
     public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
     {
-        var eventMessage = context.Message;
-        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
-            predicate: order => order.Id == eventMessage.Id,
-            includes: new ListResponse<Expression<Func<Order, object>>>()
-            {
-                order => order.Locker,
-                order => order.Locker.Location,
-                order => order.Locker.Location.Ward,
-                order => order.Locker.Location.District,
-                order => order.Locker.Location.Province
-            });
-        
-        var order = await orderQuery.FirstOrDefaultAsync();
-
-        if (order == null)
-        {
-            return;
-        }
-
-        var locker = order.Locker;
-        var address = $"{locker.Location.Address}, {locker.Location.Ward.Name}, {locker.Location.District.Name}, {locker.Location.Province.Name}";
-        
-        var smsContent = string.Format(SmsTemplates.OrderCreatedSmsTemplate, service.Name, address, order.PinCode);
-        var notifiedPhone = !string.IsNullOrWhiteSpace(order.ReceivePhone) ? order.ReceivePhone : order.OrderPhone;
-        var smsData = new SmsNotificationData(notifiedPhone, smsContent);
-        
-        _logger.LogInformation("Send sms: {0}", JsonSerializer.Serialize(smsData));
-        
-        await _smsNotificationService.SendAsync(smsData);
+        // var eventMessage = context.Message;
+        // var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
+        //     predicate: order => order.Id == eventMessage.Id,
+        //     includes: new ListResponse<Expression<Func<Order, object>>>()
+        //     {
+        //         order => order.Locker,
+        //         order => order.Locker.Location,
+        //         order => order.Locker.Location.Ward,
+        //         order => order.Locker.Location.District,
+        //         order => order.Locker.Location.Province
+        //     });
+        //
+        // var order = await orderQuery.FirstOrDefaultAsync();
+        //
+        // if (order == null)
+        // {
+        //     return;
+        // }
+        //
+        // var locker = order.Locker;
+        // var address = $"{locker.Location.Address}, {locker.Location.Ward.Name}, {locker.Location.District.Name}, {locker.Location.Province.Name}";
+        //
+        // var smsContent = string.Format(SmsTemplates.OrderCreatedSmsTemplate, service.Name, address, order.PinCode);
+        // var notifiedPhone = !string.IsNullOrWhiteSpace(order.ReceivePhone) ? order.ReceivePhone : order.OrderPhone;
+        // var smsData = new SmsNotificationData(notifiedPhone, smsContent);
+        //
+        // _logger.LogInformation("Send sms: {0}", JsonSerializer.Serialize(smsData));
+        //
+        // await _smsNotificationService.SendAsync(smsData);
     }
 }

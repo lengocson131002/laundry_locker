@@ -75,8 +75,8 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(getOrderRequest);
     }
     
-    [HttpGet]
-    public async Task<ActionResult<OrderDetailResponse>> GetOrder([FromQuery] string pinCode)
+    [HttpGet("/pin-code")]
+    public async Task<ActionResult<OrderDetailResponse>> GetOrder([FromRoute] string pinCode)
     {
         var getOrderRequest = new GetOrderByPinCodeQuery(pinCode);
         return await Mediator.Send(getOrderRequest);
@@ -109,7 +109,7 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(request);
     }
     
-    [HttpDelete("{id:int}/details/{detailId:int}")]
+    [HttpPut("{id:int}/details/{detailId:int}")]
     public async Task<ActionResult<OrderItemResponse>> UpdateOrderDetail([FromRoute] int id, [FromRoute] int detailId)
     {
         var request = new RemoveOrderDetailCommand(id, detailId);

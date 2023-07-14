@@ -50,13 +50,13 @@ public class UpdateLockerStatusHandler :
 
     private async Task ValidateStatus(Locker locker, LockerStatus status)
     {
-        if (!LockerStatus.Initialized.Equals(locker.Status) && LockerStatus.Initialized.Equals(status))
-            throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
-
-        var services = await _unitOfWork.ServiceRepository.GetAsync(service => service.LockerId == locker.Id);
-        if (!services.Any() && LockerStatus.Active.Equals(status))
-        {
-            throw new ApiException(ResponseCode.LockerErrorServiceRequired);
-        }
+        // if (!LockerStatus.Initialized.Equals(locker.Status) && LockerStatus.Initialized.Equals(status))
+        //     throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
+        //
+        // var services = await _unitOfWork.ServiceRepository.GetAsync(service => service.LockerId == locker.Id);
+        // if (!services.Any() && LockerStatus.Active.Equals(status))
+        // {
+        //     throw new ApiException(ResponseCode.LockerErrorServiceRequired);
+        // }
     }
 }

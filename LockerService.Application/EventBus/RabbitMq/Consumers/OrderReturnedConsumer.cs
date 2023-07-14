@@ -48,7 +48,7 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
         var address = $"{locker.Location.Address}, {locker.Location.Ward.Name}, {locker.Location.District.Name}, {locker.Location.Province.Name}";
         
         var smsContent = string.Format(SmsTemplates.OrderReturnedSmsTemplate, order.PinCode);
-        var notifiedPhone = !string.IsNullOrWhiteSpace(order.ReceivePhone) ? order.ReceivePhone : order.OrderPhone;
+        var notifiedPhone = !string.IsNullOrWhiteSpace(order.ReceivePhone) ? order.ReceivePhone : order.SendPhone;
         var smsData = new SmsNotificationData(notifiedPhone, smsContent);
         
         _logger.LogInformation("Send sms: {0}", JsonSerializer.Serialize(smsData));

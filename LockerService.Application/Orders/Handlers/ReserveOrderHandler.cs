@@ -48,13 +48,12 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
 
             // Check service
             var service = await _unitOfWork.ServiceRepository.GetByIdAsync(command.ServiceId);
-            if (service == null || service.LockerId != locker.Id || !service.IsActive)
+            if (service == null || !service.IsActive)
                 throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
 
             var order = new Order
             {
                 LockerId = command.LockerId,
-                ServiceId = command.ServiceId,
                 SendPhone = command.OrderPhone,
                 ReceivePhone = !string.IsNullOrWhiteSpace(command.ReceivePhone) ? command.ReceivePhone : null,
                 ReceiveAt = command.ReceiveTime,
