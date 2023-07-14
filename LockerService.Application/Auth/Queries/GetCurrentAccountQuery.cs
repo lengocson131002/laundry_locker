@@ -1,4 +1,4 @@
-namespace LockerService.Application.Lockers.Queries;
+namespace LockerService.Application.Auth.Queries;
 
 public class GetCurrentAccountQuery : IRequest<AccountResponse>
 {

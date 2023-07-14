@@ -1,3 +1,5 @@
+using LockerService.Application.Auth.Queries;
+
 namespace LockerService.Application.Auth.Handlers;
 
 public class GetCurrentAccountHandler : IRequestHandler<GetCurrentAccountQuery, AccountResponse>

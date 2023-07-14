@@ -1,3 +1,4 @@
+using LockerService.Application.Auth.Queries;
 using LockerService.Application.Lockers.Queries;
 
 namespace LockerService.API.Controllers;
