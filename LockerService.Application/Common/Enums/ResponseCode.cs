@@ -28,6 +28,8 @@ public enum ResponseCode
     
     [Description("Invalid google ID token")] AuthErrorInvalidGoogleIdToken = 22,
     
+    [Description("Account not found")] AuthErrorAccountNotFound = 23,
+    
         // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,
     
@@ -82,5 +84,19 @@ public enum ResponseCode
 
     // Hardware
     [Description("Hardware not found")] HardwareErrorNotFound = 601,
+    
+    // Staff
+    [Description("Staff is not found")] StaffErrorNotFound = 701,
+    
+    [Description("Staff's status is not allowed to do this function")] StaffErrorInvalidStatus = 702,
+    
+    [Description("Staff is belonging to a store")] StaffErrorBelongToAStore = 703,
+    
+    [Description("Staff has been assigned to this locker before")] StaffErrorAssignedBefore = 704,
+
+    // Account
+    [Description("Store not found")] StoreErrorNotFound = 801,
+    
+    [Description("Store's status is not allowed to do this function")] StoreErrorInvalidStatus = 802,
     
 }

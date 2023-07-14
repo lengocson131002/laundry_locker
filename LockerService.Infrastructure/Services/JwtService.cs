@@ -42,7 +42,6 @@ public class JwtService : IJwtService
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
-            new Claim(ClaimTypes.Email, account.Email ?? string.Empty),
             new Claim(ClaimTypes.Name, account.FullName ?? string.Empty),
             new Claim(ClaimTypes.Role, account.Role.ToString())
         };
@@ -66,5 +65,10 @@ public class JwtService : IJwtService
     public string GenerateJwtRefreshToken(Account account)
     {
         return GenerateJwtToken(account, _refreshTokenExpireInMinutes);
+    }
+
+    public string RevokeJwtRefreshToken(Account account)
+    {
+        throw new NotImplementedException();
     }
 }

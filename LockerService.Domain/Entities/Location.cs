@@ -25,7 +25,7 @@ public class Location : BaseAuditableEntity
     
     public Address District { get; set; } = default!;
     
-    public int  WardId { get; set; }
+    public int WardId { get; set; }
 
     public Address Ward { get; set; } = default!;
 }

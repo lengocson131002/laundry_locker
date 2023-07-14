@@ -44,6 +44,27 @@ public class UpdateLockerHandler :
         locker.RowCount = request.RowCount ?? locker.RowCount;
         locker.ColumnCount = request.ColumnCount ?? locker.ColumnCount;
         locker.Provider = request.Provider ?? locker.Provider;
+        if (request.StoreId is not null)
+        {
+            var storeQuery = await _unitOfWork.StoreRepository.GetAsync(
+                store => store.Id == request.StoreId,
+                includes: new List<Expression<Func<Store, object>>>
+                {
+                    locker => locker.Location,
+                    locker => locker.Location.Province,
+                    locker => locker.Location.District,
+                    locker => locker.Location.Ward
+                });
+
+            var store = storeQuery.FirstOrDefault();
+            if (store is null)
+            {
+                throw new ApiException(ResponseCode.StoreErrorNotFound);
+            }
+
+            locker.StoreId = request.StoreId;
+        }
+
 
         if (request.MacAddress != null && !request.MacAddress.ToLower().Equals(locker.MacAddress.ToLower()))
         {

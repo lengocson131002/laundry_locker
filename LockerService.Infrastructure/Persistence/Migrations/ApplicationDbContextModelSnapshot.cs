@@ -30,6 +30,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Avatar")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -45,9 +48,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
-
                     b.Property<string>("FullName")
                         .HasColumnType("text");
 
@@ -61,6 +61,55 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoreId");
+
+                    b.ToTable("Account");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.AccountLocker", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("LockerId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -69,7 +118,11 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Account");
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("LockerId");
+
+                    b.ToTable("AccountLocker");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Address", b =>
@@ -260,6 +313,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -272,6 +328,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Locker");
                 });
@@ -488,6 +546,83 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.ToTable("Service");
                 });
 
+            modelBuilder.Entity("LockerService.Domain.Entities.Store", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContactPhone")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("Store");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.AccountLocker", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Account", "Account")
+                        .WithMany("AccountLockers")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
+                        .WithMany("AccountLockers")
+                        .HasForeignKey("LockerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Locker");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Hardware", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
@@ -534,7 +669,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LockerService.Domain.Entities.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId");
+
                     b.Navigation("Location");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.LockerTimeline", b =>
@@ -589,8 +730,26 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Locker");
                 });
 
+            modelBuilder.Entity("LockerService.Domain.Entities.Store", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
+                {
+                    b.Navigation("AccountLockers");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Locker", b =>
                 {
+                    b.Navigation("AccountLockers");
+
                     b.Navigation("Hardwares");
 
                     b.Navigation("Services");

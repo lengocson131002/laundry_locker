@@ -24,29 +24,39 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
         {
             throw new ApiException(ResponseCode.MappingError);
         }
-        
+
+        // Check store
+        var storeQuery =
+            await _unitOfWork.StoreRepository.GetAsync(s =>
+                Equals(s.Id, request.StoreId));
+        var store = storeQuery.FirstOrDefault();
+        if (store == null)
+        {
+            throw new ApiException(ResponseCode.StoreErrorNotFound);
+        }
+
         // Check name
         if (await _unitOfWork.LockerRepository.FindByName(locker.Name) != null)
         {
             throw new ApiException(ResponseCode.LockerErrorExistedName);
         }
-        
+
         // Check MAC address
         if (await _unitOfWork.LockerRepository.FindByMac(locker.MacAddress) != null)
         {
             throw new ApiException(ResponseCode.LockerErrorExistedMacAddress);
         }
-        
+
         //location
         var location = request.Location;
-        var provinceQuery = 
+        var provinceQuery =
             await _unitOfWork.AddressRepository.GetAsync(p => p.Code != null && p.Code.Equals(location.ProvinceCode));
         var province = provinceQuery.FirstOrDefault();
         if (province == null)
         {
             throw new ApiException(ResponseCode.AddressErrorProvinceNotFound);
         }
-        
+
         var districtQuery =
             await _unitOfWork.AddressRepository.GetAsync(d => d.Code != null && d.Code.Equals(location.DistrictCode));
         var district = districtQuery.FirstOrDefault();
@@ -54,7 +64,7 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
         {
             throw new ApiException(ResponseCode.AddressErrorDistrictNotFound);
         }
-        
+
         var wardQuery =
             await _unitOfWork.AddressRepository.GetAsync(w => w.Code != null && w.Code.Equals(location.WardCode));
         var ward = wardQuery.FirstOrDefault();
@@ -73,13 +83,12 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
             Latitude = location.Latitude
         };
 
-        locker.Code =  LockerCodeUtils.GenerateLockerCode();
+        locker.Code = LockerCodeUtils.GenerateLockerCode();
         await _unitOfWork.LockerRepository.AddAsync(locker);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
-        
+
         return _mapper.Map<LockerResponse>(locker);
     }
-    
 }

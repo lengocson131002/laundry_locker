@@ -5,5 +5,6 @@ public interface IJwtService
     string GenerateJwtToken(Account account);
     
     string GenerateJwtRefreshToken(Account account);
+    string RevokeJwtRefreshToken(Account account);
 
 }

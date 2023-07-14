@@ -1,10 +1,8 @@
-using LockerService.Application.Auth.Models;
-
 namespace LockerService.Application.Auth.Commands;
 
-public class LoginRequestValidator : AbstractValidator<LoginRequest>
+public class StaffLoginRequestValidator : AbstractValidator<StaffLoginRequest>
 {
-    public LoginRequestValidator()
+    public StaffLoginRequestValidator()
     {
         RuleFor(model => model.Username)
             .NotEmpty();
@@ -13,7 +11,7 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
     }
 }
 
-public class LoginRequest : IRequest<TokenResponse>
+public class StaffLoginRequest : IRequest<TokenResponse>
 {
     public string Username { get; set; } = default!;
 

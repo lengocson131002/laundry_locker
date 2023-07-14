@@ -23,5 +23,7 @@ public interface IApplicationDbContext
     DbSet<OrderDetail> OrderDetails { get; }
     
     DbSet<Bill> Bills { get; }
+    
+    DbSet<Store> Stores { get; }
 
 }

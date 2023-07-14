@@ -12,6 +12,7 @@ namespace LockerService.API.Controllers;
 public class LockerController : ApiControllerBase
 {
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<LockerResponse>> AddLocker([FromBody] AddLockerCommand command)
     {
         return await Mediator.Send(command);
@@ -26,7 +27,7 @@ public class LockerController : ApiControllerBase
             query.SortColumn = "CreatedAt";
             query.SortDir = SortDirection.Desc;
         }
-        
+
         return await Mediator.Send(query);
     }
 
@@ -57,20 +58,20 @@ public class LockerController : ApiControllerBase
         await Mediator.Send(command);
         return new StatusResponse(true);
     }
-    
+
     [HttpPost("connect")]
     [ApiKey]
     public async Task<ActionResult<LockerResponse>> ConnectLocker([FromBody] ConnectLockerCommand command)
     {
         return await Mediator.Send(command);
     }
-    
+
     [HttpGet("{id:int}/boxes")]
     public async Task<ActionResult<ListResponse<BoxStatus>>> GetAllBoxes([FromRoute] int id)
     {
         return await Mediator.Send(new GetAllBoxesQuery(id));
     }
-    
+
     [HttpGet("{id:int}/timelines")]
     public async Task<ActionResult<PaginationResponse<LockerTimeline, LockerTimelineResponse>>> GetLockerTimeLines(
         [FromRoute] int id,

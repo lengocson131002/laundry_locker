@@ -29,6 +29,10 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     private IBillRepository? _billRepository;
     
+    private IStoreRepository? _storeRepository;
+
+    private IAccountLockerRepository? _accountLockerRepository;
+    
     private readonly ApplicationDbContext _dbContext;
 
     public UnitOfWork(ApplicationDbContext dbContext) : base(dbContext)
@@ -61,5 +65,7 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
         _orderDetailRepository ??= new OrderDetailRepository(_dbContext);
 
     public IBillRepository BillRepository => _billRepository ??= new BillRepository(_dbContext);
-
+        
+    public IStoreRepository StoreRepository => _storeRepository ??= new StoreRepository(_dbContext);
+    public IAccountLockerRepository AccountLockerRepository => _accountLockerRepository ??= new AccountLockerRepository(_dbContext);
 }

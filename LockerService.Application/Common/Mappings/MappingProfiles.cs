@@ -41,5 +41,15 @@ public class MappingProfiles : Profile
         
         // Order timeline
         CreateMap<OrderTimeline, OrderTimelineResponse>();
+        
+        // Account
+        CreateMap<Account, AccountResponse>();
+        CreateMap<Account, AccountDetailResponse>();
+        
+        // Store
+        CreateMap<AddStoreCommand, Store>();
+        CreateMap<Store, StoreResponse>();
+        CreateMap<Store, StoreDetailResponse>();
     }
+
 }

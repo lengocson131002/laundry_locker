@@ -41,4 +41,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<OrderDetail> OrderDetails => Set<OrderDetail>();
 
     public DbSet<Bill> Bills => Set<Bill>();
+        
+    public DbSet<AccountLocker> AccountLockers => Set<AccountLocker>();
+
+    public DbSet<Store> Stores => Set<Store>();
+
 }

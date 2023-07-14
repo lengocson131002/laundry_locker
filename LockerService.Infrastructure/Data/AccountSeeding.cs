@@ -9,12 +9,13 @@ public static class AccountSeeding
     {
         new()
         {
-            Email = "admin@gmail.com",
+            Username = "admin",
             PhoneNumber = "0367537978",
+            Status = AccountStatus.Active,
+            Role = Role.Admin,
             Password = "Aqswde123@",
             CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = DateTimeOffset.UtcNow,
-            Role = Role.Admin
+            UpdatedAt = DateTimeOffset.UtcNow
         }
     };
 }
