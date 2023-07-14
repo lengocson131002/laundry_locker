@@ -2,7 +2,7 @@ namespace LockerService.Application.Locations.Models;
 
 public class LocationResponse
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public string? Address { get; set; }
     

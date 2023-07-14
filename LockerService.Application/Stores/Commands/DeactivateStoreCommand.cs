@@ -6,5 +6,6 @@ public class DeactivateStoreCommandValidator : AbstractValidator<DeactivateStore
 
 public class DeactivateStoreCommand : IRequest<StoreResponse>
 {
-    [JsonIgnore] public int StoreId { get; set; }
+    [JsonIgnore] 
+    public long StoreId { get; set; }
 }

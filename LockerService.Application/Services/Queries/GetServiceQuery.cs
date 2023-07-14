@@ -1,3 +1,3 @@
 namespace LockerService.Application.Services.Queries;
 
-public record GetServiceQuery(int ServiceId) : IRequest<ServiceDetailResponse>;
+public record GetServiceQuery(long ServiceId) : IRequest<ServiceDetailResponse>;

@@ -54,11 +54,7 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
             var order = new Order
             {
                 LockerId = command.LockerId,
-                SendPhone = command.OrderPhone,
-                ReceivePhone = !string.IsNullOrWhiteSpace(command.ReceivePhone) ? command.ReceivePhone : null,
                 ReceiveAt = command.ReceiveTime,
-                SendBox = (int)availableBox,
-                ReceiveBox = (int)availableBox,
                 Status = OrderStatus.Initialized,
                 PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode(),
                 PinCodeIssuedAt = DateTimeOffset.UtcNow
@@ -72,8 +68,7 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
             {
                 Order = order,
                 Status = order.Status,
-                PreviousStatus = null,
-                Time = DateTimeOffset.UtcNow
+                PreviousStatus = null
             };
 
             await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
@@ -103,7 +98,6 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
                     Locker = locker,
                     Status = locker.Status,
                     Event = LockerEvent.Overload,
-                    Time = DateTimeOffset.UtcNow,
                     Error = ex.ErrorMessage,
                     ErrorCode = ex.ErrorCode
                 };

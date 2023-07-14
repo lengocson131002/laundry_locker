@@ -2,7 +2,7 @@ namespace LockerService.Application.Orders.Models;
 
 public class OrderItemResponse
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public ServiceResponse Service { get; set; } = default!;
     
@@ -10,5 +10,5 @@ public class OrderItemResponse
     
     public decimal? Price { get; set; }
     
-    public int OrderId { get; set; }
+    public long OrderId { get; set; }
 }

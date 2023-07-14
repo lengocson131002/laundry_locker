@@ -86,5 +86,6 @@ public class AddLockerCommand : IRequest<LockerResponse>
     public string? Provider { get; set; }
 
     public string MacAddress { get; set; } = default!;
-    public int StoreId { get; set; } = default!;
+    
+    public long StoreId { get; set; } = default!;
 }

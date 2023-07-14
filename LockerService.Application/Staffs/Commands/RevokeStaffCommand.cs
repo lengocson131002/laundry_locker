@@ -11,7 +11,11 @@ public class RevokeStaffCommandValidator : AbstractValidator<RevokeStaffCommand>
 
 public class RevokeStaffCommand : IRequest<StatusResponse>
 {
-    [JsonIgnore] public int Id { get; set; } = default!;
-    [JsonIgnore] public int StoreId { get; set; } = default!;
-    public int LockerId { get; set; } = default!;
+    [JsonIgnore] 
+    public long Id { get; set; } = default!;
+    
+    [JsonIgnore] 
+    public long StoreId { get; set; } = default!;
+    
+    public long LockerId { get; set; } = default!;
 }

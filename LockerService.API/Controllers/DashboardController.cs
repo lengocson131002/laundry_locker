@@ -10,7 +10,7 @@ public class DashboardController : ApiControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<OrderDashboardResponse>> GetOrderDashboard(
-        [Required] int lockerId, 
+        [Required] long lockerId, 
         DateTimeOffset? from, 
         DateTimeOffset? to)
     {

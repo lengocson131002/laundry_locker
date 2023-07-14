@@ -42,8 +42,7 @@ public class OrderTimeoutJob : IJob
             {
                 Order = order,
                 PreviousStatus = order.Status,
-                Status = OrderStatus.Canceled,
-                Time = DateTimeOffset.UtcNow
+                Status = OrderStatus.Canceled
             };
             await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
             

@@ -2,7 +2,7 @@ namespace LockerService.Application.Orders.Models;
 
 public class OrderResponse
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public string? PinCode { get; set; }
     

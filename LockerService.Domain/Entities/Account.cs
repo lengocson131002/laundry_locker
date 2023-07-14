@@ -7,7 +7,9 @@ namespace LockerService.Domain.Entities;
 [Table("Account")]
 public class Account : BaseAuditableEntity
 {
-    [Key] public int Id { get; set; }
+    [Key] 
+    public long Id { get; set; }
+    
     public string Username { get; set; } = default!;
     
     public string PhoneNumber { get; set; } = default!;
@@ -25,9 +27,9 @@ public class Account : BaseAuditableEntity
     
     public string? Avatar { get; set; }
 
-    public int? StoreId { get; set; }
+    public long? StoreId { get; set; }
     
     public Store? Store { get; set; }
     
-    public IList<AccountLocker> AccountLockers { get; private set; } = new List<AccountLocker>();
+    public IList<StaffLocker> StaffLockers { get; private set; } = new List<StaffLocker>();
 }

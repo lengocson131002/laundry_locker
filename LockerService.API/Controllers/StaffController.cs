@@ -1,30 +1,31 @@
+using LockerService.Application.Staffs.Models;
+
 namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/stores")]
 public class StaffController : ApiControllerBase
 {
-    [HttpPost("{storeId}/staffs")]
+    [HttpPost("{storeId:long}/staffs")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<AccountResponse>> AddStaff([FromRoute] int storeId, AddStaffCommand command)
+    public async Task<ActionResult<StaffResponse>> AddStaff([FromRoute] long storeId, AddStaffCommand command)
     {
         command.StoreId = storeId;
         return await Mediator.Send(command);
     }
 
-    [HttpGet("{storeId}/staffs")]
+    [HttpGet("{storeId:long}/staffs")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<PaginationResponse<Account, AccountResponse>>> GetAllStaffs([FromRoute] int storeId,
-        [FromQuery] GetAllStaffsQuery query)
+    public async Task<ActionResult<PaginationResponse<Account, StaffResponse>>> GetAllStaffs([FromRoute] long storeId, [FromQuery] GetAllStaffsQuery query)
     {
         query.StoreId = storeId;
         return await Mediator.Send(query);
     }
 
-    [HttpGet("{storeId}/staffs/{id}")]
+    [HttpGet("{storeId:long}/staffs/{id:long}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<AccountDetailResponse>> GetAllStaffs([FromRoute] int storeId,
-        [FromRoute] int id)
+    public async Task<ActionResult<StaffDetailResponse>> GetAllStaffs([FromRoute] long storeId,
+        [FromRoute] long id)
     {
         var query = new GetStaffQuery
         {
@@ -34,10 +35,10 @@ public class StaffController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
-    [HttpPut("{storeId}/staffs/{id}/activate")]
+    [HttpPut("{storeId:long}/staffs/{id:long}/activate")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> ActivateStaff([FromRoute] int storeId,
-        [FromRoute] int id)
+    public async Task<ActionResult<StatusResponse>> ActivateStaff([FromRoute] long storeId,
+        [FromRoute] long id)
     {
         var command = new ActivateStaffCommand()
         {
@@ -47,10 +48,10 @@ public class StaffController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("{storeId}/staffs/{id}/deactivate")]
+    [HttpPut("{storeId:long}/staffs/{id:long}/deactivate")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> DeactivateStaff([FromRoute] int storeId,
-        [FromRoute] int id)
+    public async Task<ActionResult<StatusResponse>> DeactivateStaff([FromRoute] long storeId,
+        [FromRoute] long id)
     {
         var command = new DeactivateStaffCommand()
         {
@@ -60,10 +61,10 @@ public class StaffController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpDelete("{storeId}/staffs/{id}")]
+    [HttpDelete("{storeId:long}/staffs/{id:long}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> DeleteStaff([FromRoute] int storeId,
-        [FromRoute] int id)
+    public async Task<ActionResult<StatusResponse>> DeleteStaff([FromRoute] long storeId,
+        [FromRoute] long id)
     {
         var command = new DeleteStaffCommand()
         {
@@ -73,20 +74,24 @@ public class StaffController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPost("{storeId}/staffs/{id}/assign")]
+    [HttpPost("{storeId:long}/staffs/{id:long}/assign")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> AssignStaff([FromRoute] int storeId,
-        [FromRoute] int id, AssignStaffCommand command)
+    public async Task<ActionResult<StatusResponse>> AssignStaff(
+        [FromRoute] long storeId,
+        [FromRoute] long id, 
+        AssignStaffCommand command)
     {
         command.Id = id;
         command.StoreId = storeId;
         return await Mediator.Send(command);
     }
     
-    [HttpDelete("{storeId}/staffs/{id}/revoke")]
+    [HttpDelete("{storeId:long}/staffs/{id:long}/revoke")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> RevokeStaff([FromRoute] int storeId,
-        [FromRoute] int id, RevokeStaffCommand command)
+    public async Task<ActionResult<StatusResponse>> RevokeStaff(
+        [FromRoute] long storeId,
+        [FromRoute] long id, 
+        RevokeStaffCommand command)
     {
         command.Id = id;
         command.StoreId = storeId;

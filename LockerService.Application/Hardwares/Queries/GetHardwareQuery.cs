@@ -2,7 +2,7 @@ namespace LockerService.Application.Hardwares.Queries;
 
 public class GetHardwareQuery : IRequest<HardwareDetailResponse>
 {
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
     
-    public int HardwareId { get; set; }
+    public long HardwareId { get; set; }
 }

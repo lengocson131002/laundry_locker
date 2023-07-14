@@ -1,6 +1,8 @@
+using LockerService.Application.Staffs.Models;
+
 namespace LockerService.Application.Staffs.Handlers;
 
-public class GetStaffHandler : IRequestHandler<GetStaffQuery, AccountDetailResponse>
+public class GetStaffHandler : IRequestHandler<GetStaffQuery, StaffDetailResponse>
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
@@ -13,7 +15,7 @@ public class GetStaffHandler : IRequestHandler<GetStaffQuery, AccountDetailRespo
         _mapper = mapper;
     }
 
-    public async Task<AccountDetailResponse> Handle(GetStaffQuery request,
+    public async Task<StaffDetailResponse> Handle(GetStaffQuery request,
         CancellationToken cancellationToken)
     {
         var storeQuery =
@@ -35,6 +37,6 @@ public class GetStaffHandler : IRequestHandler<GetStaffQuery, AccountDetailRespo
             throw new ApiException(ResponseCode.StaffErrorNotFound);
         }
 
-        return _mapper.Map<AccountDetailResponse>(staff);
+        return _mapper.Map<StaffDetailResponse>(staff);
     }
 }

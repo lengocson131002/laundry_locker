@@ -6,12 +6,12 @@ namespace LockerService.Domain.Entities;
 [Table("Address")]
 public class Address
 {
-    [Key]
-    public  int Id { get; set; }
+    [Key] 
+    public long Id { get; set; }
 
     public string? Code { get; set; }
-    
+
     public string? Name { get; set; }
-    
+
     public string? ParentCode { get; set; }
 }

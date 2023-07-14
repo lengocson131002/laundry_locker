@@ -14,9 +14,11 @@ public class Locker : BaseAuditableEntity
 
     public string Code { get; set; } = default!;
     
+    public string? Image { get; set; }
+    
     public LockerStatus Status { get; set; } = LockerStatus.Initialized;
     
-    public int LocationId { get; set; }
+    public long LocationId { get; set; }
 
     public Location Location { get; set; } = default!;
     
@@ -29,6 +31,6 @@ public class Locker : BaseAuditableEntity
 
     public Store? Store { get; set; }
     
-    public int? StoreId { get; set; }
+    public long? StoreId { get; set; }
 
 }

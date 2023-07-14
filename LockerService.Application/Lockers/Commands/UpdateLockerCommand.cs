@@ -44,7 +44,7 @@ public class UpdateLockerCommandValidator : AbstractValidator<UpdateLockerComman
 public class UpdateLockerCommand : IRequest
 {
     [JsonIgnore] 
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
     
     public string? Name { get; set; }
     
@@ -65,5 +65,6 @@ public class UpdateLockerCommand : IRequest
     public LocationCommand? Location { get; set; }
     
     public string? MacAddress { get; set; }
-    public int? StoreId { get; set; }
+    
+    public long? StoreId { get; set; }
 }

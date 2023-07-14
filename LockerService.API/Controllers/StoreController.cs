@@ -12,9 +12,9 @@ public class StoreController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:long}")]
     [AllowAnonymous]
-    public async Task<ActionResult<StoreDetailResponse>> GetAllStores([FromRoute] int id)
+    public async Task<ActionResult<StoreDetailResponse>> GetAllStores([FromRoute] long id)
     {
         return await Mediator.Send(new GetStoreQuery
         {
@@ -29,18 +29,18 @@ public class StoreController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:long}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StoreResponse>> UpdateStore([FromRoute] int id,
+    public async Task<ActionResult<StoreResponse>> UpdateStore([FromRoute] long id,
         [FromBody] UpdateStoreCommand command)
     {
         command.StoreId = id;
         return await Mediator.Send(command);
     }
 
-    [HttpPut("{id}/activate")]
+    [HttpPut("{id:long}/activate")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StoreResponse>> ActivateStore([FromRoute] int id)
+    public async Task<ActionResult<StoreResponse>> ActivateStore([FromRoute] long id)
     {
         var command = new ActivateStoreCommand
         {
@@ -49,9 +49,9 @@ public class StoreController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("{id}/deactivate")]
+    [HttpPut("{id:long}/deactivate")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StoreResponse>> DeactivateStore([FromRoute] int id)
+    public async Task<ActionResult<StoreResponse>> DeactivateStore([FromRoute] long id)
     {
         var command = new DeactivateStoreCommand()
         {

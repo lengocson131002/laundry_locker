@@ -11,10 +11,10 @@ public class UpdateOrderDetailCommandValidator : AbstractValidator<UpdateOrderDe
 public class UpdateOrderDetailCommand : IRequest<OrderItemResponse> {
     
     [JsonIgnore]
-    public int OrderId { get; set; }
+    public long OrderId { get; set; }
 
     [JsonIgnore]
-    public int DetailId { get; set; }
+    public long DetailId { get; set; }
     
     public float Quantity { get; set; }
 }

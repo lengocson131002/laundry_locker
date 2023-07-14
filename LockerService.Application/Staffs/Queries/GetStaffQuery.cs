@@ -1,7 +1,9 @@
+using LockerService.Application.Staffs.Models;
+
 namespace LockerService.Application.Staffs.Queries;
 
-public class GetStaffQuery : IRequest<AccountDetailResponse>
+public class GetStaffQuery : IRequest<StaffDetailResponse>
 {
-    public int Id { get; init; }
-    public int StoreId { get; init; }
+    public long Id { get; init; }
+    public long StoreId { get; init; }
 }

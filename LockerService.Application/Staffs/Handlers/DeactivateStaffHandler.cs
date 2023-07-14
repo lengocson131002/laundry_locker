@@ -13,6 +13,7 @@ public class DeactivateStaffHandler : IRequestHandler<DeactivateStaffCommand, St
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _jwtService = jwtService;
     }
 
     public async Task<StatusResponse> Handle(DeactivateStaffCommand request, CancellationToken cancellationToken)

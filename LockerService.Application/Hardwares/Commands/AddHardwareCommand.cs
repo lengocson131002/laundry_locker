@@ -21,7 +21,7 @@ public class AddHardwareCommandValidator : AbstractValidator<AddHardwareCommand>
 public class AddHardwareCommand : IRequest<HardwareResponse>
 {
     [JsonIgnore]
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
     public string Name { get; set; } = default!;
     public string? Code { get; set; }
     public string? Brand { get; set; }

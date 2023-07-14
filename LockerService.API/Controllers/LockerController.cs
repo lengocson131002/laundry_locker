@@ -31,8 +31,8 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<LockerDetailResponse>> GetLocker([FromRoute] int id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<LockerDetailResponse>> GetLocker([FromRoute] long id)
     {
         var query = new GetLockerQuery
         {
@@ -41,8 +41,8 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<ActionResult<StatusResponse>> UpdateLocker([FromRoute] int id,
+    [HttpPut("{id:long}")]
+    public async Task<ActionResult<StatusResponse>> UpdateLocker([FromRoute] long id,
         [FromBody] UpdateLockerCommand command)
     {
         command.LockerId = id;
@@ -50,8 +50,8 @@ public class LockerController : ApiControllerBase
         return new StatusResponse(true);
     }
 
-    [HttpPut("{id:int}/status")]
-    public async Task<ActionResult<StatusResponse>> UpdateLockerStatus([FromRoute] int id,
+    [HttpPut("{id:long}/status")]
+    public async Task<ActionResult<StatusResponse>> UpdateLockerStatus([FromRoute] long id,
         [FromBody] UpdateLockerStatusCommand command)
     {
         command.LockerId = id;
@@ -66,15 +66,15 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpGet("{id:int}/boxes")]
-    public async Task<ActionResult<ListResponse<BoxStatus>>> GetAllBoxes([FromRoute] int id)
+    [HttpGet("{id:long}/boxes")]
+    public async Task<ActionResult<ListResponse<BoxStatus>>> GetAllBoxes([FromRoute] long id)
     {
         return await Mediator.Send(new GetAllBoxesQuery(id));
     }
 
-    [HttpGet("{id:int}/timelines")]
+    [HttpGet("{id:long}/timelines")]
     public async Task<ActionResult<PaginationResponse<LockerTimeline, LockerTimelineResponse>>> GetLockerTimeLines(
-        [FromRoute] int id,
+        [FromRoute] long id,
         [FromQuery] GetLockerTimelinesQuery query)
     {
         if (string.IsNullOrWhiteSpace(query.SortColumn))

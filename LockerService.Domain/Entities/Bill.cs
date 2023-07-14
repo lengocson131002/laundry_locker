@@ -8,7 +8,7 @@ namespace LockerService.Domain.Entities;
 public class Bill : BaseAuditableEntity
 {
     [Key]
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public int OrderId { get; set; }
     

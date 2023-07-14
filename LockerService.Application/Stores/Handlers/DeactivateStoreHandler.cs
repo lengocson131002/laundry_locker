@@ -15,6 +15,7 @@ public class DeactivateStoreHandler : IRequestHandler<DeactivateStoreCommand, St
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _jwtService = jwtService;
     }
 
     public async Task<StoreResponse> Handle(DeactivateStoreCommand request, CancellationToken cancellationToken)

@@ -7,9 +7,9 @@ namespace LockerService.Domain.Entities;
 public class OrderDetail : BaseAuditableEntity
 {
     [Key]
-    public int Id { get; set; }
+    public long Id { get; set; }
     
-    public int ServiceId { get; set; }
+    public long ServiceId { get; set; }
 
     public Service Service { get; set; } = default!;
     
@@ -17,7 +17,7 @@ public class OrderDetail : BaseAuditableEntity
     
     public decimal? Price { get; set; }
     
-    public int OrderId { get; set; }
+    public long OrderId { get; set; }
 
     public Order Order { get; set; } = default!;
 }

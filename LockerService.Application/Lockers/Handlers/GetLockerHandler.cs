@@ -1,5 +1,3 @@
-using LockerService.Application.Lockers.Queries;
-
 namespace LockerService.Application.Lockers.Handlers;
 
 public class GetLockerHandler :

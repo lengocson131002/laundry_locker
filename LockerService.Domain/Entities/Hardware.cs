@@ -7,7 +7,7 @@ namespace LockerService.Domain.Entities;
 public class Hardware : BaseAuditableEntity
 {
     [Key]
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public string Name { get; set; } = string.Empty;
     
@@ -15,11 +15,11 @@ public class Hardware : BaseAuditableEntity
     
     public string? Brand { get; set; }
     
-    public double? Price { get; set; }
+    public decimal? Price { get; set; }
     
     public string? Description { get; set; }
     
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
 
     public Locker Locker { get; set; } = default!;
 

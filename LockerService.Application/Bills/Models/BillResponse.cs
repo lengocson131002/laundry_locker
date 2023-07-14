@@ -2,9 +2,9 @@ namespace LockerService.Application.Bills.Models;
 
 public class BillResponse
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     
-    public int OrderId { get; set; }
+    public long OrderId { get; set; }
     
     public decimal Amount { get; set; }
 

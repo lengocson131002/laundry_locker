@@ -37,13 +37,7 @@ public class UpdateLockerHandler :
         }
 
         locker.Name = request.Name ?? locker.Name;
-        locker.Depth = request.Depth ?? locker.Depth;
-        locker.Height = request.Height ?? locker.Height;
-        locker.Width = request.Width ?? locker.Width;
         locker.Description = request.Description ?? locker.Description;
-        locker.RowCount = request.RowCount ?? locker.RowCount;
-        locker.ColumnCount = request.ColumnCount ?? locker.ColumnCount;
-        locker.Provider = request.Provider ?? locker.Provider;
         if (request.StoreId is not null)
         {
             var storeQuery = await _unitOfWork.StoreRepository.GetAsync(
@@ -63,17 +57,6 @@ public class UpdateLockerHandler :
             }
 
             locker.StoreId = request.StoreId;
-        }
-
-
-        if (request.MacAddress != null && !request.MacAddress.ToLower().Equals(locker.MacAddress.ToLower()))
-        {
-            if (await _unitOfWork.LockerRepository.FindByMac(request.MacAddress) != null)
-            {
-                throw new ApiException(ResponseCode.LockerErrorExistedMacAddress);
-            }
-
-            locker.MacAddress = request.MacAddress;
         }
 
         if (request.Location != null)
@@ -115,7 +98,6 @@ public class UpdateLockerHandler :
             Locker = locker,
             Event = LockerEvent.UpdateInformation,
             Status = locker.Status,
-            Time = DateTimeOffset.UtcNow,
             Data = JsonConvert.SerializeObject(locker)
         };
         await _unitOfWork.LockerTimelineRepository.AddAsync(lockerEvent);

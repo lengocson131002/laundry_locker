@@ -25,9 +25,9 @@ public class ReserveOrderCommandValidator : AbstractValidator<ReserveOrderComman
 
 public class ReserveOrderCommand : IRequest<OrderResponse>
 {
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
     
-    public int ServiceId { get; set; }
+    public long ServiceId { get; set; }
 
     private string _oPhone = default!;
     

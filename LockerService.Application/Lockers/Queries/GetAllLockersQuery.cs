@@ -13,6 +13,7 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
     public string? DistrictCode { get; set; }
     
     public string? WardCode { get; set; }
+
     
     public override Expression<Func<Locker, bool>> GetExpressions()
     {
@@ -21,11 +22,6 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
             Expression = Expression.And(locker => locker.Name.ToLower().Contains(Name.ToLower()));
         }
 
-        if (MacAddress != null)
-        {
-            Expression = Expression.And(locker => locker.MacAddress.ToLower().Contains(MacAddress.ToLower()));
-        }
-        
         if (Status != null)
         {
             Expression = Expression.And(locker => locker.Status.Equals(Status));

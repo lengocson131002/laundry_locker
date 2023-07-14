@@ -9,6 +9,9 @@ public class DeleteStaffCommandValidator : AbstractValidator<DeleteStaffCommand>
 
 public class DeleteStaffCommand : IRequest<StatusResponse>
 {
-    [JsonIgnore] public int Id { get; set; } = default!;
-    [JsonIgnore] public int StoreId { get; set; } = default!;
+    [JsonIgnore] 
+    public long Id { get; set; } = default!;
+    
+    [JsonIgnore] 
+    public long StoreId { get; set; } = default!;
 }

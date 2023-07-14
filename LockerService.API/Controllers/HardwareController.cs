@@ -7,12 +7,12 @@ using LockerService.Domain.Entities;
 namespace LockerService.API.Controllers;
 
 [ApiController]
-[Route("/api/v1/lockers/{id:int}/hardwares")]
+[Route("/api/v1/lockers/{id:long}/hardwares")]
 public class HardwareController : ApiControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PaginationResponse<Hardware, HardwareResponse>>> GetAllHardwares(
-        [FromRoute] int id,
+        [FromRoute] long id,
         [FromQuery] GetAllHardwareQuery query)
     {
         if (string.IsNullOrWhiteSpace(query.SortColumn))
@@ -27,17 +27,17 @@ public class HardwareController : ApiControllerBase
 
     [HttpPost]
     public async Task<ActionResult<HardwareResponse>> CreateHardware(
-        [FromRoute] int id,
+        [FromRoute] long id,
         [FromBody] AddHardwareCommand command)
     {
         command.LockerId = id;
         return await Mediator.Send(command);
     }
     
-    [HttpPut("{hardwareId:int}")]
+    [HttpPut("{hardwareId:long}")]
     public async Task<ActionResult<StatusResponse>> UpdateHardware(
-        [FromRoute] int id,        
-        [FromRoute] int hardwareId,
+        [FromRoute] long id,        
+        [FromRoute] long hardwareId,
         [FromBody] UpdateHardwareCommand command)
     {
         command.LockerId = id;
@@ -46,10 +46,10 @@ public class HardwareController : ApiControllerBase
         return await Mediator.Send(command);
     }
     
-    [HttpDelete("{hardwareId:int}")]
+    [HttpDelete("{hardwareId:long}")]
     public async Task<ActionResult<StatusResponse>> RemoveHardware(
-        [FromRoute] int id,
-        [FromRoute] int hardwareId)
+        [FromRoute] long id,
+        [FromRoute] long hardwareId)
     {
         var command = new RemoveHardwareCommand()
         {
@@ -60,10 +60,10 @@ public class HardwareController : ApiControllerBase
         return await Mediator.Send(command);
     }
     
-    [HttpGet("{hardwareId:int}")]
+    [HttpGet("{hardwareId:long}")]
     public async Task<ActionResult<HardwareDetailResponse>> GetHardware(
-        [FromRoute] int id,
-        [FromRoute] int hardwareId)
+        [FromRoute] long id,
+        [FromRoute] long hardwareId)
     {
         var query = new GetHardwareQuery()
         {

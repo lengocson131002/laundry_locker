@@ -2,11 +2,11 @@ namespace LockerService.Application.EventBus.Mqtt.Events;
 
 public class MqttOpenBoxEvent : MqttBaseMessage 
 {
-    public int LockerId { get; private set; }
+    public long LockerId { get; private set; }
     
     public int BoxOrder { get; private set; }
 
-    public MqttOpenBoxEvent(int lockerId, int boxOrder) : base()
+    public MqttOpenBoxEvent(long lockerId, int boxOrder) : base()
     {
         this.LockerId = lockerId;
         this.BoxOrder = boxOrder;

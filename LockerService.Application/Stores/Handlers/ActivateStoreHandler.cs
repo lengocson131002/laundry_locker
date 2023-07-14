@@ -15,6 +15,7 @@ public class ActivateStoreHandler : IRequestHandler<ActivateStoreCommand, StoreR
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _jwtService = jwtService;
     }
 
     public async Task<StoreResponse> Handle(ActivateStoreCommand request, CancellationToken cancellationToken)

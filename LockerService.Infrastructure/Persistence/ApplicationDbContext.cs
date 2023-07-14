@@ -42,7 +42,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<Bill> Bills => Set<Bill>();
         
-    public DbSet<AccountLocker> AccountLockers => Set<AccountLocker>();
+    public DbSet<StaffLocker> AccountLockers => Set<StaffLocker>();
 
     public DbSet<Store> Stores => Set<Store>();
 

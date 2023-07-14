@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using LockerService.Domain.Enums;
 using LockerService.Domain.Events;
@@ -5,11 +6,12 @@ using LockerService.Domain.Events;
 namespace LockerService.Domain.Entities;
 
 [Table("LockerTimeline")]
-public class LockerTimeline
+public class LockerTimeline : BaseAuditableEntity
 {
-    public int Id { get; set; }
+    [Key]
+    public long Id { get; set; }
     
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
 
     public Locker Locker { get; set; } = default!;
     
@@ -22,12 +24,11 @@ public class LockerTimeline
     [Column(TypeName = "jsonb")]
     public string? Data { get; set; }
     
+    [Column(TypeName = "text")]
     public string? Description { get; set; }
     
     public int? ErrorCode { get; set; }
     
     public string? Error { get; set; }
     
-    public DateTimeOffset Time { get; set; } = DateTimeOffset.UtcNow;
-
 }

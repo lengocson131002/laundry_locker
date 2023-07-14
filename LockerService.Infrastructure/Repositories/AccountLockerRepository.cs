@@ -4,7 +4,7 @@ using LockerService.Infrastructure.Persistence;
 
 namespace LockerService.Infrastructure.Repositories;
 
-public class AccountLockerRepository : BaseRepository<AccountLocker>, IAccountLockerRepository
+public class AccountLockerRepository : BaseRepository<StaffLocker>, IAccountLockerRepository
 {
     private readonly ApplicationDbContext _dbContext;
 

@@ -36,8 +36,7 @@ public class UpdateLockerStatusHandler :
             Locker = locker,
             Event = LockerEvent.UpdateStatus,
             Status = request.Status,
-            PreviousStatus = currentStatus,
-            Time = DateTimeOffset.UtcNow
+            PreviousStatus = currentStatus
         };
         
         await _unitOfWork.LockerTimelineRepository.AddAsync(lockerEvent);

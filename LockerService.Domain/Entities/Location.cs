@@ -7,7 +7,7 @@ namespace LockerService.Domain.Entities;
 public class Location : BaseAuditableEntity
 {
     [Key]
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public string? Address { get; set; }
     
@@ -15,17 +15,18 @@ public class Location : BaseAuditableEntity
     
     public double? Latitude { get; set; }
     
+    [Column(TypeName = "text")]
     public string? Description { get; set; }
 
-    public int ProvinceId { get; set; }
+    public long ProvinceId { get; set; }
 
     public Address Province { get; set; } = default!;
     
-    public int DistrictId { get; set; }
+    public long DistrictId { get; set; }
     
     public Address District { get; set; } = default!;
     
-    public int WardId { get; set; }
+    public long WardId { get; set; }
 
     public Address Ward { get; set; } = default!;
 }

@@ -1,3 +1,3 @@
 namespace LockerService.Application.Orders.Queries;
 
-public record GetOrderDetailQuery(int OrderId, int DetailId) : IRequest<OrderItemResponse>;
+public record GetOrderDetailQuery(long OrderId, long DetailId) : IRequest<OrderItemResponse>;

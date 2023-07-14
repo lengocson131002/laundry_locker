@@ -28,7 +28,7 @@ public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
 
 public class CreateOrderCommand : IRequest<OrderResponse>
 {
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
     
     public OrderType Type { get; set; }
     

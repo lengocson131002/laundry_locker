@@ -1,3 +1,3 @@
 namespace LockerService.Application.Orders.Commands;
 
-public record RemoveOrderDetailCommand(int OrderId, int DetailId) : IRequest<OrderItemResponse>;
+public record RemoveOrderDetailCommand(long OrderId, long DetailId) : IRequest<OrderItemResponse>;

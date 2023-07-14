@@ -2,9 +2,9 @@ namespace LockerService.Application.Lockers.Queries;
 
 public class GetAllBoxesQuery : IRequest<ListResponse<BoxStatus>>
 {
-    public int LockerId { get; private set; }
+    public long LockerId { get; private set; }
 
-    public GetAllBoxesQuery(int lockerId)
+    public GetAllBoxesQuery(long lockerId)
     {
         this.LockerId = lockerId;
     }

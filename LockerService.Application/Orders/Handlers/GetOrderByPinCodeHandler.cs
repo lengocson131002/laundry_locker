@@ -21,7 +21,7 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
-        order.Timelines = order.Timelines.OrderBy(timeline => timeline.Time).ToList();
+        order.Timelines = order.Timelines.OrderBy(timeline => timeline.CreatedAt).ToList();
         return _mapper.Map<OrderDetailResponse>(order);
     }
     

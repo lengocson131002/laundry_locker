@@ -16,7 +16,10 @@ public class UpdateStoreCommandValidator : AbstractValidator<UpdateStoreCommand>
 
 public class UpdateStoreCommand : IRequest<StoreResponse>
 {
-    [JsonIgnore] public int StoreId { get; set; }
+    [JsonIgnore] 
+    public long StoreId { get; set; }
+    
     public string? ContactPhone { get; set; }
+    
     public string? Image { get; set; }
 }

@@ -8,7 +8,7 @@ namespace LockerService.Domain.Entities;
 public class Order : BaseAuditableEntity
 {
     [Key]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     public OrderType Type { get; set; } 
 
@@ -17,20 +17,20 @@ public class Order : BaseAuditableEntity
     public DateTimeOffset? PinCodeIssuedAt { get; set; } 
     
     // Sender info
-    public int SendBox { get; set; }
-    
-    public string SendPhone { get; set; } = default!;
+    public long SendBoxId { get; set; }
 
-    public int SenderId { get; set; }
+    public Box SendBox { get; set; } = default!; 
+        
+    public long SenderId { get; set; }
 
     public Account Sender { get; set; } = default!;
     
     // Receiver info
-    public int ReceiveBox { get; set; }
-    
-    public string? ReceivePhone { get; set; }
+    public long ReceiveBoxId { get; set; }
 
-    public int? ReceiverId { get; set; }
+    public Box ReceiveBox { get; set; } = default!;
+    
+    public long? ReceiverId { get; set; }
 
     public Account? Receiver { get; set; }
     
@@ -38,11 +38,11 @@ public class Order : BaseAuditableEntity
 
     public OrderStatus Status { get; set; } = OrderStatus.Initialized;
     
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
     
     public Locker Locker { get; set; } = default!;
     
-    public int? StaffId { get; set; }
+    public long? StaffId { get; set; }
 
     public Account? Staff { get; set; }
     
@@ -56,7 +56,7 @@ public class Order : BaseAuditableEntity
     
     public string? Description { get; set; }
     
-    public int? BillId { get; set; }
+    public long? BillId { get; set; }
     
     public Bill? Bill { get; set; }
     

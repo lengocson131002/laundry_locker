@@ -6,6 +6,9 @@ public class ActivateStaffCommandValidator : AbstractValidator<ActivateStaffComm
 
 public class ActivateStaffCommand : IRequest<StatusResponse>
 {
-    [JsonIgnore] public int Id { get; set; } = default!;
-    [JsonIgnore] public int StoreId { get; set; } = default!;
+    [JsonIgnore] 
+    public long Id { get; set; } = default!;
+    
+    [JsonIgnore] 
+    public long StoreId { get; set; } = default!;
 }

@@ -16,7 +16,7 @@ public class AuthController : ApiControllerBase
 
     [HttpPost("login/staff")]
     [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] AdminLoginRequest request)
+    public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
     {
         return await Mediator.Send(request);
     }

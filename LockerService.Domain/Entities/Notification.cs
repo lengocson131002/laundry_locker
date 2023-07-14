@@ -8,9 +8,9 @@ namespace LockerService.Domain.Entities;
 public class Notification
 {
     [Key]
-    public int Id { get; set; }
+    public long Id { get; set; }
     
-    public int AccountId { get; set; }
+    public long AccountId { get; set; }
 
     public Account Account { get; set; } = default!;
     
@@ -22,6 +22,7 @@ public class Notification
 
     public string Content { get; set; } = default!;
     
+    [Column(TypeName = "jsonb")]
     public string? Data { get; set; }
 
     public DateTimeOffset? ReadAt { get; set; }

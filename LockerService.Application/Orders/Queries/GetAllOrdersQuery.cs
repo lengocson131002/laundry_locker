@@ -38,9 +38,6 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
         if (!string.IsNullOrWhiteSpace(Query))
         {
             Expression<Func<Order, bool>> queryExpression = PredicateBuilder.New<Order>();
-            queryExpression = queryExpression.Or(order => order.SendPhone.ToLower().Contains(Query));
-            queryExpression = queryExpression.Or(order =>
-                order.ReceivePhone != null && order.ReceivePhone.ToLower().Contains(Query));
             queryExpression = queryExpression.Or(order => order.Locker.Name.ToLower().Contains(Query));
             Expression = Expression.And(queryExpression);
         }
@@ -48,9 +45,6 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
         if (BoxOrder != null)
         {
             Expression<Func<Order, bool>> boxOrderExpression = PredicateBuilder.New<Order>();
-            boxOrderExpression = boxOrderExpression.Or(order => order.SendBox == BoxOrder);
-            boxOrderExpression = boxOrderExpression.Or(order => order.ReceiveBox == BoxOrder);
-
             Expression = Expression.And(boxOrderExpression);
         }
 

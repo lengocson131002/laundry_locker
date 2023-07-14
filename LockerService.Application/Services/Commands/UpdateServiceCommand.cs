@@ -18,7 +18,7 @@ public class UpdateServiceCommand : IRequest
 {
     
     [JsonIgnore] 
-    public int ServiceId { get; set; }
+    public long ServiceId { get; set; }
     
     public string? Name { get; set; }
     

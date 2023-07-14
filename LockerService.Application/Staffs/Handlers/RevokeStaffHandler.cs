@@ -9,12 +9,16 @@ public class RevokeStaffHandler : IRequestHandler<RevokeStaffCommand, StatusResp
     private readonly ILogger<RevokeStaffHandler> _logger;
     private readonly IMapper _mapper;
 
-    public RevokeStaffHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<RevokeStaffHandler> logger,
+    public RevokeStaffHandler(
+        IMapper mapper, 
+        IUnitOfWork unitOfWork, 
+        ILogger<RevokeStaffHandler> logger,
         IJwtService jwtService)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _jwtService = jwtService;
     }
 
     public async Task<StatusResponse> Handle(RevokeStaffCommand request, CancellationToken cancellationToken)

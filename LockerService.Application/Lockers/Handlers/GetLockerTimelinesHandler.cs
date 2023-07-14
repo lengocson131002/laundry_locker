@@ -1,5 +1,3 @@
-using LockerService.Application.Lockers.Queries;
-
 namespace LockerService.Application.Lockers.Handlers;
 
 public class GetLockerTimelinesHandler : IRequestHandler<GetLockerTimelinesQuery, PaginationResponse<LockerTimeline, LockerTimelineResponse>>

@@ -3,7 +3,7 @@ namespace LockerService.Application.Hardwares.Queries;
 public class GetAllHardwareQuery : PaginationRequest<Hardware>, IRequest<PaginationResponse<Hardware, HardwareResponse>>
 {
     [BindNever] 
-    public int? LockerId { get; set; }
+    public long? LockerId { get; set; }
         
     public string? Query { get; set; }
     

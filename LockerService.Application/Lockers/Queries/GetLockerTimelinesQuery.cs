@@ -5,7 +5,7 @@ namespace LockerService.Application.Lockers.Queries;
 public class GetLockerTimelinesQuery : PaginationRequest<LockerTimeline>, IRequest<PaginationResponse<LockerTimeline, LockerTimelineResponse>>
 {
     [BindNever]
-    public int? LockerId { get; set; }
+    public long? LockerId { get; set; }
     
     public LockerEvent? Event { get; set; }
 
@@ -19,9 +19,9 @@ public class GetLockerTimelinesQuery : PaginationRequest<LockerTimeline>, IReque
 
         Expression = Expression.And(lockerTimeline => Event == null || Event.Equals(lockerTimeline.Event));
 
-        Expression = Expression.And(lockerTimeline => From == null || lockerTimeline.Time.UtcDateTime >= From);
+        Expression = Expression.And(lockerTimeline => From == null || lockerTimeline.CreatedAt.UtcDateTime >= From);
 
-        Expression = Expression.And(lockerTimeline => To == null || lockerTimeline.Time.UtcDateTime <= To);
+        Expression = Expression.And(lockerTimeline => To == null || lockerTimeline.CreatedAt.UtcDateTime <= To);
 
         return Expression;
     }

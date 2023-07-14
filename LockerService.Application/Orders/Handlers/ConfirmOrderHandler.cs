@@ -55,8 +55,7 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
         {
             Order = order,
             PreviousStatus = currentStatus,
-            Status = order.Status,
-            Time = DateTimeOffset.UtcNow
+            Status = order.Status
         };
         await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
         

@@ -24,8 +24,11 @@ public class AddStoreCommandValidator : AbstractValidator<AddStoreCommand>
 
 public class AddStoreCommand : IRequest<StoreResponse>
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
+    
     public string? ContactPhone { get; set; }
+    
     public LocationCommand Location { get; set; } = default!;
+    
     public string? Image { get; set; }
 }

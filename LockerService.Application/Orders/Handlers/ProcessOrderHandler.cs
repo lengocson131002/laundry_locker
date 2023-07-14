@@ -43,8 +43,7 @@ public class ProcessOrderHandler : IRequestHandler<ProcessOrderCommand, OrderRes
         {
             Order = order,
             PreviousStatus = currentStatus,
-            Status = order.Status,
-            Time = DateTimeOffset.UtcNow
+            Status = order.Status
         };
         await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
         
@@ -53,7 +52,7 @@ public class ProcessOrderHandler : IRequestHandler<ProcessOrderCommand, OrderRes
         _logger.LogInformation("Processing order {orderId}", order.Id);
         
         // Mqtt Open Box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox));
+        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox.Number));
         
         return _mapper.Map<OrderResponse>(order);
     }

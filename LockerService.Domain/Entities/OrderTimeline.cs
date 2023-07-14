@@ -5,12 +5,12 @@ using LockerService.Domain.Enums;
 namespace LockerService.Domain.Entities;
 
 [Table("OrderTimeline")]
-public class OrderTimeline
+public class OrderTimeline : BaseAuditableEntity
 {
     [Key]
-    public int Id { get; set; }
+    public long Id { get; set; }
     
-    public int OrderId { get; set; }
+    public long OrderId { get; set; }
 
     public Order Order { get; set; } = default!;
     
@@ -18,7 +18,6 @@ public class OrderTimeline
     
     public OrderStatus? PreviousStatus { get; set; }
     
-    public DateTimeOffset Time { get; set; } = DateTimeOffset.UtcNow;
-    
+    [Column(TypeName = "text")]
     public string? Description { get; set; }
 }

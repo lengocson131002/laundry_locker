@@ -12,7 +12,7 @@ public class UpdateServiceStatusCommandValidator : AbstractValidator<UpdateServi
 public class UpdateServiceStatusCommand : IRequest
 {
     [JsonIgnore]
-    public int ServiceId { get; set; }
+    public long ServiceId { get; set; }
     
     public ServiceStatus Status { get; set; }
 }

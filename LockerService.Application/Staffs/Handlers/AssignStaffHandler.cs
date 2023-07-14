@@ -62,7 +62,7 @@ public class AssignStaffHandler : IRequestHandler<AssignStaffCommand, StatusResp
             throw new ApiException(ResponseCode.StaffErrorAssignedBefore);
         }
 
-        accountLocker = new AccountLocker
+        accountLocker = new StaffLocker
         {
             Staff = account,
             Locker = locker

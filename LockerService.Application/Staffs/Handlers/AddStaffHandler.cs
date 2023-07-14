@@ -1,6 +1,8 @@
+using LockerService.Application.Staffs.Models;
+
 namespace LockerService.Application.Staffs.Handlers;
 
-public class AddStaffHandler : IRequestHandler<AddStaffCommand, AccountResponse>
+public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
@@ -13,9 +15,10 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, AccountResponse>
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _jwtService = jwtService;
     }
 
-    public async Task<AccountResponse> Handle(AddStaffCommand request, CancellationToken cancellationToken)
+    public async Task<StaffResponse> Handle(AddStaffCommand request, CancellationToken cancellationToken)
     {
         var storeQuery =
             await _unitOfWork.StoreRepository.GetAsync(s =>
@@ -57,6 +60,6 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, AccountResponse>
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
-        return _mapper.Map<AccountResponse>(account);
+        return _mapper.Map<StaffResponse>(account);
     }
 }

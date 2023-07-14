@@ -44,15 +44,14 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, OrderR
         {
             Order = order,
             PreviousStatus = currentStatus,
-            Status = order.Status,
-            Time = DateTimeOffset.UtcNow
+            Status = order.Status
         };
         await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
         
         await _unitOfWork.SaveChangesAsync();
         
         // Mqtt Open Box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox));
+        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox.Number));
         
         return _mapper.Map<OrderResponse>(order);
     }

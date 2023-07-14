@@ -28,22 +28,22 @@ public class ServiceController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
-    [HttpPut("{serviceId:int}")]
-    public async Task<ActionResult<StatusResponse>> UpdateService([FromRoute] int serviceId, [FromBody] UpdateServiceCommand command)
+    [HttpPut("{serviceId:long}")]
+    public async Task<ActionResult<StatusResponse>> UpdateService([FromRoute] long serviceId, [FromBody] UpdateServiceCommand command)
     {
         command.ServiceId = serviceId;
         await Mediator.Send(command);
         return new StatusResponse(true);
     }
     
-    [HttpGet("{serviceId:int}")]
-    public async Task<ActionResult<ServiceDetailResponse>> GetService([FromRoute] int serviceId)
+    [HttpGet("{serviceId:long}")]
+    public async Task<ActionResult<ServiceDetailResponse>> GetService([FromRoute] long serviceId)
     {
         var query = new GetServiceQuery(serviceId);
         return await Mediator.Send(query);
     }
 
-    [HttpPut("{serviceId:int}/status")]
+    [HttpPut("{serviceId:long}/status")]
     public async Task<ActionResult<StatusResponse>> UpdateServiceStatus([FromBody] UpdateServiceCommand command)
     {
         await Mediator.Send(command);

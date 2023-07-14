@@ -75,10 +75,6 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
                 LockerId = command.LockerId,
                 Type = command.Type,
                 Details = details,
-                SendPhone = command.OrderPhone,
-                ReceivePhone = command.ReceivePhone,
-                SendBox = (int)availableBox,
-                ReceiveBox = (int)availableBox,
                 Status = OrderStatus.Initialized
             };
 
@@ -90,8 +86,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
             {
                 Order = order,
                 Status = order.Status,
-                PreviousStatus = null,
-                Time = DateTimeOffset.UtcNow
+                PreviousStatus = null
             };
 
             await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
@@ -121,7 +116,6 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
                     Locker = locker,
                     Status = locker.Status,
                     Event = LockerEvent.Overload,
-                    Time = DateTimeOffset.UtcNow,
                     Error = ex.ErrorMessage,
                     ErrorCode = ex.ErrorCode
                 };

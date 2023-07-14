@@ -16,13 +16,13 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
         _dbContext = dbContext;
     }
 
-    public async Task<int?> FindAvailableBox(int lockerId)
+    public async Task<int?> FindAvailableBox(long lockerId)
     {
         var availableBoxes = await FindAvailableBoxes(lockerId);
         return availableBoxes.Any() ? availableBoxes[0] : null;
     }
 
-    public async Task<IList<int>> FindAvailableBoxes(int lockerId)
+    public async Task<IList<int>> FindAvailableBoxes(long lockerId)
     {
         var boxes = await GetAllBoxes(lockerId);
         return boxes
@@ -31,44 +31,44 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
             .ToList();
     }
 
-    public async Task<IList<BoxStatus>> GetAllBoxes(int lockerId)
+    public async Task<IList<BoxStatus>> GetAllBoxes(long lockerId)
     {
-        var boxCount = await _dbContext.Lockers
-            .Where(locker => locker.Id == lockerId)
-            .Select(locker => locker.ColumnCount * locker.RowCount)
-            .FirstAsync();
-
-        if (boxCount == 0) return new List<BoxStatus>();
-
-        var latestOrders = await _dbContext.Orders
-            .AsNoTracking()
-            .Where(order => order.LockerId == lockerId)
-            .GroupBy(order => order.ReceiveBox)
-            .Select(group => group.OrderByDescending(order => order.CreatedAt).First())
-            .ToListAsync();
-
-        return Enumerable.Range(1, boxCount)
-            .GroupJoin(
-                latestOrders,
-                boxOrder => boxOrder,
-                order => order.ReceiveBox,
-                (boxOrder, order) => new { boxOrder, order })
-            .SelectMany(item => item.order.DefaultIfEmpty(), (boxOrder, order) => new BoxStatus
-            {
-                BoxOrder = boxOrder.boxOrder,
-                IsAvailable = order == null || (!OrderStatus.Initialized.Equals(order.Status)
-                                                && !OrderStatus.Waiting.Equals(order.Status)
-                                                && !OrderStatus.Returned.Equals(order.Status)),
-                OrderStatus = order?.Status,
-                OrderId = order?.Id
-            })
-            .ToList();
+        // var boxCount = await _dbContext.Lockers
+        //     .Where(locker => locker.Id == lockerId)
+        //     .Select(locker => locker.ColumnCount * locker.RowCount)
+        //     .FirstAsync();
+        //
+        // if (boxCount == 0) return new List<BoxStatus>();
+        //
+        // var latestOrders = await _dbContext.Orders
+        //     .AsNoTracking()
+        //     .Where(order => order.LockerId == lockerId)
+        //     .GroupBy(order => order.ReceiveBox)
+        //     .Select(group => group.OrderByDescending(order => order.CreatedAt).First())
+        //     .ToListAsync();
+        //
+        // return Enumerable.Range(1, boxCount)
+        //     .GroupJoin(
+        //         latestOrders,
+        //         boxOrder => boxOrder,
+        //         order => order.ReceiveBox,
+        //         (boxOrder, order) => new { boxOrder, order })
+        //     .SelectMany(item => item.order.DefaultIfEmpty(), (boxOrder, order) => new BoxStatus
+        //     {
+        //         BoxOrder = boxOrder.boxOrder,
+        //         IsAvailable = order == null || (!OrderStatus.Initialized.Equals(order.Status)
+        //                                         && !OrderStatus.Waiting.Equals(order.Status)
+        //                                         && !OrderStatus.Returned.Equals(order.Status)),
+        //         OrderStatus = order?.Status,
+        //         OrderId = order?.Id
+        //     })
+        //     .ToList();
+        throw new NotImplementedException();
     }
 
     public async Task<Locker?> FindByMac(string mac)
     {
-        return await _dbContext.Lockers
-            .FirstOrDefaultAsync(lo => lo.MacAddress.ToLower().Equals(mac.ToLower()));
+        return null;
     }
 
     public async Task<Locker?> FindByName(string name)

@@ -1,5 +1,3 @@
-using LockerService.Domain.Enums;
-
 namespace LockerService.API.Controllers;
 
 [ApiController]

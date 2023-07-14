@@ -12,10 +12,10 @@ public class UpdateHardwareCommandValidator : AbstractValidator<UpdateHardwareCo
 public class UpdateHardwareCommand : IRequest<StatusResponse>
 {
     [JsonIgnore] 
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
     
     [JsonIgnore] 
-    public int HardwareId { get; set; }
+    public long HardwareId { get; set; }
     
     public string? Name { get; set; }
     
@@ -23,7 +23,7 @@ public class UpdateHardwareCommand : IRequest<StatusResponse>
     
     public string? Brand { get; set; }
     
-    public double? Price { get; set; }
+    public decimal? Price { get; set; }
     
     public string? Description { get; set; }
 }

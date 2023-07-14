@@ -1,6 +1,8 @@
+using LockerService.Application.Staffs.Models;
+
 namespace LockerService.Application.Staffs.Handlers;
 
-public class GetAllStaffsHandler : IRequestHandler<GetAllStaffsQuery, PaginationResponse<Account, AccountResponse>>
+public class GetAllStaffsHandler : IRequestHandler<GetAllStaffsQuery, PaginationResponse<Account, StaffResponse>>
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
@@ -13,7 +15,7 @@ public class GetAllStaffsHandler : IRequestHandler<GetAllStaffsQuery, Pagination
         _mapper = mapper;
     }
 
-    public async Task<PaginationResponse<Account, AccountResponse>> Handle(GetAllStaffsQuery request,
+    public async Task<PaginationResponse<Account, StaffResponse>> Handle(GetAllStaffsQuery request,
         CancellationToken cancellationToken)
     {
         var storeQuery =
@@ -30,10 +32,10 @@ public class GetAllStaffsHandler : IRequestHandler<GetAllStaffsQuery, Pagination
             orderBy: request.GetOrder()
         );
 
-        return new PaginationResponse<Account, AccountResponse>(
+        return new PaginationResponse<Account, StaffResponse>(
             staffs,
             request.PageNumber,
             request.PageSize,
-            entity => _mapper.Map<AccountResponse>(entity));
+            entity => _mapper.Map<StaffResponse>(entity));
     }
 }

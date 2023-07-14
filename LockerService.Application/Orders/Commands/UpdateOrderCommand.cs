@@ -17,7 +17,8 @@ public class UpdateOrderValidation : AbstractValidator<UpdateOrderCommand>
 public class UpdateOrderCommand : IRequest<OrderResponse>
 {
     [JsonIgnore]
-    public int Id { get; set; }
+    public long Id { get; set; }
+    
     public double? Amount { get; set; }
     
     public double? Fee { get; set; }

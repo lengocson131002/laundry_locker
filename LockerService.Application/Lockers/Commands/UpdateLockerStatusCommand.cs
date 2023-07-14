@@ -13,7 +13,7 @@ public class UpdateLockerStatusCommandValidator : AbstractValidator<UpdateLocker
 public class UpdateLockerStatusCommand : IRequest
 {
     [JsonIgnore] 
-    public int LockerId { get; set; }
+    public long LockerId { get; set; }
     
     public LockerStatus Status { get; set; }
 }

@@ -4,6 +4,8 @@ namespace LockerService.Application.Lockers.Models;
 
 public class LockerTimelineResponse
 {
+    public long Id { get; set; }
+    
     public LockerEvent? Event { get; set; }
     
     public LockerStatus? Status { get; set; }

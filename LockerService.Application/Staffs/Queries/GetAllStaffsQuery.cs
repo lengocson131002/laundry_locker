@@ -1,13 +1,15 @@
+using LockerService.Application.Staffs.Models;
+
 namespace LockerService.Application.Staffs.Queries;
 
-public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<PaginationResponse<Account, AccountResponse>>
+public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<PaginationResponse<Account, StaffResponse>>
 {
-    public string Username { get; set; }
-    public string PhoneNumber { get; set; }
-    public AccountStatus Status { get; set; }
+    public string? Username { get; set; }
+    public string? PhoneNumber { get; set; }
+    public AccountStatus? Status { get; set; }
     public string? FullName { get; set; }
     public string? Description { get; set; }
-    public int StoreId { get; set; }
+    public long? StoreId { get; set; }
 
     public override Expression<Func<Account, bool>> GetExpressions()
     {

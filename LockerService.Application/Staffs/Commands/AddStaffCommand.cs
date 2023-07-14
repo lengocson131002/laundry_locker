@@ -1,3 +1,5 @@
+using LockerService.Application.Staffs.Models;
+
 namespace LockerService.Application.Staffs.Commands;
 
 public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
@@ -9,8 +11,10 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
     }
 }
 
-public class AddStaffCommand : IRequest<AccountResponse>
+public class AddStaffCommand : IRequest<StaffResponse>
 {
     public string PhoneNumber { get; set; } = default!;
-    [JsonIgnore] public int StoreId { get; set; } = default!;
+    
+    [JsonIgnore] 
+    public long StoreId { get; set; } = default!;
 }

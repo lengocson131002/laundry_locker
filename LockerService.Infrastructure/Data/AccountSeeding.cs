@@ -13,9 +13,7 @@ public static class AccountSeeding
             PhoneNumber = "0367537978",
             Status = AccountStatus.Active,
             Role = Role.Admin,
-            Password = "Aqswde123@",
-            CreatedAt = DateTimeOffset.UtcNow,
-            UpdatedAt = DateTimeOffset.UtcNow
+            Password = "Aqswde123@"
         }
     };
 }

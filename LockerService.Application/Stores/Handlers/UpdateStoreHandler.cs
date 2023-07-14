@@ -15,6 +15,7 @@ public class UpdateStoreHandler : IRequestHandler<UpdateStoreCommand, StoreRespo
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _jwtService = jwtService;
     }
 
     public async Task<StoreResponse> Handle(UpdateStoreCommand request, CancellationToken cancellationToken)

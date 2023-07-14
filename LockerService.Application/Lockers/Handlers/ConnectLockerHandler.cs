@@ -20,7 +20,6 @@ public class ConnectLockerHandler : IRequestHandler<ConnectLockerCommand, Locker
         // Check locker
         var lockerQuery =
             await _unitOfWork.LockerRepository.GetAsync(
-                predicate: locker => locker.MacAddress.ToLower().Equals(request.MacAddress.ToLower()),
                 includes: new List<Expression<Func<Locker, object>>>
                 {
                     lo => lo.Location,
@@ -40,7 +39,6 @@ public class ConnectLockerHandler : IRequestHandler<ConnectLockerCommand, Locker
         {
             Locker = locker,
             Event = LockerEvent.Connect,
-            Time = DateTimeOffset.UtcNow,
             Status = locker.Status
         };
         await _unitOfWork.LockerTimelineRepository.AddAsync(connectEvent);

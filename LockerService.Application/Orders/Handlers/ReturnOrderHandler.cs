@@ -44,7 +44,7 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
                 throw new ApiException(ResponseCode.LockerErrorNoAvailableBox);
             }
 
-            order.ReceiveBox = (int)availableBox;
+            // order.ReceiveBox = (int)availableBox;
             order.Status = OrderStatus.Returned;
             await _unitOfWork.OrderRepository.UpdateAsync(order);
 
@@ -53,14 +53,13 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
             {
                 Order = order,
                 PreviousStatus = currentStatus,
-                Status = order.Status,
-                Time = DateTimeOffset.UtcNow
+                Status = order.Status
             };
             await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
             await _unitOfWork.SaveChangesAsync();
 
             // Mqtt Open Box
-            await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox));
+            await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox.Number));
 
             // Push rabbit MQ
             await _rabbitMqBus.Publish(_mapper.Map<OrderReturnedEvent>(order), cancellationToken);
@@ -75,8 +74,7 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
                 {
                     Locker = locker,
                     Status = locker.Status,
-                    Event = LockerEvent.Overload,
-                    Time = DateTimeOffset.UtcNow
+                    Event = LockerEvent.Overload
                 };
 
                 await _unitOfWork.LockerTimelineRepository.AddAsync(overloadEvent);

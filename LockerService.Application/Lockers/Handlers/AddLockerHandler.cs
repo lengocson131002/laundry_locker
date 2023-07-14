@@ -41,12 +41,6 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
             throw new ApiException(ResponseCode.LockerErrorExistedName);
         }
 
-        // Check MAC address
-        if (await _unitOfWork.LockerRepository.FindByMac(locker.MacAddress) != null)
-        {
-            throw new ApiException(ResponseCode.LockerErrorExistedMacAddress);
-        }
-
         //location
         var location = request.Location;
         var provinceQuery =

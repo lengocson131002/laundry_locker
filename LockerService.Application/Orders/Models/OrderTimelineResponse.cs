@@ -2,7 +2,7 @@ namespace LockerService.Application.Orders.Models;
 
 public class OrderTimelineResponse
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public OrderStatus Status { get; set; }
     
