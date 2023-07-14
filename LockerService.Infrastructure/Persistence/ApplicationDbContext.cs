@@ -46,4 +46,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<Store> Stores => Set<Store>();
 
+    public DbSet<Box> Boxes => Set<Box>();
+
+    public DbSet<Notification> Notifications => Set<Notification>();
+
+    public DbSet<Setting> Settings => Set<Setting>();
+
+    public DbSet<StaffLocker> StaffLockers => Set<StaffLocker>();
+
+    public DbSet<Token> Tokens => Set<Token>();
 }

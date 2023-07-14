@@ -25,5 +25,14 @@ public interface IApplicationDbContext
     DbSet<Bill> Bills { get; }
     
     DbSet<Store> Stores { get; }
+    
+    DbSet<Box> Boxes { get; }
+    
+    DbSet<Notification> Notifications { get; }
+    
+    DbSet<Setting> Settings { get; }
 
+    DbSet<StaffLocker> StaffLockers { get; }
+
+    DbSet<Token> Tokens { get; }
 }

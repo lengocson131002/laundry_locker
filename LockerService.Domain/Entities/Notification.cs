@@ -5,7 +5,7 @@ using LockerService.Domain.Enums;
 namespace LockerService.Domain.Entities;
 
 [Table(("Notification"))]
-public class Notification
+public class Notification : BaseAuditableEntity
 {
     [Key]
     public long Id { get; set; }

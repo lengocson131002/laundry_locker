@@ -1,6 +1,6 @@
 namespace LockerService.Application.Common.Persistence.Repositories;
 
-public interface IAccountLockerRepository : IBaseRepository<StaffLocker>
+public interface IStaffLockerRepository : IBaseRepository<StaffLocker>
 {
     
 }

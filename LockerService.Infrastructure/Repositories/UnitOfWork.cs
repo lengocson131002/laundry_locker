@@ -1,6 +1,5 @@
 using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Persistence.Repositories;
-using LockerService.Domain.Entities;
 using LockerService.Infrastructure.Persistence;
 
 namespace LockerService.Infrastructure.Repositories;
@@ -31,7 +30,7 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     
     private IStoreRepository? _storeRepository;
 
-    private IAccountLockerRepository? _accountLockerRepository;
+    private IStaffLockerRepository? _accountLockerRepository;
     
     private readonly ApplicationDbContext _dbContext;
 
@@ -67,5 +66,6 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     public IBillRepository BillRepository => _billRepository ??= new BillRepository(_dbContext);
         
     public IStoreRepository StoreRepository => _storeRepository ??= new StoreRepository(_dbContext);
-    public IAccountLockerRepository AccountLockerRepository => _accountLockerRepository ??= new AccountLockerRepository(_dbContext);
+    
+    public IStaffLockerRepository StaffLockerRepository => _accountLockerRepository ??= new StaffLockerRepository(_dbContext);
 }

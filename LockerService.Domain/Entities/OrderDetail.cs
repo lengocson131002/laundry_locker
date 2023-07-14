@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LockerService.Domain.Entities;
 
-[Table("orderDetail")]
+[Table("OrderDetail")]
 public class OrderDetail : BaseAuditableEntity
 {
     [Key]

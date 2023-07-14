@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
 
@@ -39,9 +40,12 @@ public static class ConfigureServices
         services.AddScoped<ApplicationDbInitializer>();
         using var scope = services.BuildServiceProvider().CreateScope();
         var initializer = scope.ServiceProvider.GetRequiredService<ApplicationDbInitializer>();
-
-        initializer.InitializeAsync().Wait();
-        initializer.SeedAsync().Wait();
+        
+        if (IsDevelopment())
+        {
+            initializer.InitializeAsync().Wait();
+            initializer.SeedAsync().Wait();
+        }
         
         // Storage
         services.AddScoped<IStorageService, StorageService>();
@@ -108,5 +112,11 @@ public static class ConfigureServices
         services.AddScoped<ISmsNotificationService, TwilioNotificationService>();
         
         return services;
+    }
+
+    private static bool IsDevelopment()
+    {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        return environment == Environments.Development;
     }
 }

@@ -4,11 +4,11 @@ using LockerService.Infrastructure.Persistence;
 
 namespace LockerService.Infrastructure.Repositories;
 
-public class AccountLockerRepository : BaseRepository<StaffLocker>, IAccountLockerRepository
+public class StaffLockerRepository : BaseRepository<StaffLocker>, IStaffLockerRepository
 {
     private readonly ApplicationDbContext _dbContext;
 
-    public AccountLockerRepository(ApplicationDbContext dbContext) : base(dbContext)
+    public StaffLockerRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
     }

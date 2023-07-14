@@ -28,6 +28,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     
     IStoreRepository StoreRepository { get; }
     
-    IAccountLockerRepository AccountLockerRepository { get; }
+    IStaffLockerRepository StaffLockerRepository { get; }
     
 }

@@ -52,7 +52,7 @@ public class AssignStaffHandler : IRequestHandler<AssignStaffCommand, StatusResp
 
 
         var accountLockerQuery =
-            await _unitOfWork.AccountLockerRepository.GetAsync(al =>
+            await _unitOfWork.StaffLockerRepository.GetAsync(al =>
                 Equals(al.StaffId, request.Id) && Equals(al.LockerId, request.LockerId));
 
         var accountLocker = accountLockerQuery.FirstOrDefault();
@@ -68,7 +68,7 @@ public class AssignStaffHandler : IRequestHandler<AssignStaffCommand, StatusResp
             Locker = locker
         };
 
-        await _unitOfWork.AccountLockerRepository.AddAsync(accountLocker);
+        await _unitOfWork.StaffLockerRepository.AddAsync(accountLocker);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();

@@ -16,7 +16,7 @@ public class OrderTimeoutService : IOrderTimeoutService
         _schedulerFactory = schedulerFactory;
     }
 
-    public async Task CancelExpiredOrder(int orderId, DateTimeOffset time)
+    public async Task CancelExpiredOrder(long orderId, DateTimeOffset time)
     {
         try
         {

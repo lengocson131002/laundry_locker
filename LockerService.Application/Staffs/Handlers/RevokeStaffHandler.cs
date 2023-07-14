@@ -43,7 +43,7 @@ public class RevokeStaffHandler : IRequestHandler<RevokeStaffCommand, StatusResp
         }
 
         var accountLockerQuery =
-            await _unitOfWork.AccountLockerRepository.GetAsync(
+            await _unitOfWork.StaffLockerRepository.GetAsync(
                 al => Equals(al.StaffId, request.Id) && Equals(al.LockerId, request.LockerId));
         var accountLocker = accountLockerQuery.FirstOrDefault();
         if (accountLocker is null)
@@ -51,7 +51,7 @@ public class RevokeStaffHandler : IRequestHandler<RevokeStaffCommand, StatusResp
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
-        await _unitOfWork.AccountLockerRepository.DeleteAsync(accountLocker);
+        await _unitOfWork.StaffLockerRepository.DeleteAsync(accountLocker);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
