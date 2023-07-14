@@ -29,8 +29,6 @@ public class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, OrderRespo
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
 
-        order.Amount = request.Amount ??= order.Amount;
-        order.Fee = request.Fee ??= order.Fee;
         order.Description = request.Description ??= order.Description;
 
         await _unitOfWork.OrderRepository.UpdateAsync(order);

@@ -30,7 +30,6 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
             predicate: order => order.Id == eventMessage.Id,
             includes: new ListResponse<Expression<Func<Order, object>>>()
             {
-                order => order.Service,
                 order => order.Locker,
                 order => order.Locker.Location,
                 order => order.Locker.Location.Ward,
@@ -46,10 +45,9 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
         }
 
         var locker = order.Locker;
-        var service = order.Service;
         var address = $"{locker.Location.Address}, {locker.Location.Ward.Name}, {locker.Location.District.Name}, {locker.Location.Province.Name}";
         
-        var smsContent = string.Format(SmsTemplates.OrderReturnedSmsTemplate, service.Name, address, order.Fee, order.PinCode);
+        var smsContent = string.Format(SmsTemplates.OrderReturnedSmsTemplate, order.PinCode);
         var notifiedPhone = !string.IsNullOrWhiteSpace(order.ReceivePhone) ? order.ReceivePhone : order.OrderPhone;
         var smsData = new SmsNotificationData(notifiedPhone, smsContent);
         

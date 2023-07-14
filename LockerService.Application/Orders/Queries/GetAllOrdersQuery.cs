@@ -14,7 +14,7 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 
     public int? BoxOrder { get; set; }
 
-    public int? ServiceId { get; set; }
+    public OrderType? Type { get; set; }
 
     public OrderStatus? Status { get; set; }
 
@@ -27,7 +27,7 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
     {
         Expression = Expression.And(order => LockerId == null || order.LockerId == LockerId);
 
-        Expression = Expression.And(order => ServiceId == null || order.ServiceId == ServiceId);
+        Expression = Expression.And(order => Type == null || order.Type == Type);
 
         Expression = Expression.And(order => Status == null || Status.Equals(order.Status));
 
@@ -41,7 +41,6 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
             queryExpression = queryExpression.Or(order => order.SendPhone.ToLower().Contains(Query));
             queryExpression = queryExpression.Or(order =>
                 order.ReceivePhone != null && order.ReceivePhone.ToLower().Contains(Query));
-            queryExpression = queryExpression.Or(order => order.Service.Name.ToLower().Contains(Query));
             queryExpression = queryExpression.Or(order => order.Locker.Name.ToLower().Contains(Query));
             Expression = Expression.And(queryExpression);
         }

@@ -3,7 +3,6 @@ using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Security;
 using LockerService.Application.Common.Services;
 using LockerService.Application.Common.Services.Notification;
-using LockerService.Application.Common.Services.Notification.Data;
 using LockerService.Application.EventBus.Mqtt;
 using LockerService.Infrastructure.EventBus.Mqtt;
 using LockerService.Infrastructure.Persistence;
@@ -16,7 +15,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
-using IUnitOfWork = LockerService.Infrastructure.Repositories.IUnitOfWork;
 
 namespace LockerService.Infrastructure;
 
@@ -27,7 +25,7 @@ public static class ConfigureServices
     {
 
         services.AddHttpContextAccessor();
-        services.AddScoped<Application.Common.Persistence.IUnitOfWork, IUnitOfWork>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICurrentPrincipalService, CurrentPrincipalService>();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();

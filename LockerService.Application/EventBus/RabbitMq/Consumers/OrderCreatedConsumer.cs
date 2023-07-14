@@ -30,7 +30,6 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
             predicate: order => order.Id == eventMessage.Id,
             includes: new ListResponse<Expression<Func<Order, object>>>()
             {
-                order => order.Service,
                 order => order.Locker,
                 order => order.Locker.Location,
                 order => order.Locker.Location.Ward,
@@ -46,7 +45,6 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
         }
 
         var locker = order.Locker;
-        var service = order.Service;
         var address = $"{locker.Location.Address}, {locker.Location.Ward.Name}, {locker.Location.District.Name}, {locker.Location.Province.Name}";
         
         var smsContent = string.Format(SmsTemplates.OrderCreatedSmsTemplate, service.Name, address, order.PinCode);
