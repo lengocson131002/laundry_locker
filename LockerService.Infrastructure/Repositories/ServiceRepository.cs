@@ -1,4 +1,5 @@
 using LockerService.Application.Common.Persistence.Repositories;
+using LockerService.Application.Common.Utils;
 using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Persistence;
@@ -9,9 +10,8 @@ namespace LockerService.Infrastructure.Repositories;
 public class OrderRepository : BaseRepository<Order>, IOrderRepository
 {
     private readonly ApplicationDbContext _dbContext;
-    
-    private const string AllowedCharacters = "0123456789";
-    
+
+
     public OrderRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
@@ -21,28 +21,14 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         while (true)
         {
-            var pinCode = GeneratePinCode(length);
-            
+            var pinCode = GeneratorUtils.GenerateToken(length);
+
             var order = await _dbContext.Orders.FirstOrDefaultAsync(
                 order => pinCode.Equals(order.PinCode)
                          && !OrderStatus.Completed.Equals(order.Status)
                          && !OrderStatus.Canceled.Equals(order.Status));
 
-            if (order  == null) return pinCode;
+            if (order == null) return pinCode;
         }
-    }
-
-    private string GeneratePinCode(int length)
-    {
-        var rand = new Random();
-        
-        var otp = string.Empty;
-
-        for (var i = 0; i < length; i++)
-        {
-            otp += AllowedCharacters[rand.Next(0, AllowedCharacters.Length)];
-        }
-
-        return otp;
     }
 }

@@ -26,6 +26,7 @@ public class UnitOfWork : BaseUnitOfWork, IUnitOfWork
 
     private IServiceRepository? _serviceRepository;
     private IStoreRepository? _storeRepository;
+    private ITokenRepository? _tokenRepository;
 
     private readonly ApplicationDbContext _dbContext;
 
@@ -58,4 +59,5 @@ public class UnitOfWork : BaseUnitOfWork, IUnitOfWork
 
     public IServiceRepository ServiceRepository => _serviceRepository ??= new ServiceRepository(_dbContext);
     public IStoreRepository StoreRepository => _storeRepository ??= new StoreRepository(_dbContext);
+    public ITokenRepository TokenRepository => _tokenRepository ??= new TokenRepository(_dbContext);
 }

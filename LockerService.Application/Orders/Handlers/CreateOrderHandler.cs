@@ -31,11 +31,11 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
     {
         var locker = await _unitOfWork.LockerRepository.GetByIdAsync(command.LockerId);
         if (locker == null) throw new ApiException(ResponseCode.LockerErrorNotFound);
-            
+
         // Check Locker status
         if (!LockerStatus.Active.Equals(locker.Status))
             throw new ApiException(ResponseCode.LockerErrorNotActive);
-        
+
         try
         {
             // Check available boxes
@@ -50,11 +50,45 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
             if (service == null || service.LockerId != locker.Id || !service.IsActive)
                 throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
 
+            // Create account for sender, receiver
+            var senderQuery =
+                await _unitOfWork.AccountRepository.GetAsync(a =>
+                    a.PhoneNumber != null && Equals(a.PhoneNumber, command.OrderPhone));
+
+            var sender = senderQuery.FirstOrDefault() ?? new Account()
+            {
+                PhoneNumber = command.OrderPhone,
+                Username = command.OrderPhone,
+                Role = Role.Customer,
+                Status = AccountStatus.Active
+            };
+            var savedSender = await _unitOfWork.AccountRepository.AddAsync(sender);
+
+            Account? receiver = null;
+            if (string.IsNullOrWhiteSpace(command.ReceivePhone))
+            {
+                var receiverQuery =
+                    await _unitOfWork.AccountRepository.GetAsync(a =>
+                        a.PhoneNumber != null && Equals(a.PhoneNumber, command.ReceivePhone));
+
+                receiver = receiverQuery.FirstOrDefault() ?? new Account()
+                {
+                    PhoneNumber = command.OrderPhone,
+                    Username = command.OrderPhone,
+                    Role = Role.Customer,
+                    Status = AccountStatus.Active
+                };
+            }
+
+            var savedReceiver = receiver != null ? await _unitOfWork.AccountRepository.AddAsync(receiver) : null;
+
             var order = new Order
             {
                 LockerId = command.LockerId,
                 ServiceId = command.ServiceId,
                 OrderPhone = command.OrderPhone,
+                Sender = savedSender,
+                Receiver = savedReceiver,
                 ReceivePhone = !string.IsNullOrWhiteSpace(command.ReceivePhone) ? command.ReceivePhone : null,
                 ReceiveTime = command.ReceiveTime,
                 SendBoxOrder = (int)availableBox,
@@ -64,7 +98,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
 
             // Save order
             var savedOrder = await _unitOfWork.OrderRepository.AddAsync(order);
-        
+
             // Save timeline
             var timeline = new OrderTimeline()
             {
@@ -82,13 +116,14 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
 
             // Set timeout for initialized order
             var cancelTime = DateTimeOffset.Now
-                .AddMinutes(_configuration.GetValueOrDefault<int>("Order:TimeoutInMinutes", DefaultOrderTimeoutInMinutes));
+                .AddMinutes(_configuration.GetValueOrDefault<int>("Order:TimeoutInMinutes",
+                    DefaultOrderTimeoutInMinutes));
 
             await _orderTimeoutService.CancelExpiredOrder(order.Id, cancelTime);
-            
+
             // MQTT open box
             await _mqttBus.PublishAsync(new MqttOpenBoxEvent(locker.Id, (int)availableBox));
-            
+
             // response
             return _mapper.Map<OrderResponse>(savedOrder);
         }
@@ -109,6 +144,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
                 await _unitOfWork.LockerTimelineRepository.AddAsync(overloadEvent);
                 await _unitOfWork.SaveChangesAsync();
             }
+
             throw;
         }
     }

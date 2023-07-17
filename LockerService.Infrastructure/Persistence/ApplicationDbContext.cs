@@ -39,4 +39,5 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     public DbSet<Service> Services => Set<Service>();
     public DbSet<Store> Stores => Set<Store>();
+    public DbSet<Token> Tokens => Set<Token>();
 }
