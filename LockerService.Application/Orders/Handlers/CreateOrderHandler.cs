@@ -34,13 +34,13 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
         {
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
-            
+
         // Check Locker status
         if (!LockerStatus.Active.Equals(locker.Status))
         {
             throw new ApiException(ResponseCode.LockerErrorNotActive);
         }
-        
+
         try
         {
             // Check available boxes
@@ -64,7 +64,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
                 {
                     Service = service,
                 };
-                
+
                 details.Add(orderDetail);
             }
 
@@ -103,14 +103,10 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
             var order = new Order
             {
                 LockerId = command.LockerId,
-                ServiceId = command.ServiceId,
-                OrderPhone = command.OrderPhone,
-                Sender = savedSender,
+                Type = command.Type,
                 Receiver = savedReceiver,
-                ReceivePhone = !string.IsNullOrWhiteSpace(command.ReceivePhone) ? command.ReceivePhone : null,
-                ReceiveTime = command.ReceiveTime,
-                SendBoxOrder = (int)availableBox,
-                ReceiveBoxOrder = (int)availableBox,
+                Sender = savedSender,
+                Details = details,
                 Status = OrderStatus.Initialized
             };
 
@@ -136,10 +132,10 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
                 .AddMinutes(_configuration.GetValueOrDefault("Order:TimeoutInMinutes", DefaultOrderTimeoutInMinutes));
 
             await _orderTimeoutService.CancelExpiredOrder(order.Id, cancelTime);
-            
+
             // MQTT open box
             await _mqttBus.PublishAsync(new MqttOpenBoxEvent(locker.Id, (int)availableBox));
-            
+
             // response
             return _mapper.Map<OrderResponse>(savedOrder);
         }

@@ -16,6 +16,8 @@ public class Token : BaseAuditableEntity
     
     public TokenType Type { get; set; }
 
+    public TokenStatus Status { get; set; }
+
     public string Value { get; set; } = default!;
     
     public DateTimeOffset? ExpiredAt { get; set; }

@@ -36,7 +36,7 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, Stat
         }
 
         var tokenQuery = await _unitOfWork.TokenRepository.GetAsync(
-            predicate: token => token.accountId == account.Id && Equals(token.Type, TokenType.OTP) &&
+            predicate: token => token.AccountId == account.Id && Equals(token.Type, TokenType.Otp) &&
                                 Equals(token.Status, TokenStatus.Valid)
         );
         
@@ -51,8 +51,8 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, Stat
         {
             Account = account,
             Status = TokenStatus.Valid,
-            Type = TokenType.OTP,
-            Content = GeneratorUtils.GenerateToken(6)
+            Type = TokenType.Otp,
+            Value = GeneratorUtils.GenerateToken(6)
         };
         await _unitOfWork.TokenRepository.AddAsync(token);
         // TODO: Handle send OTP

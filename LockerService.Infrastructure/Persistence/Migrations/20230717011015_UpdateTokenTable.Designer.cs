@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LockerService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230713042546_AddTokenTable")]
-    partial class AddTokenTable
+    [Migration("20230717011015_UpdateTokenTable")]
+    partial class UpdateTokenTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,11 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Avatar")
                         .HasColumnType("text");
@@ -67,8 +67,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("StoreId")
-                        .HasColumnType("integer");
+                    b.Property<long?>("StoreId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -87,54 +87,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.ToTable("Account");
                 });
 
-            modelBuilder.Entity("LockerService.Domain.Entities.AccountLocker", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("DeletedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("LockerId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("UpdatedBy")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("LockerId");
-
-                    b.ToTable("AccountLocker");
-                });
-
             modelBuilder.Entity("LockerService.Domain.Entities.Address", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Code")
                         .HasColumnType("text");
@@ -150,13 +109,104 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.ToTable("Address");
                 });
 
-            modelBuilder.Entity("LockerService.Domain.Entities.Hardware", b =>
+            modelBuilder.Entity("LockerService.Domain.Entities.Bill", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Method")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReferenceTransactionId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Bill");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.Box", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("LockerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PinNo")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LockerId");
+
+                    b.ToTable("Box");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.Hardware", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Brand")
                         .HasColumnType("text");
@@ -179,15 +229,15 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("LockerId")
-                        .HasColumnType("integer");
+                    b.Property<long>("LockerId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double?>("Price")
-                        .HasColumnType("double precision");
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -204,11 +254,11 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.Location", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Address")
                         .HasColumnType("text");
@@ -228,8 +278,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("DistrictId")
-                        .HasColumnType("integer");
+                    b.Property<long>("DistrictId")
+                        .HasColumnType("bigint");
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("double precision");
@@ -237,8 +287,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<double?>("Longitude")
                         .HasColumnType("double precision");
 
-                    b.Property<int>("ProvinceId")
-                        .HasColumnType("integer");
+                    b.Property<long>("ProvinceId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -246,8 +296,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<long?>("UpdatedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("WardId")
-                        .HasColumnType("integer");
+                    b.Property<long>("WardId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -262,18 +312,15 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.Locker", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("ColumnCount")
-                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -287,46 +334,30 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<long?>("DeletedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("Depth")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int?>("Height")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("MacAddress")
-                        .IsRequired()
+                    b.Property<string>("Image")
                         .HasColumnType("text");
+
+                    b.Property<long>("LocationId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Provider")
-                        .HasColumnType("text");
-
-                    b.Property<int>("RowCount")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("StoreId")
-                        .HasColumnType("integer");
+                    b.Property<long?>("StoreId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("UpdatedBy")
                         .HasColumnType("bigint");
-
-                    b.Property<int?>("Width")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -339,14 +370,26 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.LockerTimeline", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Data")
                         .HasColumnType("jsonb");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -360,8 +403,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int?>("Event")
                         .HasColumnType("integer");
 
-                    b.Property<int>("LockerId")
-                        .HasColumnType("integer");
+                    b.Property<long>("LockerId")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("PreviousStatus")
                         .HasColumnType("integer");
@@ -369,8 +412,11 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int?>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset>("Time")
+                    b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -379,19 +425,71 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.ToTable("LockerTimeline");
                 });
 
-            modelBuilder.Entity("LockerService.Domain.Entities.Order", b =>
+            modelBuilder.Entity("LockerService.Domain.Entities.Notification", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTimeOffset?>("ActualReceiveTime")
+                    b.Property<long>("AccountId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double?>("Amount")
-                        .HasColumnType("double precision");
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Data")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("EntityType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("ReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReferenceId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("Notification");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.Order", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("BillId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -408,18 +506,17 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<double?>("Fee")
-                        .HasColumnType("double precision");
+                    b.Property<decimal?>("Discount")
+                        .HasColumnType("numeric");
 
-                    b.Property<int>("LockerId")
-                        .HasColumnType("integer");
+                    b.Property<float?>("ExtraCount")
+                        .HasColumnType("real");
 
-                    b.Property<int?>("MemberId")
-                        .HasColumnType("integer");
+                    b.Property<decimal?>("ExtraFee")
+                        .HasColumnType("numeric");
 
-                    b.Property<string>("OrderPhone")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("LockerId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("PinCode")
                         .HasColumnType("text");
@@ -427,28 +524,132 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("PinCodeIssuedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ReceiveBoxOrder")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
 
-                    b.Property<string>("ReceivePhone")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("ReceiveTime")
+                    b.Property<DateTimeOffset?>("ReceiveAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("ReceiverId")
+                    b.Property<long>("ReceiveBoxId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ReceiverId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SendBoxId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SenderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("StaffId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SendBoxOrder")
+                    b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SenderId")
-                        .HasColumnType("integer");
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("integer");
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("StaffId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillId");
+
+                    b.HasIndex("LockerId");
+
+                    b.HasIndex("ReceiveBoxId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SendBoxId");
+
+                    b.HasIndex("SenderId");
+
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.OrderDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<float?>("Quantity")
+                        .HasColumnType("real");
+
+                    b.Property<long>("ServiceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("OrderDetail");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.OrderTimeline", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("PreviousStatus")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -462,42 +663,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LockerId");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("Order");
-                });
-
-            modelBuilder.Entity("LockerService.Domain.Entities.OrderTimeline", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PreviousStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("Time")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderTimeline");
@@ -505,11 +670,11 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.Service", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -526,22 +691,18 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<double?>("Fee")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("FeeType")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Image")
-                        .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("LockerId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Unit")
                         .HasColumnType("text");
@@ -554,18 +715,103 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.ToTable("Service");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.Setting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Group")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Setting");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.StaffLocker", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("LockerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StaffId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
                     b.HasIndex("LockerId");
 
-                    b.ToTable("Service");
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("StaffLocker");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Store", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ContactPhone")
                         .HasColumnType("text");
@@ -585,8 +831,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
-                    b.Property<int>("LocationId")
-                        .HasColumnType("integer");
+                    b.Property<long>("LocationId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -610,15 +856,14 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.Token", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("AccountId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -632,7 +877,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<long?>("DeletedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset?>("ExpirationTime")
+                    b.Property<DateTimeOffset?>("ExpiredAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
@@ -647,12 +892,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<long?>("UpdatedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("accountId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("accountId");
+                    b.HasIndex("AccountId");
 
                     b.ToTable("Token");
                 });
@@ -666,21 +912,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("LockerService.Domain.Entities.AccountLocker", b =>
+            modelBuilder.Entity("LockerService.Domain.Entities.Box", b =>
                 {
-                    b.HasOne("LockerService.Domain.Entities.Account", "Account")
-                        .WithMany("AccountLockers")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
-                        .WithMany("AccountLockers")
+                        .WithMany()
                         .HasForeignKey("LockerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Account");
 
                     b.Navigation("Locker");
                 });
@@ -751,11 +989,32 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Locker");
                 });
 
+            modelBuilder.Entity("LockerService.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Order", b =>
                 {
+                    b.HasOne("LockerService.Domain.Entities.Bill", "Bill")
+                        .WithMany()
+                        .HasForeignKey("BillId");
+
                     b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
                         .WithMany()
                         .HasForeignKey("LockerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LockerService.Domain.Entities.Box", "ReceiveBox")
+                        .WithMany()
+                        .HasForeignKey("ReceiveBoxId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -763,9 +1022,42 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ReceiverId");
 
+                    b.HasOne("LockerService.Domain.Entities.Box", "SendBox")
+                        .WithMany()
+                        .HasForeignKey("SendBoxId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("LockerService.Domain.Entities.Account", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LockerService.Domain.Entities.Account", "Staff")
+                        .WithMany()
+                        .HasForeignKey("StaffId");
+
+                    b.Navigation("Bill");
+
+                    b.Navigation("Locker");
+
+                    b.Navigation("ReceiveBox");
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("SendBox");
+
+                    b.Navigation("Sender");
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.OrderDetail", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Order", "Order")
+                        .WithMany("Details")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -775,11 +1067,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Locker");
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
+                    b.Navigation("Order");
 
                     b.Navigation("Service");
                 });
@@ -795,15 +1083,23 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("LockerService.Domain.Entities.Service", b =>
+            modelBuilder.Entity("LockerService.Domain.Entities.StaffLocker", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
-                        .WithMany("Services")
+                        .WithMany()
                         .HasForeignKey("LockerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LockerService.Domain.Entities.Account", "Staff")
+                        .WithMany("StaffLockers")
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Locker");
+
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Store", b =>
@@ -821,29 +1117,29 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("LockerService.Domain.Entities.Account", "Account")
                         .WithMany()
-                        .HasForeignKey("accountId");
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Account");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
-                    b.Navigation("AccountLockers");
+                    b.Navigation("StaffLockers");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Locker", b =>
                 {
-                    b.Navigation("AccountLockers");
-
                     b.Navigation("Hardwares");
-
-                    b.Navigation("Services");
 
                     b.Navigation("Timelines");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Order", b =>
                 {
+                    b.Navigation("Details");
+
                     b.Navigation("Timelines");
                 });
 #pragma warning restore 612, 618

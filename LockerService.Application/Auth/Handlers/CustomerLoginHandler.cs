@@ -27,12 +27,12 @@ public class CustomerLoginHandler : IRequestHandler<CustomerLoginRequest, TokenR
         }
 
         var otpQuery = await _unitOfWork.TokenRepository.GetAsync(
-            predicate: token => token.accountId == account.Id
-                                && Equals(token.Content, request.Otp)
-                                && Equals(token.Type, TokenType.OTP)
+            predicate: token => token.AccountId == account.Id
+                                && Equals(token.Value, request.Otp)
+                                && Equals(token.Type, TokenType.Otp)
                                 && Equals(token.Status, TokenStatus.Valid)
-                                && (token.ExpirationTime == null ||
-                                    token.ExpirationTime > DateTimeOffset.UtcNow)
+                                && (token.ExpiredAt == null ||
+                                    token.ExpiredAt > DateTimeOffset.UtcNow)
         );
 
         var otp = otpQuery.FirstOrDefault();

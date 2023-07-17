@@ -29,5 +29,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     IStoreRepository StoreRepository { get; }
     
     IStaffLockerRepository StaffLockerRepository { get; }
+    ITokenRepository TokenRepository { get; }
     
 }
