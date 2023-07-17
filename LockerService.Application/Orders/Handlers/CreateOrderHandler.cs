@@ -69,18 +69,54 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
             }
 
             // Check sender and receiver
-            
+            var senderQuery =
+                await _unitOfWork.AccountRepository.GetAsync(a =>
+                    a.PhoneNumber != null && Equals(a.PhoneNumber, command.OrderPhone));
+
+            var sender = senderQuery.FirstOrDefault() ?? new Account()
+            {
+                PhoneNumber = command.OrderPhone,
+                Username = command.OrderPhone,
+                Role = Role.Customer,
+                Status = AccountStatus.Active
+            };
+            var savedSender = await _unitOfWork.AccountRepository.AddAsync(sender);
+
+            Account? receiver = null;
+            if (string.IsNullOrWhiteSpace(command.ReceivePhone))
+            {
+                var receiverQuery =
+                    await _unitOfWork.AccountRepository.GetAsync(a =>
+                        a.PhoneNumber != null && Equals(a.PhoneNumber, command.ReceivePhone));
+
+                receiver = receiverQuery.FirstOrDefault() ?? new Account()
+                {
+                    PhoneNumber = command.OrderPhone,
+                    Username = command.OrderPhone,
+                    Role = Role.Customer,
+                    Status = AccountStatus.Active
+                };
+            }
+
+            var savedReceiver = receiver != null ? await _unitOfWork.AccountRepository.AddAsync(receiver) : null;
+
             var order = new Order
             {
                 LockerId = command.LockerId,
-                Type = command.Type,
-                Details = details,
+                ServiceId = command.ServiceId,
+                OrderPhone = command.OrderPhone,
+                Sender = savedSender,
+                Receiver = savedReceiver,
+                ReceivePhone = !string.IsNullOrWhiteSpace(command.ReceivePhone) ? command.ReceivePhone : null,
+                ReceiveTime = command.ReceiveTime,
+                SendBoxOrder = (int)availableBox,
+                ReceiveBoxOrder = (int)availableBox,
                 Status = OrderStatus.Initialized
             };
 
             // Save order
             var savedOrder = await _unitOfWork.OrderRepository.AddAsync(order);
-        
+
             // Save timeline
             var timeline = new OrderTimeline()
             {
@@ -123,6 +159,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
                 await _unitOfWork.LockerTimelineRepository.AddAsync(overloadEvent);
                 await _unitOfWork.SaveChangesAsync();
             }
+
             throw;
         }
     }

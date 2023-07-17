@@ -22,13 +22,14 @@ public enum ResponseCode
     
     // Auth
         
-    [Description("Invalid email or password")] AuthErrorInvalidEmailOrPassword = 20,
+    [Description("Invalid username or password")] AuthErrorInvalidUsernameOrPassword = 20,
     
     [Description("Invalid refresh token")] AuthErrorInvalidRefreshToken = 21,
     
     [Description("Invalid google ID token")] AuthErrorInvalidGoogleIdToken = 22,
     
     [Description("Account not found")] AuthErrorAccountNotFound = 23,
+    [Description("Invalid username or otp")] AuthErrorInvalidUsernameOrOtp = 24,
     
         // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,

@@ -7,16 +7,30 @@ namespace LockerService.API.Controllers;
 [Route("/api/v1/auth")]
 public class AuthController : ApiControllerBase
 {
-    [HttpPost("login/admin")]
+    [HttpPost("admin/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginAdmin([FromBody] AdminLoginRequest request)
     {
         return await Mediator.Send(request);
     }
 
-    [HttpPost("login/staff")]
+    [HttpPost("staff/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
+    {
+        return await Mediator.Send(request);
+    }
+
+    [HttpPost("customer/login")]
+    [AllowAnonymous]
+    public async Task<ActionResult<TokenResponse>> LoginCustomer([FromBody] CustomerLoginRequest request)
+    {
+        return await Mediator.Send(request);
+    }
+
+    [HttpPost("customer/verify")]
+    [AllowAnonymous]
+    public async Task<ActionResult<StatusResponse>> VerifyCustomer([FromBody] CustomerVerifyRequest request)
     {
         return await Mediator.Send(request);
     }
