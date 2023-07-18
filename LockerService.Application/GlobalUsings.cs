@@ -35,6 +35,7 @@ global using LockerService.Application.Stores.Queries;
 global using LockerService.Application.Staffs.Commands;
 global using LockerService.Application.Staffs.Handlers;
 global using LockerService.Application.Staffs.Queries;
+global using LockerService.Application.Staffs.Models;
 global using LockerService.Domain.Entities;
 global using LockerService.Domain.Enums;
 global using MediatR;
