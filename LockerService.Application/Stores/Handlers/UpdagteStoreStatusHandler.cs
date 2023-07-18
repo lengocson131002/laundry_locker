@@ -2,14 +2,14 @@ using LockerService.Application.Stores.Commands;
 
 namespace LockerService.Application.Stores.Handlers;
 
-public class DeactivateStoreHandler : IRequestHandler<DeactivateStoreCommand, StoreResponse>
+public class UpdateStoreStatusHandler : IRequestHandler<UpdateStoreStatusCommand, StoreResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
-    private readonly ILogger<DeactivateStoreHandler> _logger;
+    private readonly ILogger<UpdateStoreStatusHandler> _logger;
     private readonly IMapper _mapper;
 
-    public DeactivateStoreHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<DeactivateStoreHandler> logger,
+    public UpdateStoreStatusHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<UpdateStoreStatusHandler> logger,
         IJwtService jwtService)
     {
         _mapper = mapper;
@@ -18,7 +18,7 @@ public class DeactivateStoreHandler : IRequestHandler<DeactivateStoreCommand, St
         _jwtService = jwtService;
     }
 
-    public async Task<StoreResponse> Handle(DeactivateStoreCommand request, CancellationToken cancellationToken)
+    public async Task<StoreResponse> Handle(UpdateStoreStatusCommand request, CancellationToken cancellationToken)
     {
         var storeQuery = await _unitOfWork.StoreRepository.GetAsync(
             store => store.Id == request.StoreId,
@@ -36,17 +36,17 @@ public class DeactivateStoreHandler : IRequestHandler<DeactivateStoreCommand, St
             throw new ApiException(ResponseCode.StoreErrorNotFound);
         }
 
-        if (store.Status != StoreStatus.Active)
+        if (Equals(store.Status, request.Status))
         {
             throw new ApiException(ResponseCode.StoreErrorInvalidStatus);
-        }
 
-        store.Status = StoreStatus.Inactive;
+        }
+        store.Status = request.Status;
         await _unitOfWork.StoreRepository.UpdateAsync(store);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
-
+        
         return _mapper.Map<StoreResponse>(store);
     }
 }

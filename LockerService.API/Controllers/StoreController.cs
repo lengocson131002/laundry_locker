@@ -5,15 +5,15 @@ namespace LockerService.API.Controllers;
 public class StoreController : ApiControllerBase
 {
     [HttpGet("")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<PaginationResponse<Store, StoreResponse>>> GetAllStores(
-        [FromQuery] GetAllStoresQuery query)
+        [FromQuery] GetAllStoresQuery request)
     {
-        return await Mediator.Send(query);
+        return await Mediator.Send(request);
     }
 
     [HttpGet("{id:long}")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StoreDetailResponse>> GetAllStores([FromRoute] long id)
     {
         return await Mediator.Send(new GetStoreQuery
@@ -38,25 +38,12 @@ public class StoreController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("{id:long}/activate")]
+    [HttpPut("{id:long}/status")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StoreResponse>> ActivateStore([FromRoute] long id)
+    public async Task<ActionResult<StoreResponse>> UpdateStoreStatus([FromRoute] long id,
+        UpdateStoreStatusCommand command)
     {
-        var command = new ActivateStoreCommand
-        {
-            StoreId = id
-        };
-        return await Mediator.Send(command);
-    }
-
-    [HttpPut("{id:long}/deactivate")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StoreResponse>> DeactivateStore([FromRoute] long id)
-    {
-        var command = new DeactivateStoreCommand()
-        {
-            StoreId = id
-        };
+        command.StoreId = id;
         return await Mediator.Send(command);
     }
 }

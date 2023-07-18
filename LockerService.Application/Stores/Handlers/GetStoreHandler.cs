@@ -1,6 +1,6 @@
 namespace LockerService.Application.Stores.Handlers;
 
-public class GetStoreHandler : IRequestHandler<GetStoreQuery,StoreDetailResponse>
+public class GetStoreHandler : IRequestHandler<GetStoreQuery, StoreDetailResponse>
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
@@ -20,10 +20,10 @@ public class GetStoreHandler : IRequestHandler<GetStoreQuery,StoreDetailResponse
             store => store.Id == request.StoreId,
             includes: new List<Expression<Func<Store, object>>>
             {
-                locker => locker.Location,
-                locker => locker.Location.Province,
-                locker => locker.Location.District,
-                locker => locker.Location.Ward
+                store => store.Location,
+                store => store.Location.Province,
+                store => store.Location.District,
+                store => store.Location.Ward,
             });
 
         var store = storeQuery.FirstOrDefault();
