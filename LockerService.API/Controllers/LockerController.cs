@@ -4,6 +4,7 @@ using LockerService.Application.Lockers.Commands;
 using LockerService.Application.Lockers.Models;
 using LockerService.Application.Lockers.Queries;
 using LockerService.Domain.Entities;
+using AssignStaffCommand = LockerService.Application.Lockers.Commands.AssignStaffCommand;
 
 namespace LockerService.API.Controllers;
 
@@ -85,5 +86,14 @@ public class LockerController : ApiControllerBase
 
         query.LockerId = id;
         return await Mediator.Send(query);
+    }
+
+    [HttpPost("{id:long}/staffs")]
+    public async Task<ActionResult<StatusResponse>> GetLockerTimeLines(
+        [FromRoute] long id,
+        [FromQuery] AssignStaffCommand command)
+    {
+        command.LockerId = id;
+        return await Mediator.Send(command);
     }
 }

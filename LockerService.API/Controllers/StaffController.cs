@@ -66,27 +66,13 @@ public class StaffController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPost("{id:long}/assign")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> AssignStaff(
-        [FromRoute] long storeId,
-        [FromRoute] long id,
-        AssignStaffCommand command)
-    {
-        command.Id = id;
-        command.StoreId = storeId;
-        return await Mediator.Send(command);
-    }
-
     [HttpDelete("{id:long}/revoke")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> RevokeStaff(
-        [FromRoute] long storeId,
         [FromRoute] long id,
         RevokeStaffCommand command)
     {
-        command.Id = id;
-        command.StoreId = storeId;
+        command.StaffId = id;
         return await Mediator.Send(command);
     }
 }

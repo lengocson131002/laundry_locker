@@ -29,9 +29,14 @@ public enum ResponseCode
     [Description("Invalid google ID token")] AuthErrorInvalidGoogleIdToken = 22,
     
     [Description("Account not found")] AuthErrorAccountNotFound = 23,
+    
     [Description("Invalid username or otp")] AuthErrorInvalidUsernameOrOtp = 24,
     
-        // Locker
+    [Description("Current Password Incorrect")] AuthErrorCurrentPasswordIncorrect = 25,
+    
+    [Description("The new password must be different from the current password")] AuthErrorNewPasswordMustBeDifferent = 26,
+  
+    // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,
     
     [Description("Locker status invalid")] LockerErrorInvalidStatus = 102,
@@ -95,9 +100,20 @@ public enum ResponseCode
     
     [Description("Staff has been assigned to this locker before")] StaffErrorAssignedBefore = 704,
 
-    // Account
+    // Store
     [Description("Store not found")] StoreErrorNotFound = 801,
     
     [Description("Store's status is not allowed to do this function")] StoreErrorInvalidStatus = 802,
+    
+    [Description("Staff and Locker do not belong to the same store")] StoreErrorStaffAndLockerNotInSameStore = 803,
+    
+    // Staff Locker
+    [Description("Assignment not found")] StaffLockerErrorNotFound = 901,
+    
+    // Account
+    [Description("Username existed")] AccountErrorUsernameExisted = 1001,
+    
+    [Description("Phone Number existed")] AccountErrorPhoneNumberExisted = 1002,
+
     
 }

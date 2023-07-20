@@ -24,7 +24,10 @@ public class UpdateLockerStatusHandler :
         }
 
         var currentStatus = locker.Status;
-        if (request.Status.Equals(currentStatus)) return;
+        if (request.Status.Equals(currentStatus))
+        {
+            throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
+        }
 
         await ValidateStatus(locker, request.Status);
 
@@ -38,9 +41,9 @@ public class UpdateLockerStatusHandler :
             Status = request.Status,
             PreviousStatus = currentStatus
         };
-        
+
         await _unitOfWork.LockerTimelineRepository.AddAsync(lockerEvent);
-        
+
         await _unitOfWork.SaveChangesAsync();
 
         // Push MQTT event

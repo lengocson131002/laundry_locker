@@ -42,11 +42,13 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
                 PhoneNumber = request.PhoneNumber,
                 FullName = request.FullName,
                 Avatar = request.Avatar,
-                Password = "123456",
+                Password = request.Password,
+                Description = request.Description,
                 Status = AccountStatus.Verifying,
                 Role = Role.Staff,
                 Store = store,
             };
+            
             await _unitOfWork.AccountRepository.AddAsync(account);
         }
         else

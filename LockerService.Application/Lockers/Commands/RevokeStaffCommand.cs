@@ -6,16 +6,15 @@ public class RevokeStaffCommandValidator : AbstractValidator<RevokeStaffCommand>
     {
         RuleFor(model => model.LockerId)
             .NotNull();
+        
+        RuleFor(model => model.StaffId)
+            .NotNull();
     }
 }
 
 public class RevokeStaffCommand : IRequest<StatusResponse>
 {
-    [JsonIgnore] 
-    public long Id { get; set; } = default!;
-    
-    [JsonIgnore] 
-    public long StoreId { get; set; } = default!;
-    
-    public long LockerId { get; set; } = default!;
+    [JsonIgnore] public long LockerId { get; set; } = default!;
+
+    public long StaffId { get; set; } = default!;
 }

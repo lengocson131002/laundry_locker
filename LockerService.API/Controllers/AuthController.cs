@@ -14,6 +14,20 @@ public class AuthController : ApiControllerBase
         return await Mediator.Send(request);
     }
 
+    [HttpGet("admin/profile")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<AccountResponse>> GetAdminProfile()
+    {
+        return await Mediator.Send(new GetAdminProfileQuery());
+    }
+
+    [HttpPut("admin/profile")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<AccountResponse>> UpdateAdminProfile([FromBody] UpdateAdminProfileCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
     [HttpPost("staff/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
@@ -42,10 +56,10 @@ public class AuthController : ApiControllerBase
         return await Mediator.Send(request);
     }
 
-    [HttpGet("current")]
-    [Authorize]
-    public async Task<ActionResult<AccountResponse>> GetCurrentAccount()
+    [HttpPut("password")]
+    [AllowAnonymous]
+    public async Task<ActionResult<StatusResponse>> ChangePassword([FromBody] UpdatePasswordCommand request)
     {
-        return await Mediator.Send(new GetCurrentAccountQuery());
+        return await Mediator.Send(request);
     }
 }

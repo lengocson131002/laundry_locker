@@ -12,6 +12,9 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
         RuleFor(model => model.FullName)
             .NotEmpty();
 
+        RuleFor(model => model.Password)
+            .NotNull();
+
         RuleFor(model => model.StoreId)
             .NotNull();
     }
@@ -22,9 +25,11 @@ public class AddStaffCommand : IRequest<StaffDetailResponse>
     public string FullName { get; set; } = default!;
     public string PhoneNumber { get; set; } = default!;
 
-    public string Avatar { get; set; }
+    public string? Avatar { get; set; }
 
-    public string Description { get; set; }
+    public string Password { get; set; } = default!;
 
-    public long StoreId { get; set; }
+    public string? Description { get; set; }
+
+    public long StoreId { get; set; } = default!;
 }

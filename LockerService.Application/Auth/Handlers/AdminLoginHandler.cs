@@ -18,7 +18,7 @@ public class AdminLoginHandler : IRequestHandler<AdminLoginRequest, TokenRespons
         var userQuery = await _unitOfWork.AccountRepository.GetAsync(
             predicate: account => Equals(account.Username, request.Username)
                                   && account.Password != null
-                                  && account.Password.Equals(request.Password)
+                                  && Equals(account.Password, request.Password)
                                   && Equals(account.Role, Role.Admin)
         );
 

@@ -1,9 +1,15 @@
-using LockerService.Application.Staffs.Models;
-
 namespace LockerService.Application.Staffs.Queries;
 
 public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<PaginationResponse<Account, StaffResponse>>
 {
+    private string? _query;
+
+    public string? Query
+    {
+        get => _query;
+        set => _query = value?.Trim().ToLower();
+    }
+
     public string? Username { get; set; }
     public string? PhoneNumber { get; set; }
     public AccountStatus? Status { get; set; }
@@ -13,6 +19,14 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
 
     public override Expression<Func<Account, bool>> GetExpressions()
     {
+        if (Query != null)
+        {
+            Expression = Expression.And(account => account.FullName.ToLower().Contains(_query)
+                                                   || account.Username.ToLower().Contains(_query)
+                                                   || account.Description.ToLower().Contains(_query)
+                                                   || account.PhoneNumber.ToLower().Contains(_query));
+        }
+
         if (Username != null)
         {
             Expression = Expression.And(account => account.Username.ToLower().Contains(Username.ToLower()));

@@ -2,15 +2,15 @@ using LockerService.Application.Auth.Queries;
 
 namespace LockerService.Application.Auth.Handlers;
 
-public class GetCurrentAccountHandler : IRequestHandler<GetCurrentAccountQuery, AccountResponse>
+public class GetAdminProfileHandler : IRequestHandler<GetAdminProfileQuery, AccountResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
-    private readonly ILogger<GetCurrentAccountHandler> _logger;
+    private readonly ILogger<GetAdminProfileHandler> _logger;
     private readonly ICurrentPrincipalService _currentUserService;
     private readonly IMapper _mapper;
 
-    public GetCurrentAccountHandler(IUnitOfWork unitOfWork, ILogger<GetCurrentAccountHandler> logger,
+    public GetAdminProfileHandler(IUnitOfWork unitOfWork, ILogger<GetAdminProfileHandler> logger,
         IJwtService jwtService, ICurrentPrincipalService currentUserService, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
@@ -20,7 +20,7 @@ public class GetCurrentAccountHandler : IRequestHandler<GetCurrentAccountQuery, 
         _mapper = mapper;
     }
 
-    public async Task<AccountResponse> Handle(GetCurrentAccountQuery request, CancellationToken cancellationToken)
+    public async Task<AccountResponse> Handle(GetAdminProfileQuery request, CancellationToken cancellationToken)
     {
         var accountId = _currentUserService.CurrentPrincipal;
         if (accountId is null)
@@ -29,7 +29,7 @@ public class GetCurrentAccountHandler : IRequestHandler<GetCurrentAccountQuery, 
         }
 
         var accountQuery = await _unitOfWork.AccountRepository.GetAsync(
-            predicate: account => Equals(int.Parse(accountId), account.Id)
+            predicate: account => Equals(long.Parse(accountId), account.Id)
         );
 
         var account = accountQuery.FirstOrDefault();

@@ -6,6 +6,7 @@ public class AdminLoginRequestValidator : AbstractValidator<AdminLoginRequest>
     {
         RuleFor(model => model.Username)
             .NotEmpty();
+            
         RuleFor(model => model.Password)
             .NotEmpty();
     }
