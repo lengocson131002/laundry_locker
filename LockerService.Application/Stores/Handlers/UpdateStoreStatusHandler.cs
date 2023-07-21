@@ -21,15 +21,7 @@ public class UpdateStoreStatusHandler : IRequestHandler<UpdateStoreStatusCommand
     public async Task<StoreResponse> Handle(UpdateStoreStatusCommand request, CancellationToken cancellationToken)
     {
         var storeQuery = await _unitOfWork.StoreRepository.GetAsync(
-            store => store.Id == request.StoreId,
-            includes: new List<Expression<Func<Store, object>>>
-            {
-                locker => locker.Location,
-                locker => locker.Location.Province,
-                locker => locker.Location.District,
-                locker => locker.Location.Ward
-            });
-
+            store => store.Id == request.StoreId);
         var store = storeQuery.FirstOrDefault();
         if (store is null)
         {
@@ -39,14 +31,14 @@ public class UpdateStoreStatusHandler : IRequestHandler<UpdateStoreStatusCommand
         if (Equals(store.Status, request.Status))
         {
             throw new ApiException(ResponseCode.StoreErrorInvalidStatus);
-
         }
+
         store.Status = request.Status;
         await _unitOfWork.StoreRepository.UpdateAsync(store);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
-        
+
         return _mapper.Map<StoreResponse>(store);
     }
 }

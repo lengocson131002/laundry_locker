@@ -13,7 +13,8 @@ public class UpdateStoreCommandValidator : AbstractValidator<UpdateStoreCommand>
             .When(model => model.Location is not null);
 
         RuleFor(model => model.ContactPhone)
-            .MaximumLength(20)
+            .Must(contactPhone => contactPhone.IsValidPhoneNumber())
+            .WithMessage("Invalid Contact Phone")
             .When(model => model is not null);
 
         RuleFor(model => model.Image)

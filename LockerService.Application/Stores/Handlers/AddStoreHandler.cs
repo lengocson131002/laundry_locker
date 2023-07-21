@@ -29,26 +29,21 @@ public class AddStoreHandler : IRequestHandler<AddStoreCommand, StoreResponse>
 
         //location
         var location = request.Location;
-        var provinceQuery =
-            await _unitOfWork.AddressRepository.GetAsync(p => p.Code != null && p.Code.Equals(location.ProvinceCode));
-        var province = provinceQuery.FirstOrDefault();
+
+        var province = await _unitOfWork.AddressRepository.CheckProvince(location.ProvinceCode);
         if (province is null)
         {
             throw new ApiException(ResponseCode.AddressErrorProvinceNotFound);
         }
 
-        var districtQuery =
-            await _unitOfWork.AddressRepository.GetAsync(d => d.Code != null && d.Code.Equals(location.DistrictCode));
-        var district = districtQuery.FirstOrDefault();
-        if (district is null || district.ParentCode != province.Code)
+        var district = await _unitOfWork.AddressRepository.CheckDistrict(location.DistrictCode, province.Code);
+        if (district is null)
         {
             throw new ApiException(ResponseCode.AddressErrorDistrictNotFound);
         }
 
-        var wardQuery =
-            await _unitOfWork.AddressRepository.GetAsync(w => w.Code != null && w.Code.Equals(location.WardCode));
-        var ward = wardQuery.FirstOrDefault();
-        if (ward == null || ward.ParentCode != district.Code)
+        var ward = await _unitOfWork.AddressRepository.CheckWardCode(location.WardCode, district.Code);
+        if (ward is null)
         {
             throw new ApiException(ResponseCode.AddressErrorWardNotFound);
         }

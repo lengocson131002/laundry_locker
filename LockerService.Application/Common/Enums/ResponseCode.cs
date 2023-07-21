@@ -107,7 +107,7 @@ public enum ResponseCode
     // Store
     [Description("Store not found")] StoreErrorNotFound = 801,
     
-    [Description("Store's status is not allowed to do this function")] StoreErrorInvalidStatus = 802,
+    [Description("Store's status is invalid")] StoreErrorInvalidStatus = 802,
     
     [Description("Staff and Locker do not belong to the same store")] StoreErrorStaffAndLockerNotInSameStore = 803,
     
