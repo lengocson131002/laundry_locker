@@ -35,6 +35,8 @@ public enum ResponseCode
     [Description("Current Password Incorrect")] AuthErrorCurrentPasswordIncorrect = 25,
     
     [Description("The new password must be different from the current password")] AuthErrorNewPasswordMustBeDifferent = 26,
+    
+    [Description("The account is inactive")] AuthErrorAccountInactive = 27,
   
     // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,

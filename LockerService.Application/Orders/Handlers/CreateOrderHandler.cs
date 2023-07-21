@@ -69,33 +69,31 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
             }
 
             // Check sender and receiver
-            var senderQuery =
-                await _unitOfWork.AccountRepository.GetAsync(a =>
-                    a.PhoneNumber != null && Equals(a.PhoneNumber, command.OrderPhone));
-
-            var sender = senderQuery.FirstOrDefault() ?? new Account()
-            {
-                PhoneNumber = command.OrderPhone,
-                Username = command.OrderPhone,
-                Role = Role.Customer,
-                Status = AccountStatus.Active
-            };
+            var sender =
+                await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(command.OrderPhone)
+                ?? new Account
+                {
+                    PhoneNumber = command.OrderPhone,
+                    Username = command.OrderPhone,
+                    FullName = command.OrderPhone,
+                    Role = Role.Customer,
+                    Status = AccountStatus.Active
+                };
             var savedSender = await _unitOfWork.AccountRepository.AddAsync(sender);
 
             Account? receiver = null;
             if (string.IsNullOrWhiteSpace(command.ReceivePhone))
             {
-                var receiverQuery =
-                    await _unitOfWork.AccountRepository.GetAsync(a =>
-                        a.PhoneNumber != null && Equals(a.PhoneNumber, command.ReceivePhone));
-
-                receiver = receiverQuery.FirstOrDefault() ?? new Account()
-                {
-                    PhoneNumber = command.OrderPhone,
-                    Username = command.OrderPhone,
-                    Role = Role.Customer,
-                    Status = AccountStatus.Active
-                };
+                receiver =
+                    await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(command.ReceivePhone)
+                    ?? new Account
+                    {
+                        PhoneNumber = command.ReceivePhone,
+                        Username = command.ReceivePhone,
+                        FullName = command.ReceivePhone,
+                        Role = Role.Customer,
+                        Status = AccountStatus.Active
+                    };
             }
 
             var savedReceiver = receiver != null ? await _unitOfWork.AccountRepository.AddAsync(receiver) : null;

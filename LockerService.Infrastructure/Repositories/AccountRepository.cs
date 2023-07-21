@@ -37,4 +37,12 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
             && Equals(account.Role, Role.Customer));
         return accountQuery.FirstOrDefault();
     }
+
+    public async Task<Account?> GetCustomerByPhoneNumber(string phoneNumber)
+    {
+        var accountQuery = await GetAsync(account =>
+            Equals(account.PhoneNumber, phoneNumber)
+            && Equals(account.Role, Role.Customer));
+        return accountQuery.FirstOrDefault();
+    }
 }

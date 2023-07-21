@@ -7,4 +7,6 @@ public interface IAccountRepository : IBaseRepository<Account>
     public Task<Account?> GetStaffByPhoneNumber(string phoneNumber);
 
     public Task<Account?> GetCustomerByUsername(string username);
+    
+    public Task<Account?> GetCustomerByPhoneNumber(string phoneNumber);
 }

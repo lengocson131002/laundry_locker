@@ -20,6 +20,7 @@ public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenRespons
                                   && account.Password != null
                                   && account.Password.Equals(request.Password)
                                   && Equals(account.Role, Role.Staff)
+                                  && !Equals(account.Status, AccountStatus.Inactive)
         );
 
         var user = userQuery.FirstOrDefault();
