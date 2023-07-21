@@ -1,6 +1,3 @@
-using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Utils;
-
 namespace LockerService.Application.Auth.Commands;
 
 public class UpdateAdminProfileCommandValidator : AbstractValidator<UpdateAdminProfileCommand>

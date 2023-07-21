@@ -1,3 +1,5 @@
+using LockerService.Application.Common.Enums;
+
 namespace LockerService.API.Controllers;
 
 [ApiController]
@@ -9,12 +11,18 @@ public class StoreController : ApiControllerBase
     public async Task<ActionResult<PaginationResponse<Store, StoreResponse>>> GetAllStores(
         [FromQuery] GetAllStoresQuery request)
     {
+        if (string.IsNullOrWhiteSpace(request.SortColumn))
+        {
+            request.SortColumn = "CreatedAt";
+            request.SortDir = SortDirection.Desc;
+        }
+
         return await Mediator.Send(request);
     }
 
     [HttpGet("{id:long}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StoreDetailResponse>> GetAllStores([FromRoute] long id)
+    public async Task<ActionResult<StoreDetailResponse>> GetStore([FromRoute] long id)
     {
         return await Mediator.Send(new GetStoreQuery
         {

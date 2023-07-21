@@ -17,12 +17,8 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, Stat
 
     public async Task<StatusResponse> Handle(CustomerVerifyRequest request, CancellationToken cancellationToken)
     {
-        var accountQuery = await _unitOfWork.AccountRepository.GetAsync(
-            predicate: account => Equals(request.Username.ToLower(), account.Username)
-        );
-
-        var account = accountQuery.FirstOrDefault();
-        if (account is null || !Equals(account.Role, Role.Customer))
+        var account = await _unitOfWork.AccountRepository.GetCustomerByUsername(request.Username);
+        if (account is null)
         {
             account = new Account
             {
@@ -39,7 +35,7 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, Stat
             predicate: token => token.AccountId == account.Id && Equals(token.Type, TokenType.Otp) &&
                                 Equals(token.Status, TokenStatus.Valid)
         );
-        
+
         // invalid old token
         await tokenQuery.ForEachAsync(async token =>
         {

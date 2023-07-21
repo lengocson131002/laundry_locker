@@ -1,5 +1,3 @@
-using LockerService.Application.Staffs.Models;
-
 namespace LockerService.Application.Staffs.Handlers;
 
 public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailResponse>
@@ -29,14 +27,10 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
             throw new ApiException(ResponseCode.StoreErrorNotFound);
         }
 
-        var accountQuery =
-            await _unitOfWork.AccountRepository.GetAsync(a =>
-                a.PhoneNumber != null && Equals(a.PhoneNumber, request.PhoneNumber));
-
-        var account = accountQuery.FirstOrDefault();
-        if (account is null)
+        var staff = await _unitOfWork.AccountRepository.GetStaffByPhoneNumber(request.PhoneNumber);
+        if (staff is null)
         {
-            account = new Account()
+            staff = new Account()
             {
                 Username = request.PhoneNumber,
                 PhoneNumber = request.PhoneNumber,
@@ -48,22 +42,22 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
                 Role = Role.Staff,
                 Store = store,
             };
-            
-            await _unitOfWork.AccountRepository.AddAsync(account);
+
+            await _unitOfWork.AccountRepository.AddAsync(staff);
         }
         else
         {
-            if (account.Store is not null)
+            if (staff.Store is not null)
             {
                 throw new ApiException(ResponseCode.StaffErrorBelongToAStore);
             }
 
-            account.Store = store;
-            await _unitOfWork.AccountRepository.UpdateAsync(account);
+            staff.Store = store;
+            await _unitOfWork.AccountRepository.UpdateAsync(staff);
         }
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
-        return _mapper.Map<StaffDetailResponse>(account);
+        return _mapper.Map<StaffDetailResponse>(staff);
     }
 }

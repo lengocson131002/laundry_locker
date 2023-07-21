@@ -1,5 +1,3 @@
-using LockerService.Application.Staffs.Models;
-
 namespace LockerService.Application.Staffs.Handlers;
 
 public class UpdateStaffHandler : IRequestHandler<UpdateStaffCommand, StaffDetailResponse>
@@ -34,18 +32,41 @@ public class UpdateStaffHandler : IRequestHandler<UpdateStaffCommand, StaffDetai
             throw new ApiException(ResponseCode.StaffErrorNotFound);
         }
 
+        // Check store
         if (request.StoreId is not null)
         {
+            var slQuery =
+                await _unitOfWork.StaffLockerRepository.GetAsync(sl =>
+                    Equals(sl.StaffId, staff.Id));
+            if (slQuery.FirstOrDefault() is not null)
+            {
+                throw new ApiException(ResponseCode.StaffErrorInAssignment);
+            }
+
             var storeQuery =
                 await _unitOfWork.StoreRepository.GetAsync(s =>
                     Equals(s.Id, request.StoreId));
             var store = storeQuery.FirstOrDefault();
-            if (store == null)
+            if (store is null)
             {
                 throw new ApiException(ResponseCode.StoreErrorNotFound);
             }
 
             staff.Store = store;
+        }
+
+        // Check phone number
+        if (request.PhoneNumber is not null && !Equals(request.PhoneNumber, staff.PhoneNumber))
+        {
+            var checkStaff = await _unitOfWork.AccountRepository.GetStaffByPhoneNumber(request.PhoneNumber);
+
+            if (checkStaff is not null)
+            {
+                throw new ApiException(ResponseCode.StaffErrorExisted);
+            }
+
+            staff.PhoneNumber = request.PhoneNumber;
+            staff.Username = request.PhoneNumber;
         }
 
         staff.Avatar = request.Avatar ?? staff.Avatar;

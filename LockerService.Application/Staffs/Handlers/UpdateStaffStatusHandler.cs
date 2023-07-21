@@ -1,5 +1,3 @@
-using LockerService.Application.Staffs.Models;
-
 namespace LockerService.Application.Staffs.Handlers;
 
 public class UpdateStaffStatusHandler : IRequestHandler<UpdateStaffStatusCommand, StaffDetailResponse>
@@ -20,15 +18,7 @@ public class UpdateStaffStatusHandler : IRequestHandler<UpdateStaffStatusCommand
 
     public async Task<StaffDetailResponse> Handle(UpdateStaffStatusCommand request, CancellationToken cancellationToken)
     {
-        var staffQuery =
-            await _unitOfWork.AccountRepository.GetAsync(a =>
-                    Equals(a.Id, request.Id),
-                includes: new List<Expression<Func<Account, object>>>
-                {
-                    staff => staff.Store
-                });
-
-        var staff = staffQuery.FirstOrDefault();
+        var staff = await _unitOfWork.AccountRepository.GetStaffById(request.Id);
         if (staff is null)
         {
             throw new ApiException(ResponseCode.StaffErrorNotFound);

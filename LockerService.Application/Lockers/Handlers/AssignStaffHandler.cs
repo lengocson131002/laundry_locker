@@ -37,6 +37,17 @@ public class AssignStaffHandler : IRequestHandler<AssignStaffCommand, StatusResp
             throw new ApiException(ResponseCode.StaffErrorNotFound);
         }
 
+        // Check duplicate
+        var slQuery =
+            await _unitOfWork.StaffLockerRepository.GetAsync(
+                al => Equals(al.StaffId, request.StaffId)
+                      && Equals(al.LockerId, request.LockerId));
+
+        if (slQuery.FirstOrDefault() is not null)
+        {
+            throw new ApiException(ResponseCode.StaffLockerErrorExisted);
+        }
+
         // Check store
         if (!Equals(locker.Store, staff.Store))
         {

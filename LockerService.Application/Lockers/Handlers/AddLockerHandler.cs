@@ -1,5 +1,3 @@
-using LockerService.Application.Common.Utils;
-
 namespace LockerService.Application.Lockers.Handlers;
 
 public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse>
@@ -77,7 +75,29 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
             Latitude = location.Latitude
         };
 
+
         locker.Code = LockerCodeUtils.GenerateLockerCode();
+
+        // Assign staff
+        request.StaffIds.Distinct().ForEach(async staffId =>
+        {
+            var staffQuery = await _unitOfWork.AccountRepository.GetAsync(
+                predicate: staff => staff.Id == staffId
+                                    && Equals(staff.Store, store));
+
+            var staff = staffQuery.FirstOrDefault();
+            if (staff is null) return;
+
+            var staffLocker = new StaffLocker
+            {
+                Staff = staff,
+                Locker = locker,
+            };
+
+            locker.StaffLockers.Add(staffLocker);
+        });
+
+
         await _unitOfWork.LockerRepository.AddAsync(locker);
 
         // Save changes

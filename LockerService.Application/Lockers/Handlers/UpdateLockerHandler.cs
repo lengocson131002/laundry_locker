@@ -27,7 +27,7 @@ public class UpdateLockerHandler :
                 locker => locker.Location,
                 locker => locker.Location.Province,
                 locker => locker.Location.District,
-                locker => locker.Location.Ward
+                locker => locker.Location.Ward,
             });
 
         var locker = lockerQuery.FirstOrDefault();
@@ -38,17 +38,12 @@ public class UpdateLockerHandler :
 
         locker.Name = request.Name ?? locker.Name;
         locker.Description = request.Description ?? locker.Description;
+        locker.Image = request.Image ?? locker.Image;
+
         if (request.StoreId is not null)
         {
             var storeQuery = await _unitOfWork.StoreRepository.GetAsync(
-                store => store.Id == request.StoreId,
-                includes: new List<Expression<Func<Store, object>>>
-                {
-                    locker => locker.Location,
-                    locker => locker.Location.Province,
-                    locker => locker.Location.District,
-                    locker => locker.Location.Ward
-                });
+                store => store.Id == request.StoreId);
 
             var store = storeQuery.FirstOrDefault();
             if (store is null)
@@ -57,6 +52,36 @@ public class UpdateLockerHandler :
             }
 
             locker.StoreId = request.StoreId;
+        }
+
+        // Assign staff
+        if (request.StaffIds?.Any() ?? false)
+        {
+            locker.StaffLockers.Clear();
+
+            var slQuery = await _unitOfWork.StaffLockerRepository.GetAsync(
+                predicate: sl => Equals(sl.LockerId, locker.Id));
+
+            await slQuery.ForEachAsync(async sl => { await _unitOfWork.StaffLockerRepository.DeleteAsync(sl); },
+                cancellationToken: cancellationToken);
+
+            request.StaffIds.Distinct().ForEach(async staffId =>
+            {
+                var staffQuery = await _unitOfWork.AccountRepository.GetAsync(
+                    predicate: staff => staff.Id == staffId
+                                        && Equals(staff.StoreId, locker.StoreId));
+
+                var staff = staffQuery.FirstOrDefault();
+                if (staff is null) return;
+
+                var staffLocker = new StaffLocker
+                {
+                    Staff = staff,
+                    Locker = locker,
+                };
+
+                locker.StaffLockers.Add(staffLocker);
+            });
         }
 
         if (request.Location != null)

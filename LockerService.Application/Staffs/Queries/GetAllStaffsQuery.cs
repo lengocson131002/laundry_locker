@@ -17,9 +17,13 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
     public string? Description { get; set; }
     public long? StoreId { get; set; }
 
+    public DateTimeOffset? CreatedFrom { get; set; }
+
+    public DateTimeOffset? CreatedTo { get; set; }
+
     public override Expression<Func<Account, bool>> GetExpressions()
     {
-        if (Query != null)
+        if (Query is not null)
         {
             Expression = Expression.And(account => account.FullName.ToLower().Contains(_query)
                                                    || account.Username.ToLower().Contains(_query)
@@ -27,34 +31,44 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
                                                    || account.PhoneNumber.ToLower().Contains(_query));
         }
 
-        if (Username != null)
+        if (Username is not null)
         {
             Expression = Expression.And(account => account.Username.ToLower().Contains(Username.ToLower()));
         }
 
-        if (PhoneNumber != null)
+        if (PhoneNumber is not null)
         {
             Expression = Expression.And(account => account.PhoneNumber.ToLower().Contains(PhoneNumber.ToLower()));
         }
 
-        if (FullName != null)
+        if (FullName is not null)
         {
             Expression = Expression.And(account => account.FullName.ToLower().Contains(FullName.ToLower()));
         }
 
-        if (Description != null)
+        if (Description is not null)
         {
             Expression = Expression.And(account => account.Description.ToLower().Contains(Description.ToLower()));
         }
 
-        if (StoreId != null)
+        if (StoreId is not null)
         {
             Expression = Expression.And(account => StoreId == account.StoreId);
         }
 
-        if (Status != null)
+        if (Status is not null)
         {
             Expression = Expression.And(account => account.Status.Equals(Status));
+        }
+
+        if (CreatedFrom is not null)
+        {
+            Expression = Expression.And(account => CreatedFrom <= account.CreatedAt);
+        }
+
+        if (CreatedTo is not null)
+        {
+            Expression = Expression.And(account => CreatedTo >= account.CreatedAt);
         }
 
         Expression = Expression.And(account => Equals(Role.Staff, account.Role));

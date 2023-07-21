@@ -11,6 +11,6 @@ public class AssignStaffCommandValidator : AbstractValidator<AssignStaffCommand>
 
 public class AssignStaffCommand : IRequest<StatusResponse>
 {
-    [JsonIgnore] public long LockerId { get; set; } = default!;
+    [JsonIgnore] public long LockerId { get; set; }
     public long StaffId { get; set; } = default!;
 }

@@ -99,6 +99,10 @@ public enum ResponseCode
     [Description("Staff is belonging to a store")] StaffErrorBelongToAStore = 703,
     
     [Description("Staff has been assigned to this locker before")] StaffErrorAssignedBefore = 704,
+    
+    [Description("Staff has been assigned to the locker(s) in this store")] StaffErrorInAssignment = 705,
+
+    [Description("Staff existed")] StaffErrorExisted = 706,
 
     // Store
     [Description("Store not found")] StoreErrorNotFound = 801,
@@ -110,6 +114,8 @@ public enum ResponseCode
     // Staff Locker
     [Description("Assignment not found")] StaffLockerErrorNotFound = 901,
     
+    [Description("Assignment existed")] StaffLockerErrorExisted = 902,
+
     // Account
     [Description("Username existed")] AccountErrorUsernameExisted = 1001,
     

@@ -1,5 +1,3 @@
-using LockerService.Application.Staffs.Models;
-
 namespace LockerService.Application.Staffs.Commands;
 
 public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
@@ -7,13 +5,15 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
     public AddStaffCommandValidator()
     {
         RuleFor(model => model.PhoneNumber)
-            .NotEmpty();
+            .Must(phoneNumber => phoneNumber.IsValidPhoneNumber())
+            .WithMessage("Invalid Phone Number");
 
         RuleFor(model => model.FullName)
             .NotEmpty();
 
         RuleFor(model => model.Password)
-            .NotNull();
+            .Must(phoneNumber => phoneNumber.IsValidPassword())
+            .WithMessage("Invalid Password");
 
         RuleFor(model => model.StoreId)
             .NotNull();

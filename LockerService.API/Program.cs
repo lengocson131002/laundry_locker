@@ -5,6 +5,8 @@ using LockerService.Application;
 using LockerService.Application.Common.Exceptions;
 using LockerService.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,15 +31,16 @@ builder.Services.AddSwaggerGen(opt =>
         BearerFormat = "JWT",
         Scheme = "bearer"
     });
-    
+
     // Security Definition X-API-KEY
-    opt.AddSecurityDefinition("X-API-KEY", new OpenApiSecurityScheme{
-            Name = "X-API-KEY",
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "ApiKeyScheme",
-            In = ParameterLocation.Header,
-            Description = "ApiKey must appear in header"
-        });
+    opt.AddSecurityDefinition("X-API-KEY", new OpenApiSecurityScheme
+    {
+        Name = "X-API-KEY",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "ApiKeyScheme",
+        In = ParameterLocation.Header,
+        Description = "ApiKey must appear in header"
+    });
 
     // Filter security requirement
     opt.OperationFilter<AuthorizationOperationFilter>();
@@ -63,6 +66,18 @@ builder.Services.ConfigureApplicationServices(builder.Configuration);
 builder.Services.ConfigureInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
+
+var defaultSettings = new JsonSerializerSettings
+{
+    ReferenceLoopHandling = ReferenceLoopHandling.Ignore, // Handle circular references
+    ContractResolver = new DefaultContractResolver
+    {
+        NamingStrategy = new CamelCaseNamingStrategy()
+    },
+    Formatting = Formatting.Indented 
+};
+
+JsonConvert.DefaultSettings = () => defaultSettings;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -1,3 +1,4 @@
+using LockerService.Application.Common.Enums;
 using LockerService.Application.Staffs.Models;
 
 namespace LockerService.API.Controllers;
@@ -16,33 +17,26 @@ public class StaffController : ApiControllerBase
     [HttpGet("")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<PaginationResponse<Account, StaffResponse>>> GetAllStaffs(
-        [FromQuery] GetAllStaffsQuery query)
+        [FromQuery] GetAllStaffsQuery request)
     {
-        return await Mediator.Send(query);
+        if (string.IsNullOrWhiteSpace(request.SortColumn))
+        {
+            request.SortColumn = "CreatedAt";
+            request.SortDir = SortDirection.Desc;
+        }
+
+        return await Mediator.Send(request);
     }
 
     [HttpGet("{id:long}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StaffDetailResponse>> GetAllStaffs([FromRoute] long id)
+    public async Task<ActionResult<StaffDetailResponse>> GetStaff([FromRoute] long id)
     {
         var query = new GetStaffQuery
         {
             Id = id,
         };
         return await Mediator.Send(query);
-    }
-
-    [HttpPut("{id:long}/activate")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> ActivateStaff([FromRoute] long storeId,
-        [FromRoute] long id)
-    {
-        var command = new ActivateStaffCommand()
-        {
-            Id = id,
-            StoreId = storeId
-        };
-        return await Mediator.Send(command);
     }
 
     [HttpPut("{id:long}")]
@@ -58,21 +52,10 @@ public class StaffController : ApiControllerBase
     [HttpPut("{id:long}/status")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StaffDetailResponse>> UpdateStaffStatus(
-        [FromRoute] long storeId,
         [FromRoute] long id,
         UpdateStaffStatusCommand command)
     {
         command.Id = id;
-        return await Mediator.Send(command);
-    }
-
-    [HttpDelete("{id:long}/revoke")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> RevokeStaff(
-        [FromRoute] long id,
-        RevokeStaffCommand command)
-    {
-        command.StaffId = id;
         return await Mediator.Send(command);
     }
 }

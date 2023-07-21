@@ -5,13 +5,14 @@ public class UpdateStaffStatusCommandValidator : AbstractValidator<UpdateStaffSt
     public UpdateStaffStatusCommandValidator()
     {
         RuleFor(model => model.Status)
+            .IsInEnum()
             .NotNull();
     }
 }
 
 public class UpdateStaffStatusCommand : IRequest<StaffDetailResponse>
 {
-    [JsonIgnore] public long Id { get; set; } = default!;
+    [JsonIgnore] public long Id { get; set; }
 
     public AccountStatus Status { get; set; }
 }

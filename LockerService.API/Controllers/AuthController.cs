@@ -57,7 +57,7 @@ public class AuthController : ApiControllerBase
     }
 
     [HttpPut("password")]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<ActionResult<StatusResponse>> ChangePassword([FromBody] UpdatePasswordCommand request)
     {
         return await Mediator.Send(request);

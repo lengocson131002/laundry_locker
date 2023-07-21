@@ -24,7 +24,15 @@ public class UpdateLockerStatusHandler :
         }
 
         var currentStatus = locker.Status;
-        if (request.Status.Equals(currentStatus))
+        if (Equals(currentStatus, request.Status))
+        {
+            throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
+        }
+
+        if (!((Equals(currentStatus, LockerStatus.Active) && Equals(request.Status, LockerStatus.Inactive))
+              || (Equals(currentStatus, LockerStatus.Inactive) && Equals(request.Status, LockerStatus.Active))
+              || (Equals(currentStatus, LockerStatus.Active) && Equals(request.Status, LockerStatus.Maintaining))
+              || (Equals(currentStatus, LockerStatus.Maintaining) && Equals(request.Status, LockerStatus.Active))))
         {
             throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
         }

@@ -20,19 +20,21 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<PaginationResponse<Locker, LockerResponse>>> GetAllLockers(
-        [FromQuery] GetAllLockersQuery query)
+        [FromQuery] GetAllLockersQuery request)
     {
-        if (string.IsNullOrWhiteSpace(query.SortColumn))
+        if (string.IsNullOrWhiteSpace(request.SortColumn))
         {
-            query.SortColumn = "CreatedAt";
-            query.SortDir = SortDirection.Desc;
+            request.SortColumn = "CreatedAt";
+            request.SortDir = SortDirection.Desc;
         }
 
-        return await Mediator.Send(query);
+        return await Mediator.Send(request);
     }
 
     [HttpGet("{id:long}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<LockerDetailResponse>> GetLocker([FromRoute] long id)
     {
         var query = new GetLockerQuery
@@ -43,6 +45,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> UpdateLocker([FromRoute] long id,
         [FromBody] UpdateLockerCommand command)
     {
@@ -52,6 +55,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/status")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> UpdateLockerStatus([FromRoute] long id,
         [FromBody] UpdateLockerStatusCommand command)
     {
@@ -89,9 +93,20 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPost("{id:long}/staffs")]
-    public async Task<ActionResult<StatusResponse>> GetLockerTimeLines(
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> AssignStaff(
         [FromRoute] long id,
-        [FromQuery] AssignStaffCommand command)
+        [FromBody] AssignStaffCommand command)
+    {
+        command.LockerId = id;
+        return await Mediator.Send(command);
+    }
+
+    [HttpDelete("{id:long}/staffs")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> RevokeStaff(
+        [FromRoute] long id,
+        [FromBody] RevokeStaffCommand command)
     {
         command.LockerId = id;
         return await Mediator.Send(command);
