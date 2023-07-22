@@ -25,10 +25,10 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
     {
         if (Query is not null)
         {
-            Expression = Expression.And(account => account.FullName.ToLower().Contains(_query)
-                                                   || account.Username.ToLower().Contains(_query)
-                                                   || account.Description.ToLower().Contains(_query)
-                                                   || account.PhoneNumber.ToLower().Contains(_query));
+            Expression = Expression.And(account => (account.FullName != null && account.FullName.ToLower().Contains(Query))
+                                                   || account.Username.ToLower().Contains(Query)
+                                                   || (account.Description != null && account.Description.ToLower().Contains(Query))
+                                                       || account.PhoneNumber.ToLower().Contains(Query));
         }
 
         if (Username is not null)
@@ -43,12 +43,12 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
 
         if (FullName is not null)
         {
-            Expression = Expression.And(account => account.FullName.ToLower().Contains(FullName.ToLower()));
+            Expression = Expression.And(account => account.FullName != null && account.FullName.ToLower().Contains(FullName.ToLower()));
         }
 
         if (Description is not null)
         {
-            Expression = Expression.And(account => account.Description.ToLower().Contains(Description.ToLower()));
+            Expression = Expression.And(account => account.Description != null && account.Description.ToLower().Contains(Description.ToLower()));
         }
 
         if (StoreId is not null)

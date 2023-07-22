@@ -5,9 +5,8 @@ public class UpdateAdminProfileCommandValidator : AbstractValidator<UpdateAdminP
     public UpdateAdminProfileCommandValidator()
     {
         RuleFor(model => model.PhoneNumber)
-            .Must(phoneNumber => phoneNumber.IsValidPhoneNumber())
-            .WithMessage("Invalid Phone Number")
-            .When(model => !string.IsNullOrEmpty(model.PhoneNumber));
+            .Must(phoneNumber => string.IsNullOrEmpty(phoneNumber) || phoneNumber.IsValidPhoneNumber())
+            .WithMessage("Invalid Phone Number");
     }
 }
 

@@ -1,5 +1,3 @@
-using LockerService.Application.Stores.Commands;
-
 namespace LockerService.Application.Stores.Handlers;
 
 public class AddStoreHandler : IRequestHandler<AddStoreCommand, StoreResponse>
@@ -36,13 +34,13 @@ public class AddStoreHandler : IRequestHandler<AddStoreCommand, StoreResponse>
             throw new ApiException(ResponseCode.AddressErrorProvinceNotFound);
         }
 
-        var district = await _unitOfWork.AddressRepository.CheckDistrict(location.DistrictCode, province.Code);
+        var district = await _unitOfWork.AddressRepository.CheckDistrict(location.DistrictCode, province.Code!);
         if (district is null)
         {
             throw new ApiException(ResponseCode.AddressErrorDistrictNotFound);
         }
 
-        var ward = await _unitOfWork.AddressRepository.CheckWardCode(location.WardCode, district.Code);
+        var ward = await _unitOfWork.AddressRepository.CheckWardCode(location.WardCode, district.Code!);
         if (ward is null)
         {
             throw new ApiException(ResponseCode.AddressErrorWardNotFound);

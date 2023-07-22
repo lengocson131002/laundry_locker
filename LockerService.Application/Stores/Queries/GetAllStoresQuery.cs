@@ -29,13 +29,13 @@ public class GetAllStoresQuery : PaginationRequest<Store>, IRequest<PaginationRe
     {
         if (Query is not null)
         {
-            Expression = Expression.And(store => store.Location.Address.ToLower().Contains(_query) ||
-                                                 store.Name.ToLower().Contains(_query));
+            Expression = Expression.And(store => (store.Location.Address != null && store.Location.Address.ToLower().Contains(Query)) ||
+                                                 store.Name.ToLower().Contains(Query));
         }
 
         if (Address is not null)
         {
-            Expression = Expression.And(store => store.Location.Address.ToLower().Contains(Address.ToLower().Trim()));
+            Expression = Expression.And(store => store.Location.Address != null && store.Location.Address.ToLower().Contains(Address.ToLower().Trim()));
         }
 
         if (Name is not null)

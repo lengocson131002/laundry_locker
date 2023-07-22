@@ -5,9 +5,8 @@ public class UpdateStaffCommandValidator : AbstractValidator<UpdateStaffCommand>
     public UpdateStaffCommandValidator()
     {
         RuleFor(model => model.PhoneNumber)
-            .Must(phoneNumber => phoneNumber.IsValidPhoneNumber())
-            .WithMessage("Invalid Phone Number")
-            .When(model => model.PhoneNumber is not null);
+            .Must(phoneNumber => phoneNumber == null || phoneNumber.IsValidPhoneNumber())
+            .WithMessage("Invalid Phone Number");
     }
 }
 

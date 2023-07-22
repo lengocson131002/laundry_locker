@@ -24,4 +24,10 @@ public class Store : BaseAuditableEntity
     public IList<Account> Staffs { get; set; }
     
     public IList<Locker> Lockers { get; set; }
+
+    public Store()
+    {
+        Staffs = new List<Account>();
+        Lockers = new List<Locker>();
+    }
 }
