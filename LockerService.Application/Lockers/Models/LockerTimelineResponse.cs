@@ -18,5 +18,7 @@ public class LockerTimelineResponse
     
     public string? Error { get; set; }
     
-    public DateTimeOffset Time { get; set; }
+    public DateTimeOffset? CreatedAt { get; set; }
+    
+    public DateTimeOffset? UpdatedAt { get; set; }
 }

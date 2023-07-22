@@ -26,12 +26,12 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
     {
         var boxes = await GetAllBoxes(lockerId);
         return boxes
-            .Where(box => box.IsAvailable)
-            .Select(box => box.BoxOrder)
+            // .Where(box => box.IsAvailable)
+            .Select(box => box.Number)
             .ToList();
     }
 
-    public async Task<IList<BoxStatus>> GetAllBoxes(long lockerId)
+    public async Task<IList<BoxResponse>> GetAllBoxes(long lockerId)
     {
         // var boxCount = await _dbContext.Lockers
         //     .Where(locker => locker.Id == lockerId)
@@ -66,14 +66,14 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Locker?> FindByMac(string mac)
-    {
-        return null;
-    }
-
     public async Task<Locker?> FindByName(string name)
     {
         return await _dbContext.Lockers
             .FirstOrDefaultAsync(lo => lo.Name.ToLower().Equals(name.ToLower()));
+    }
+
+    public async Task<Locker?> FindByCode(string code)
+    {
+        return await _dbContext.Lockers.FirstOrDefaultAsync(lo => Equals(lo.Code, code));
     }
 }

@@ -6,9 +6,9 @@ public interface ILockerRepository : IBaseRepository<Locker>
     
     Task<IList<int>> FindAvailableBoxes(long lockerId);
 
-    Task<IList<BoxStatus>> GetAllBoxes(long lockerId);
-
-    Task<Locker?> FindByMac(string mac);
+    Task<IList<BoxResponse>> GetAllBoxes(long lockerId);
 
     Task<Locker?> FindByName(string name);
+
+    Task<Locker?> FindByCode(string code);
 }

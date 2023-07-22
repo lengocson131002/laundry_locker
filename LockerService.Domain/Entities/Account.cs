@@ -32,4 +32,14 @@ public class Account : BaseAuditableEntity
     public Store? Store { get; set; }
     
     public IList<StaffLocker> StaffLockers { get; private set; } = new List<StaffLocker>();
+
+    [InverseProperty(nameof(Order.Sender))]
+    public IList<Order> SendOrders { get; set; } = new List<Order>();
+    
+    [InverseProperty(nameof(Order.Receiver))]
+    public IList<Order> ReceiveOrders { get; set; } = new List<Order>();
+
+    public IList<Locker> Lockers { get; set; } = new List<Locker>();
+
+    public bool IsActive => Equals(AccountStatus.Active, Status);
 }

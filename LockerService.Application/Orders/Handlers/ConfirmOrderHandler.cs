@@ -1,4 +1,5 @@
 using LockerService.Application.EventBus.RabbitMq.Events;
+using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using MassTransit;
 
 namespace LockerService.Application.Orders.Handlers;

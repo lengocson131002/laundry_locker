@@ -22,6 +22,21 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("AccountLocker", b =>
+                {
+                    b.Property<long>("LockersId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StaffsId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("LockersId", "StaffsId");
+
+                    b.HasIndex("StaffsId");
+
+                    b.ToTable("AccountLocker");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
                     b.Property<long>("Id")
@@ -337,8 +352,14 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("text");
+
                     b.Property<long>("LocationId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("MacAddress")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -897,6 +918,21 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.ToTable("Token");
                 });
 
+            modelBuilder.Entity("AccountLocker", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Locker", null)
+                        .WithMany()
+                        .HasForeignKey("LockersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LockerService.Domain.Entities.Account", null)
+                        .WithMany()
+                        .HasForeignKey("StaffsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Store", "Store")
@@ -909,7 +945,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("LockerService.Domain.Entities.Box", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
-                        .WithMany()
+                        .WithMany("Boxes")
                         .HasForeignKey("LockerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1013,7 +1049,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LockerService.Domain.Entities.Account", "Receiver")
-                        .WithMany()
+                        .WithMany("ReceiveOrders")
                         .HasForeignKey("ReceiverId");
 
                     b.HasOne("LockerService.Domain.Entities.Box", "SendBox")
@@ -1023,7 +1059,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LockerService.Domain.Entities.Account", "Sender")
-                        .WithMany()
+                        .WithMany("SendOrders")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1120,11 +1156,17 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
+                    b.Navigation("ReceiveOrders");
+
+                    b.Navigation("SendOrders");
+
                     b.Navigation("StaffLockers");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Locker", b =>
                 {
+                    b.Navigation("Boxes");
+
                     b.Navigation("Hardwares");
 
                     b.Navigation("Timelines");

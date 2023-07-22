@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,21 +13,21 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public Task<IQueryable<T>> GetAllAsync()
-    {
-        return Task.FromResult(_dbContext.Set<T>().AsQueryable());
-    }
-
-    public Task<IQueryable<T>> GetAsync(Expression<Func<T, bool>> predicate)
-    {
-        return Task.FromResult(_dbContext.Set<T>().Where(predicate).AsQueryable());
-    }
+    // public Task<IQueryable<T>> GetAllAsync()
+    // {
+    //     return Task.FromResult(_dbContext.Set<T>().AsQueryable());
+    // }
+    //
+    // public Task<IQueryable<T>> GetAsync(Expression<Func<T, bool>> predicate)
+    // {
+    //     return Task.FromResult(_dbContext.Set<T>().Where(predicate).AsQueryable());
+    // }
 
     public Task<IQueryable<T>> GetAsync(
-        Expression<Func<T, bool>> predicate = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-        List<Expression<Func<T, object>>> includes = null,
-        bool disableTracking = true)
+        Expression<Func<T, bool>>? predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        List<Expression<Func<T, object>>>? includes = null,
+        bool disableTracking = false)
     {
         IQueryable<T> query = _dbContext.Set<T>();
 

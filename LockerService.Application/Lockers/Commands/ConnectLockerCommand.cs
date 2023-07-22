@@ -1,4 +1,4 @@
-using LockerService.Application.Common.Extensions;
+using LockerService.Application.Common.Utils;
 
 namespace LockerService.Application.Lockers.Commands;
 
@@ -6,13 +6,21 @@ public class ConnectLockerCommandValidator : AbstractValidator<ConnectLockerComm
     
     public ConnectLockerCommandValidator()
     {
-        RuleFor(model => model.MacAddress)
-            .Must(model => model.IsValidMacAddress())
-            .WithMessage("Invalid MAC address. Right format XX:XX:XX:XX:XX:XX");
+        RuleFor(model => model.Code)
+            .NotEmpty();
+        
     }
 }
 
 public class ConnectLockerCommand : IRequest<LockerResponse>
 {
-    public string MacAddress { get; set; } = default!;
+    [TrimString(true)]
+    public string Code { get; set; } = default!;
+
+    [TrimString(true)]
+    public string? MacAddress { get; set; } = default!;
+
+    [TrimString(true)]
+    public string? IpAddress { get; set; }
+    
 }

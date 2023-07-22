@@ -1,4 +1,4 @@
-namespace LockerService.Application.EventBus.RabbitMq.Events;
+namespace LockerService.Application.EventBus.RabbitMq.Events.Orders;
 
 public class OrderReturnedEvent : RabbitMqBaseEvent
 {

@@ -25,7 +25,7 @@ public class GetLockerHandler :
                 locker => locker.Location.Province,
                 locker => locker.Location.District,
                 locker => locker.Location.Ward,
-                locker => locker.Timelines
+                locker => locker.Store
             });
         
         var locker = query.FirstOrDefault();

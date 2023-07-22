@@ -27,6 +27,7 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
                     locker => locker.Location.Province,
                     locker => locker.Location.District,
                     locker => locker.Location.Ward,
+                    locker => locker.Store
                 }
             );
 

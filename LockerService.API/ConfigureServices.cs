@@ -11,7 +11,7 @@ public static class ConfigureServices
         services.AddControllers(opt => opt.Filters.Add(typeof(TrimPropertiesActionFilter)))
             .ConfigureApiBehaviorOptions(opt => opt.SuppressModelStateInvalidFilter = true)
             .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-        
+
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.SuppressModelStateInvalidFilter = true;

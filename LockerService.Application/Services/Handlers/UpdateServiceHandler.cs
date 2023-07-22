@@ -14,17 +14,16 @@ public class UpdateServiceHandler : IRequestHandler<UpdateServiceCommand>
 
     public async Task Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
     {
-
         var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
         if (service is null)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);
         }
 
-        if (!string.IsNullOrEmpty(request.Name) && !service.Name.Equals(request.Name, StringComparison.OrdinalIgnoreCase))
+        if (request.Name != null && !service.Name.Equals(request.Name, StringComparison.OrdinalIgnoreCase))
         {
             var query = await _unitOfWork.ServiceRepository.GetAsync(
-                predicate: ser => ser.Name.Equals(service.Name, StringComparison.OrdinalIgnoreCase)
+                predicate: ser => ser.Name.Equals(request.Name)
             );
 
             if (query.Any())
@@ -40,17 +39,17 @@ public class UpdateServiceHandler : IRequestHandler<UpdateServiceCommand>
             service.Price = (decimal) request.Price;
         }
 
-        if (!string.IsNullOrEmpty(request.Description))
+        if (request.Description != null)
         {
             service.Description = request.Description;
         }
 
-        if (!string.IsNullOrEmpty(request.Image))
+        if (request.Image != null)
         {
             service.Image = request.Image;
         }
 
-        if (!string.IsNullOrEmpty(request.Unit))
+        if (request.Unit != null)
         {
             service.Unit = request.Unit;
         }

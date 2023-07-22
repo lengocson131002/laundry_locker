@@ -1,19 +1,19 @@
-using LockerService.Domain.Events;
+using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
+using MassTransit;
 
 namespace LockerService.Application.Lockers.Handlers;
 
 public class UpdateLockerStatusHandler :
     IRequestHandler<UpdateLockerStatusCommand>
 {
-    private readonly IMqttBus _mqttBus;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublishEndpoint _rabbitMqBus;
 
-    public UpdateLockerStatusHandler(IUnitOfWork unitOfWork, IMqttBus mqttBus)
+    public UpdateLockerStatusHandler(IUnitOfWork unitOfWork, IPublishEndpoint rabbitMqBus)
     {
         _unitOfWork = unitOfWork;
-        _mqttBus = mqttBus;
+        _rabbitMqBus = rabbitMqBus;
     }
-
 
     public async Task Handle(UpdateLockerStatusCommand request, CancellationToken cancellationToken)
     {
@@ -23,39 +23,23 @@ public class UpdateLockerStatusHandler :
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
+        if (!locker.CanUpdateStatus || Equals(request.Status, locker.Status))
+        {
+            throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
+        }
+
         var currentStatus = locker.Status;
         if (request.Status.Equals(currentStatus)) return;
 
-        await ValidateStatus(locker, request.Status);
-
         locker.Status = request.Status;
         await _unitOfWork.LockerRepository.UpdateAsync(locker);
-
-        var lockerEvent = new LockerTimeline()
-        {
-            Locker = locker,
-            Event = LockerEvent.UpdateStatus,
-            Status = request.Status,
-            PreviousStatus = currentStatus
-        };
-        
-        await _unitOfWork.LockerTimelineRepository.AddAsync(lockerEvent);
-        
         await _unitOfWork.SaveChangesAsync();
 
-        // Push MQTT event
-        await _mqttBus.PublishAsync(new MqttUpdateLockerStatusEvent(locker.Id, request.Status));
-    }
-
-    private async Task ValidateStatus(Locker locker, LockerStatus status)
-    {
-        // if (!LockerStatus.Initialized.Equals(locker.Status) && LockerStatus.Initialized.Equals(status))
-        //     throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
-        //
-        // var services = await _unitOfWork.ServiceRepository.GetAsync(service => service.LockerId == locker.Id);
-        // if (!services.Any() && LockerStatus.Active.Equals(status))
-        // {
-        //     throw new ApiException(ResponseCode.LockerErrorServiceRequired);
-        // }
+        await _rabbitMqBus.Publish(new LockerUpdatedStatusEvent()
+        {
+            LockerId = locker.Id,
+            Status = locker.Status,
+            PreviousStatus = currentStatus
+        }, cancellationToken);
     }
 }

@@ -75,7 +75,7 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(getOrderRequest);
     }
     
-    [HttpGet("/pin-code")]
+    [HttpGet("pin-code")]
     public async Task<ActionResult<OrderDetailResponse>> GetOrder([FromRoute] string pinCode)
     {
         var getOrderRequest = new GetOrderByPinCodeQuery(pinCode);

@@ -2,10 +2,12 @@ namespace LockerService.Application.Lockers.Queries;
 
 public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<PaginationResponse<Locker, LockerResponse>>
 {
-    public string? Name { get; set; }
-
-    public string? MacAddress { get; set; }
+    public string? Search { get; set; }
     
+    public long? StoreId { get; set; }
+    
+    public long? StaffId { get; set; }
+
     public LockerStatus? Status { get; set; }
     
     public string? ProvinceCode { get; set; }
@@ -17,9 +19,10 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
     
     public override Expression<Func<Locker, bool>> GetExpressions()
     {
-        if (Name != null)
+        if (Search != null)
         {
-            Expression = Expression.And(locker => locker.Name.ToLower().Contains(Name.ToLower()));
+            Search = Search.Trim().ToLower();
+            Expression = Expression.And(locker => locker.Name.ToLower().Contains(Search));
         }
 
         if (Status != null)
@@ -41,7 +44,17 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
         {
             Expression = Expression.And(locker => WardCode.Equals(locker.Location.Ward.Code));
         }
-        
+
+        if (StoreId != null)
+        {
+            Expression = Expression.And(locker => StoreId.Equals(locker.StoreId));
+        }
+
+        if (StaffId != null)
+        {
+            Expression = Expression.And(locker =>
+                locker.Staffs.FirstOrDefault(staff => StaffId.Equals(staff.Id)) != null);
+        }
         
         return Expression;
     }

@@ -30,10 +30,10 @@ public enum ResponseCode
     
     [Description("Account not found")] AuthErrorAccountNotFound = 23,
     
-        // Locker
+    // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,
     
-    [Description("Locker status invalid")] LockerErrorInvalidStatus = 102,
+    [Description("Locker' status is not allow to do this function")] LockerErrorInvalidStatus = 102,
 
     [Description("Update boxes failed, please scan enough box")] LockerErrorInvalidNumberOfBoxes = 103,
     
@@ -55,6 +55,8 @@ public enum ResponseCode
     [Description("Service's fee is required")] ServiceErrorMissingFee = 202,
 
     [Description("Existed service name")] ServiceErrorExistedName = 203,
+    
+    [Description("Service's status is not allowed to do this function")] ServiceErrorInvalidStatus = 204,
     
 
     // Order
@@ -94,7 +96,7 @@ public enum ResponseCode
     
     [Description("Staff has been assigned to this locker before")] StaffErrorAssignedBefore = 704,
 
-    // Account
+    // Store
     [Description("Store not found")] StoreErrorNotFound = 801,
     
     [Description("Store's status is not allowed to do this function")] StoreErrorInvalidStatus = 802,

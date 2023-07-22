@@ -1,4 +1,6 @@
+using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using LockerService.Domain.Events;
+using MassTransit;
 
 namespace LockerService.Application.Lockers.Handlers;
 
@@ -7,45 +9,47 @@ public class ConnectLockerHandler : IRequestHandler<ConnectLockerCommand, Locker
     private readonly ILogger<ConnectLockerHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IPublishEndpoint _rabbitMqBus;
     
-    public ConnectLockerHandler(IUnitOfWork unitOfWork, ILogger<ConnectLockerHandler> logger, IMapper mapper)
+    public ConnectLockerHandler(IUnitOfWork unitOfWork, ILogger<ConnectLockerHandler> logger, IMapper mapper, IPublishEndpoint rabbitMqBus)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _mapper = mapper;
+        _rabbitMqBus = rabbitMqBus;
     }
 
     public async Task<LockerResponse> Handle(ConnectLockerCommand request, CancellationToken cancellationToken)
     {
-        // Check locker
-        var lockerQuery =
-            await _unitOfWork.LockerRepository.GetAsync(
-                includes: new List<Expression<Func<Locker, object>>>
-                {
-                    lo => lo.Location,
-                    lo => lo.Location.Province,
-                    lo => lo.Location.District,
-                    lo => lo.Location.Ward
-                },
-                disableTracking: false);
-
-        var locker = lockerQuery.FirstOrDefault();
+        // Check locker by code
+        var locker = await _unitOfWork.LockerRepository.FindByCode(request.Code);
         if (locker == null)
         {
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
+        locker.Status = LockerStatus.Active;
+        locker.MacAddress = request.MacAddress;
+        locker.IpAddress = request.IpAddress;
+        await _unitOfWork.LockerRepository.UpdateAsync(locker);
+        
         var connectEvent = new LockerTimeline()
         {
             Locker = locker,
             Event = LockerEvent.Connect,
             Status = locker.Status
         };
+        
         await _unitOfWork.LockerTimelineRepository.AddAsync(connectEvent);
         await _unitOfWork.SaveChangesAsync();
         
         _logger.LogInformation("Locker {0} connected to server", locker.Id);
-
+        
+        await _rabbitMqBus.Publish(new LockerConnectedEvent()
+        {
+            LockerId = locker.Id,
+        }, cancellationToken);
+        
         return _mapper.Map<LockerResponse>(locker);
     }
 }

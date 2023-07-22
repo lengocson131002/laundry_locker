@@ -29,8 +29,17 @@ public class Locker : BaseAuditableEntity
 
     public IList<LockerTimeline> Timelines { get; private set; } = new List<LockerTimeline>();
 
-    public Store? Store { get; set; }
+    public Store Store { get; set; } = default!;
     
     public long? StoreId { get; set; }
 
+    public string? MacAddress { get; set; }
+    
+    public string? IpAddress { get; set; }
+
+    public IList<Account> Staffs { get; set; } = new List<Account>();
+
+    public IList<Box> Boxes { get; set; } = new List<Box>();
+
+    public bool CanUpdateStatus => !Equals(LockerStatus.Initialized, Status) && !Equals(LockerStatus.Disconnected, Status);
 }

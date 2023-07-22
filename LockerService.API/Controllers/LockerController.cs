@@ -3,7 +3,6 @@ using LockerService.Application.Common.Enums;
 using LockerService.Application.Lockers.Commands;
 using LockerService.Application.Lockers.Models;
 using LockerService.Application.Lockers.Queries;
-using LockerService.Domain.Entities;
 
 namespace LockerService.API.Controllers;
 
@@ -12,7 +11,6 @@ namespace LockerService.API.Controllers;
 public class LockerController : ApiControllerBase
 {
     [HttpPost]
-    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<LockerResponse>> AddLocker([FromBody] AddLockerCommand command)
     {
         return await Mediator.Send(command);
@@ -60,14 +58,20 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPost("connect")]
-    [ApiKey]
     public async Task<ActionResult<LockerResponse>> ConnectLocker([FromBody] ConnectLockerCommand command)
     {
         return await Mediator.Send(command);
     }
 
+    [HttpPost("{id:long}/boxes")]
+    public async Task<ActionResult<StatusResponse>> AddBox([FromRoute] long id, [FromBody] AddBoxCommand  command)
+    {
+        command.LockerId = id;
+        return await Mediator.Send(command);
+    }
+    
     [HttpGet("{id:long}/boxes")]
-    public async Task<ActionResult<ListResponse<BoxStatus>>> GetAllBoxes([FromRoute] long id)
+    public async Task<ActionResult<ListResponse<BoxResponse>>> GetAllBoxes([FromRoute] long id)
     {
         return await Mediator.Send(new GetAllBoxesQuery(id));
     }
@@ -79,7 +83,7 @@ public class LockerController : ApiControllerBase
     {
         if (string.IsNullOrWhiteSpace(query.SortColumn))
         {
-            query.SortColumn = "Time";
+            query.SortColumn = "CreatedAt";
             query.SortDir = SortDirection.Desc;
         }
 

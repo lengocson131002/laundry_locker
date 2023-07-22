@@ -1,20 +1,24 @@
+using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using LockerService.Domain.Events;
+using MassTransit;
 using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace LockerService.Application.Lockers.Handlers;
 
-public class UpdateLockerHandler :
-    IRequestHandler<UpdateLockerCommand>
+public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-
+    private readonly IPublishEndpoint _rabbitMqBus;
     public UpdateLockerHandler(
         IMapper mapper,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork, 
+        IPublishEndpoint rabbitMqBus)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _rabbitMqBus = rabbitMqBus;
     }
 
 
@@ -36,27 +40,63 @@ public class UpdateLockerHandler :
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
-        locker.Name = request.Name ?? locker.Name;
-        locker.Description = request.Description ?? locker.Description;
-        if (request.StoreId is not null)
+        if (request.Name != null && !Equals(request.Name, locker.Name))
         {
-            var storeQuery = await _unitOfWork.StoreRepository.GetAsync(
-                store => store.Id == request.StoreId,
-                includes: new List<Expression<Func<Store, object>>>
-                {
-                    locker => locker.Location,
-                    locker => locker.Location.Province,
-                    locker => locker.Location.District,
-                    locker => locker.Location.Ward
-                });
+            if (await _unitOfWork.LockerRepository.FindByName(request.Name) != null)
+            {
+                throw new ApiException(ResponseCode.LockerErrorExistedName);
+            }
 
-            var store = storeQuery.FirstOrDefault();
-            if (store is null)
+            locker.Name = request.Name;
+        }
+
+        if (request.Image != null)
+        {
+            locker.Image = request.Image;
+        }
+
+        if (request.Description != null)
+        {
+            locker.Description = request.Description;
+        }
+
+        if (request.StoreId != null && !Equals(request.StoreId, locker.StoreId))
+        {
+            var store = await _unitOfWork.StoreRepository.GetByIdAsync(request.StoreId);
+            if (store == null)
             {
                 throw new ApiException(ResponseCode.StoreErrorNotFound);
             }
-
             locker.StoreId = request.StoreId;
+        }
+
+        if (request.StaffIds != null)
+        {
+            var staffLockers = new List<StaffLocker>();
+            foreach (var staffId in request.StaffIds)
+            {
+                var staff = await _unitOfWork.AccountRepository.GetByIdAsync(staffId);
+                if (staff == null || !Equals(staff.Role, Role.Staff) || !Equals(staff.StoreId, locker.StoreId))
+                {
+                    throw new ApiException(ResponseCode.StaffErrorNotFound);
+                }
+
+                if (!staff.IsActive)
+                {
+                    throw new ApiException(ResponseCode.StaffErrorInvalidStatus);
+                }
+                staffLockers.Add(new StaffLocker()
+                {
+                    Locker = locker,
+                    Staff = staff
+                });
+            }
+
+            var currentStaffLockersQuery =
+                await _unitOfWork.StaffLockerRepository.GetAsync(item => item.LockerId == locker.Id);
+
+            await _unitOfWork.StaffLockerRepository.DeleteRange(currentStaffLockersQuery.ToList());
+            await _unitOfWork.StaffLockerRepository.AddRange(staffLockers);
         }
 
         if (request.Location != null)
@@ -66,20 +106,27 @@ public class UpdateLockerHandler :
                 await _unitOfWork.AddressRepository.GetAsync(
                     p => p.Code != null && p.Code.Equals(location.ProvinceCode));
             var province = await provinceQuery.FirstOrDefaultAsync();
-            if (province == null) throw new ApiException(ResponseCode.AddressErrorProvinceNotFound);
+            if (province == null)
+            {
+                throw new ApiException(ResponseCode.AddressErrorProvinceNotFound);
+            }
 
             var districtQuery =
                 await _unitOfWork.AddressRepository.GetAsync(
                     d => d.Code != null && d.Code.Equals(location.DistrictCode));
             var district = await districtQuery.FirstOrDefaultAsync();
             if (district == null || district.ParentCode != province.Code)
+            {
                 throw new ApiException(ResponseCode.AddressErrorDistrictNotFound);
+            }
 
             var wardQuery =
                 await _unitOfWork.AddressRepository.GetAsync(w => w.Code != null && w.Code.Equals(location.WardCode));
             var ward = await wardQuery.FirstOrDefaultAsync();
             if (ward == null || ward.ParentCode != district.Code)
+            {
                 throw new ApiException(ResponseCode.AddressErrorWardNotFound);
+            }
 
             locker.Location.Address = location.Address;
             locker.Location.Province = province;
@@ -92,17 +139,14 @@ public class UpdateLockerHandler :
         await _unitOfWork.LockerRepository.UpdateAsync(locker);
         await _unitOfWork.LocationRepository.UpdateAsync(locker.Location);
 
-        // Create timeline
-        var lockerEvent = new LockerTimeline()
-        {
-            Locker = locker,
-            Event = LockerEvent.UpdateInformation,
-            Status = locker.Status,
-            Data = JsonConvert.SerializeObject(locker)
-        };
-        await _unitOfWork.LockerTimelineRepository.AddAsync(lockerEvent);
-
         // Save changes
         await _unitOfWork.SaveChangesAsync();
+        
+        await _rabbitMqBus.Publish(new LockerUpdatedInfoEvent()
+        {
+            Id = locker.Id,
+            Time = DateTimeOffset.UtcNow,
+            Data = JsonSerializer.Serialize(locker)
+        }, cancellationToken);
     }
 }

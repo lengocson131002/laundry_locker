@@ -19,6 +19,7 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
         CancellationToken cancellationToken)
     {
         var locker = _mapper.Map<Locker>(request);
+        locker.Code = LockerCodeUtils.GenerateLockerCode();
 
         if (locker == null)
         {
@@ -26,13 +27,15 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
         }
 
         // Check store
-        var storeQuery =
-            await _unitOfWork.StoreRepository.GetAsync(s =>
-                Equals(s.Id, request.StoreId));
-        var store = storeQuery.FirstOrDefault();
+        var store = await _unitOfWork.StoreRepository.GetByIdAsync(request.StoreId);
         if (store == null)
         {
             throw new ApiException(ResponseCode.StoreErrorNotFound);
+        }
+
+        if (!store.IsActive)
+        {
+            throw new ApiException(ResponseCode.StoreErrorInvalidStatus);
         }
 
         // Check name
@@ -77,9 +80,29 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
             Latitude = location.Latitude
         };
 
-        locker.Code = LockerCodeUtils.GenerateLockerCode();
-        await _unitOfWork.LockerRepository.AddAsync(locker);
+        var staffLockers = new List<StaffLocker>();
+        foreach (var staffId in request.StaffIds)
+        {
+            var staff = await _unitOfWork.AccountRepository.GetByIdAsync(staffId);
+            if (staff == null || !Equals(staff.Role, Role.Staff) || !Equals(staff.StoreId, store.Id))
+            {
+                throw new ApiException(ResponseCode.StaffErrorNotFound);
+            }
 
+            if (!staff.IsActive)
+            {
+                throw new ApiException(ResponseCode.StaffErrorInvalidStatus);
+            }
+            staffLockers.Add(new StaffLocker()
+            {
+                Locker = locker,
+                Staff = staff
+            });
+        }
+        
+        await _unitOfWork.LockerRepository.AddAsync(locker);
+        await _unitOfWork.StaffLockerRepository.AddRange(staffLockers);
+        
         // Save changes
         await _unitOfWork.SaveChangesAsync();
 

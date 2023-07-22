@@ -1,11 +1,8 @@
-using System.Text.Json;
-using LockerService.Application.Common.Constants;
 using LockerService.Application.Common.Services.Notification;
-using LockerService.Application.Common.Services.Notification.Data;
-using LockerService.Application.EventBus.RabbitMq.Events;
+using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using MassTransit;
 
-namespace LockerService.Application.EventBus.RabbitMq.Consumers;
+namespace LockerService.Application.EventBus.RabbitMq.Consumers.Orders;
 
 public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
 {

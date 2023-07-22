@@ -1,7 +1,9 @@
 using System.Reflection;
 using LockerService.Application.Common.Behaviours;
 using LockerService.Application.Common.Mappings;
-using LockerService.Application.EventBus.RabbitMq.Consumers;
+using LockerService.Application.EventBus.RabbitMq.Consumers.Lockers;
+using LockerService.Application.EventBus.RabbitMq.Consumers.Orders;
+using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,8 +33,16 @@ public static class ConfigureServices
         services.AddMassTransit(config =>
         {
             // Define RabbitMQ consumer
+            // Order events consumers
             config.AddConsumer<OrderCreatedConsumer>();
             config.AddConsumer<OrderReturnedConsumer>();
+            
+            // Locker events consumers
+            config.AddConsumer<LockerConnectedConsumer>();
+            config.AddConsumer<LockerDisconnectedConsumer>();
+            config.AddConsumer<LockerOverloadedConsumer>();
+            config.AddConsumer<LockerUpdatedInfoConsumer>();
+            config.AddConsumer<LockerUpdatedStatusConsumer>();
             
             config.UsingRabbitMq((ctx, cfg) =>
             {
@@ -46,19 +56,10 @@ public static class ConfigureServices
                             h.Password(configuration["RabbitMQ:Password"]);
                         }
                     );
-                
-                cfg.ReceiveEndpoint("order.created.locker-service", e =>
-                {
-                    e.PrefetchCount = 20;
-                    e.ConfigureConsumer<OrderCreatedConsumer>(ctx);
-                });
-                
-                cfg.ReceiveEndpoint("order.returned.locker-service", e =>
-                {
-                    e.PrefetchCount = 20;
-                    e.ConfigureConsumer<OrderReturnedConsumer>(ctx);
-                });
+                cfg.ConfigureEndpoints(ctx);
             });
+            
+            config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("locker-service", false));
         });
         
         return services;

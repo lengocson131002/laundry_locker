@@ -2,15 +2,16 @@ namespace LockerService.Application.Services.Queries;
 
 public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<PaginationResponse<Service, ServiceResponse>>
 {
-    public string? Query { get; set; }
+    public string? Search { get; set; }
 
     public ServiceStatus? Status { get; set; }
     
     public override Expression<Func<Service, bool>> GetExpressions()
     {
-        if (!string.IsNullOrWhiteSpace(Query))
+        if (!string.IsNullOrWhiteSpace(Search))
         {
-            Expression = Expression.And(service => service.Name.ToLower().Contains(Query.Trim().ToLower()));
+            Search = Search.Trim().ToLower();
+            Expression = Expression.And(service => service.Name.ToLower().Contains(Search));
         }
         
         if (Status != null)
