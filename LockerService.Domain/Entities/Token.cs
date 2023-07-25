@@ -16,9 +16,16 @@ public class Token : BaseAuditableEntity
     
     public TokenType Type { get; set; }
 
+    public TokenStatus Status { get; set; }
+
     public string Value { get; set; } = default!;
     
     public DateTimeOffset? ExpiredAt { get; set; }
 
     public bool IsExpired => ExpiredAt != null && ExpiredAt < DateTimeOffset.UtcNow;
+
+    public Token()
+    {
+        Status = TokenStatus.Valid;
+    }
 }

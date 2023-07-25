@@ -1,8 +1,6 @@
-using LockerService.Application.Staffs.Models;
-
 namespace LockerService.Application.Staffs.Handlers;
 
-public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffResponse>
+public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
@@ -18,7 +16,7 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffResponse>
         _jwtService = jwtService;
     }
 
-    public async Task<StaffResponse> Handle(AddStaffCommand request, CancellationToken cancellationToken)
+    public async Task<StaffDetailResponse> Handle(AddStaffCommand request, CancellationToken cancellationToken)
     {
         var storeQuery =
             await _unitOfWork.StoreRepository.GetAsync(s =>
@@ -29,37 +27,37 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffResponse>
             throw new ApiException(ResponseCode.StoreErrorNotFound);
         }
 
-        var accountQuery =
-            await _unitOfWork.AccountRepository.GetAsync(a =>
-                a.PhoneNumber != null && Equals(a.PhoneNumber, request.PhoneNumber));
-
-        var account = accountQuery.FirstOrDefault();
-        if (account is null)
+        var staff = await _unitOfWork.AccountRepository.GetStaffByPhoneNumber(request.PhoneNumber);
+        if (staff is null)
         {
-            account = new Account()
+            staff = new Account()
             {
                 Username = request.PhoneNumber,
                 PhoneNumber = request.PhoneNumber,
-                Password = "123456",
+                FullName = request.FullName,
+                Avatar = request.Avatar,
+                Password = request.Password,
+                Description = request.Description,
                 Status = AccountStatus.Verifying,
                 Role = Role.Staff,
-                Store = store
+                Store = store,
             };
-            await _unitOfWork.AccountRepository.AddAsync(account);
+
+            await _unitOfWork.AccountRepository.AddAsync(staff);
         }
         else
         {
-            if (account.Store is not null)
+            if (staff.Store is not null)
             {
                 throw new ApiException(ResponseCode.StaffErrorBelongToAStore);
             }
 
-            account.Store = store;
-            await _unitOfWork.AccountRepository.UpdateAsync(account);
+            staff.Store = store;
+            await _unitOfWork.AccountRepository.UpdateAsync(staff);
         }
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
-        return _mapper.Map<StaffResponse>(account);
+        return _mapper.Map<StaffDetailResponse>(staff);
     }
 }

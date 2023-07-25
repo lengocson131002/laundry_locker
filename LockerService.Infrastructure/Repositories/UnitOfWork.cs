@@ -30,9 +30,11 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     
     private IStoreRepository? _storeRepository;
 
-    private IStaffLockerRepository? _accountLockerRepository;
+    private IStaffLockerRepository? _staffLockerRepository;
 
     private IBoxRepository? _boxRepository;
+
+    private ITokenRepository? _tokenRepository;
     
     private readonly ApplicationDbContext _dbContext;
 
@@ -69,7 +71,9 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
         
     public IStoreRepository StoreRepository => _storeRepository ??= new StoreRepository(_dbContext);
     
-    public IStaffLockerRepository StaffLockerRepository => _accountLockerRepository ??= new StaffLockerRepository(_dbContext);
+    public IStaffLockerRepository StaffLockerRepository => _staffLockerRepository ??= new StaffLockerRepository(_dbContext);
 
     public IBoxRepository BoxRepository => _boxRepository ??= new BoxRepository(_dbContext);
+ 
+    public ITokenRepository TokenRepository => _tokenRepository ??= new TokenRepository(_dbContext);
 }

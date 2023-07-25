@@ -27,25 +27,21 @@ public class ActivateStaffHandler : IRequestHandler<ActivateStaffCommand, Status
             throw new ApiException(ResponseCode.StoreErrorNotFound);
         }
 
-        var accountQuery =
-            await _unitOfWork.AccountRepository.GetAsync(a =>
-                Equals(a.Id, request.Id));
+        var staff = await _unitOfWork.AccountRepository.GetStaffById(request.Id);
 
-        var account = accountQuery.FirstOrDefault();
-
-        if (account is null)
+        if (staff is null)
         {
             throw new ApiException(ResponseCode.StaffErrorNotFound);
         }
 
-        if (account.Status != AccountStatus.Inactive)
+        if (staff.Status != AccountStatus.Inactive)
         {
             throw new ApiException(ResponseCode.StaffErrorInvalidStatus);
         }
 
-        account.Status = AccountStatus.Active;
+        staff.Status = AccountStatus.Active;
 
-        await _unitOfWork.AccountRepository.UpdateAsync(account);
+        await _unitOfWork.AccountRepository.UpdateAsync(staff);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();

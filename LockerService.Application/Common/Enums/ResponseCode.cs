@@ -22,7 +22,7 @@ public enum ResponseCode
     
     // Auth
         
-    [Description("Invalid email or password")] AuthErrorInvalidEmailOrPassword = 20,
+    [Description("Invalid username or password")] AuthErrorInvalidUsernameOrPassword = 20,
     
     [Description("Invalid refresh token")] AuthErrorInvalidRefreshToken = 21,
     
@@ -30,6 +30,14 @@ public enum ResponseCode
     
     [Description("Account not found")] AuthErrorAccountNotFound = 23,
     
+    [Description("Invalid username or otp")] AuthErrorInvalidUsernameOrOtp = 24,
+    
+    [Description("Current Password Incorrect")] AuthErrorCurrentPasswordIncorrect = 25,
+    
+    [Description("The new password must be different from the current password")] AuthErrorNewPasswordMustBeDifferent = 26,
+    
+    [Description("The account is inactive")] AuthErrorAccountInactive = 27,
+  
     // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,
     
@@ -100,10 +108,27 @@ public enum ResponseCode
     [Description("Staff is belonging to a store")] StaffErrorBelongToAStore = 703,
     
     [Description("Staff has been assigned to this locker before")] StaffErrorAssignedBefore = 704,
+    
+    [Description("Staff has been assigned to the locker(s) in this store")] StaffErrorInAssignment = 705,
+
+    [Description("Staff existed")] StaffErrorExisted = 706,
 
     // Store
     [Description("Store not found")] StoreErrorNotFound = 801,
     
-    [Description("Store's status is not allowed to do this function")] StoreErrorInvalidStatus = 802,
+    [Description("Store's status is invalid")] StoreErrorInvalidStatus = 802,
+    
+    [Description("Staff and Locker do not belong to the same store")] StoreErrorStaffAndLockerNotInSameStore = 803,
+    
+    // Staff Locker
+    [Description("Assignment not found")] StaffLockerErrorNotFound = 901,
+    
+    [Description("Assignment existed")] StaffLockerErrorExisted = 902,
+
+    // Account
+    [Description("Username existed")] AccountErrorUsernameExisted = 1001,
+    
+    [Description("Phone Number existed")] AccountErrorPhoneNumberExisted = 1002,
+
     
 }

@@ -16,15 +16,17 @@ public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenRespons
     public async Task<TokenResponse> Handle(StaffLoginRequest request, CancellationToken cancellationToken)
     {
         var userQuery = await _unitOfWork.AccountRepository.GetAsync(
-                predicate: account => account.Username.ToLower().Equals(request.Username.ToLower()) 
-                                      && account.Password != null 
-                                      && account.Password.Equals(request.Password)
-            );
+            predicate: account => Equals(account.Username, request.Username)
+                                  && account.Password != null
+                                  && account.Password.Equals(request.Password)
+                                  && Equals(account.Role, Role.Staff)
+                                  && !Equals(account.Status, AccountStatus.Inactive)
+        );
 
         var user = userQuery.FirstOrDefault();
-        if (user is null || !Equals(user.Role, Role.Admin))
+        if (user is null)
         {
-            throw new ApiException(ResponseCode.AuthErrorInvalidEmailOrPassword);
+            throw new ApiException(ResponseCode.AuthErrorInvalidUsernameOrPassword);
         }
 
         var token = _jwtService.GenerateJwtToken(user);

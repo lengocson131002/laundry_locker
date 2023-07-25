@@ -898,6 +898,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("ExpiredAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 

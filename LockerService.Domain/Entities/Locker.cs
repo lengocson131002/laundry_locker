@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -28,6 +29,8 @@ public class Locker : BaseAuditableEntity
     public IList<Hardware> Hardwares { get; private set; } = new List<Hardware>();
 
     public IList<LockerTimeline> Timelines { get; private set; } = new List<LockerTimeline>();
+  
+    public IList<StaffLocker> StaffLockers { get; private set; } = new List<StaffLocker>();
 
     public Store Store { get; set; } = default!;
     

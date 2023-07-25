@@ -8,8 +8,6 @@ public class AccountResponse
 
     public string PhoneNumber { get; set; } = default!;
 
-    public string? Password { get; set; }
-
     public Role Role { get; set; }
     
     public AccountStatus Status { get; set; }
@@ -19,18 +17,4 @@ public class AccountResponse
     public string? Description { get; set; }
     
     public string? Avatar { get; set; }
-    
-    public long? StoreId { get; set; }
-    
-    public DateTimeOffset CreatedAt { get; set; }
-
-    public long? CreatedBy { get; set; }
-
-    public DateTimeOffset UpdatedAt { get; set; }
-
-    public long? UpdatedBy { get; set; }
-
-    public DateTimeOffset? DeletedAt { get; set; }
-
-    public long? DeletedBy { get; set; }
 }
