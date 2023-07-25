@@ -40,7 +40,6 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, Pagi
             .Select(item =>
             {
                 var customResponse = _mapper.Map<CustomerResponse>(item.Account);
-                customResponse.OrderCount = item.OrderCount;
                 return customResponse;
             })
             .ToList();

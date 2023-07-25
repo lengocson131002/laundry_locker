@@ -22,15 +22,15 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
         while (true)
         {
             var pinCode = GeneratePinCode(length);
-            var order = await GetOrderByPinCode(pinCode);
+            var order =  await GetOrderByPinCode(pinCode).FirstOrDefaultAsync();
             if (order  == null) return pinCode;
         }
     }
 
-    public async Task<Order?> GetOrderByPinCode(string pinCode)
+    public IQueryable<Order> GetOrderByPinCode(string pinCode)
     {
-        return await _dbContext.Orders.FirstOrDefaultAsync(
-            order => pinCode.Equals(order.PinCode)
+        return _dbContext.Orders
+            .Where(order => pinCode.Equals(order.PinCode)
                      && !OrderStatus.Completed.Equals(order.Status)
                      && !OrderStatus.Canceled.Equals(order.Status));
     }

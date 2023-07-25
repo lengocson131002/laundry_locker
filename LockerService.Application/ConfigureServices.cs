@@ -3,7 +3,6 @@ using LockerService.Application.Common.Behaviours;
 using LockerService.Application.Common.Mappings;
 using LockerService.Application.EventBus.RabbitMq.Consumers.Lockers;
 using LockerService.Application.EventBus.RabbitMq.Consumers.Orders;
-using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,7 +34,11 @@ public static class ConfigureServices
             // Define RabbitMQ consumer
             // Order events consumers
             config.AddConsumer<OrderCreatedConsumer>();
+            config.AddConsumer<OrderProcessingConsumer>();
+            config.AddConsumer<OrderConfirmedConsumer>();
             config.AddConsumer<OrderReturnedConsumer>();
+            config.AddConsumer<OrderCompletedConsumer>();
+            config.AddConsumer<OrderCanceledConsumer>();
             
             // Locker events consumers
             config.AddConsumer<LockerConnectedConsumer>();

@@ -21,11 +21,18 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
             includes: new List<Expression<Func<Order, object>>>
             {
                 order => order.Locker,
+                order => order.Sender,
+                order => order.Receiver,
+                order => order.SendBox,
+                order => order.ReceiveBox,
+                order => order.Bill,
                 order => order.Timelines,
                 order => order.Locker.Location,
                 order => order.Locker.Location.Ward,
                 order => order.Locker.Location.District,
                 order => order.Locker.Location.Province,
+                order => order.Details,
+                order => order.Timelines
             });
         
         var order = orderQuery.FirstOrDefault();

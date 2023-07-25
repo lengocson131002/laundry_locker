@@ -83,9 +83,6 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
 
             await _orderTimeoutService.CancelExpiredOrder(order.Id, cancelTime);
             
-            // MQTT open box
-            await _mqttBus.PublishAsync(new MqttOpenBoxEvent(locker.Id, (int)availableBox));
-            
             // response
             return _mapper.Map<OrderResponse>(savedOrder);
         }

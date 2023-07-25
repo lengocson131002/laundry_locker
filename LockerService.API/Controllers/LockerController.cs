@@ -11,6 +11,7 @@ namespace LockerService.API.Controllers;
 public class LockerController : ApiControllerBase
 {
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<LockerResponse>> AddLocker([FromBody] AddLockerCommand command)
     {
         return await Mediator.Send(command);
@@ -40,6 +41,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> UpdateLocker([FromRoute] long id,
         [FromBody] UpdateLockerCommand command)
     {
@@ -49,6 +51,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/status")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> UpdateLockerStatus([FromRoute] long id,
         [FromBody] UpdateLockerStatusCommand command)
     {
@@ -64,6 +67,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPost("{id:long}/boxes")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> AddBox([FromRoute] long id, [FromBody] AddBoxCommand  command)
     {
         command.LockerId = id;
@@ -74,6 +78,14 @@ public class LockerController : ApiControllerBase
     public async Task<ActionResult<ListResponse<BoxResponse>>> GetAllBoxes([FromRoute] long id)
     {
         return await Mediator.Send(new GetAllBoxesQuery(id));
+    }
+
+    [HttpPut("{id:long}/boxes")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> UpdateBoxStatus([FromRoute] long id, [FromBody] UpdateBoxStatusCommand command)
+    {
+        command.LockerId = id;
+        return await Mediator.Send(command);
     }
 
     [HttpGet("{id:long}/timelines")]

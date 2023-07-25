@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Persistence.Repositories;
-using LockerService.Application.Lockers.Models;
 using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Persistence;
@@ -16,54 +15,26 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
         _dbContext = dbContext;
     }
 
-    public async Task<int?> FindAvailableBox(long lockerId)
+    public async Task<Box?> FindAvailableBox(long lockerId)
     {
-        var availableBoxes = await FindAvailableBoxes(lockerId);
-        return availableBoxes.Any() ? availableBoxes[0] : null;
+        var boxes = await FindAvailableBoxes(lockerId);
+        return boxes.Any() ? boxes[0] : null;
     }
 
-    public async Task<IList<int>> FindAvailableBoxes(long lockerId)
+    public async Task<IList<Box>> FindAvailableBoxes(long lockerId)
     {
-        var boxes = await GetAllBoxes(lockerId);
-        return boxes
-            // .Where(box => box.IsAvailable)
-            .Select(box => box.Number)
-            .ToList();
+        return await GetAllBoxesQueryable(lockerId)
+            .Where(box => box.IsActive && (box.LastOrder == null
+                                           || (!OrderStatus.Initialized.Equals(box.LastOrder.Status)
+                                               && !OrderStatus.Waiting.Equals(box.LastOrder.Status)
+                                               && !OrderStatus.Returned.Equals(box.LastOrder.Status))))
+            .ToListAsync();
     }
 
-    public async Task<IList<BoxResponse>> GetAllBoxes(long lockerId)
+    public async Task<IList<Box>> GetAllBoxes(long lockerId)
     {
-        // var boxCount = await _dbContext.Lockers
-        //     .Where(locker => locker.Id == lockerId)
-        //     .Select(locker => locker.ColumnCount * locker.RowCount)
-        //     .FirstAsync();
-        //
-        // if (boxCount == 0) return new List<BoxStatus>();
-        //
-        // var latestOrders = await _dbContext.Orders
-        //     .AsNoTracking()
-        //     .Where(order => order.LockerId == lockerId)
-        //     .GroupBy(order => order.ReceiveBox)
-        //     .Select(group => group.OrderByDescending(order => order.CreatedAt).First())
-        //     .ToListAsync();
-        //
-        // return Enumerable.Range(1, boxCount)
-        //     .GroupJoin(
-        //         latestOrders,
-        //         boxOrder => boxOrder,
-        //         order => order.ReceiveBox,
-        //         (boxOrder, order) => new { boxOrder, order })
-        //     .SelectMany(item => item.order.DefaultIfEmpty(), (boxOrder, order) => new BoxStatus
-        //     {
-        //         BoxOrder = boxOrder.boxOrder,
-        //         IsAvailable = order == null || (!OrderStatus.Initialized.Equals(order.Status)
-        //                                         && !OrderStatus.Waiting.Equals(order.Status)
-        //                                         && !OrderStatus.Returned.Equals(order.Status)),
-        //         OrderStatus = order?.Status,
-        //         OrderId = order?.Id
-        //     })
-        //     .ToList();
-        throw new NotImplementedException();
+        return await GetAllBoxesQueryable(lockerId)
+            .ToListAsync();
     }
 
     public async Task<Locker?> FindByName(string name)
@@ -75,5 +46,28 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
     public async Task<Locker?> FindByCode(string code)
     {
         return await _dbContext.Lockers.FirstOrDefaultAsync(lo => Equals(lo.Code, code));
+    }
+
+    private IQueryable<Box> GetAllBoxesQueryable(long lockerId)
+    {
+        return _dbContext.Boxes
+            .Where(box => box.LockerId == lockerId)
+            .GroupJoin(
+                _dbContext.Orders
+                    .Include(order => order.Sender)
+                    .Include(order => order.Receiver),
+                box => box.Id,
+                order => order.ReceiveBoxId,
+                (box, orders) => new Box
+                {
+                    Id = box.Id,
+                    Number = box.Number,
+                    PinNo = box.PinNo,
+                    IsActive = box.IsActive,
+                    CreatedAt = box.CreatedAt,
+                    UpdatedAt = box.UpdatedAt,
+                    LockerId = box.LockerId,
+                    LastOrder = orders.OrderByDescending(or => or.CreatedAt).First()
+                });
     }
 }

@@ -20,7 +20,11 @@ public class GetAllOrdersHandler : IRequestHandler<GetAllOrdersQuery, Pagination
             orderBy: request.GetOrder(),
             includes: new List<Expression<Func<Order, object>>>() {
                 order => order.Locker,
-                order => order.Staff
+                order => order.Staff,
+                order => order.SendBox,
+                order => order.ReceiveBox,
+                order => order.Sender,
+                order => order.Receiver
             });
 
         return new PaginationResponse<Order, OrderResponse>(

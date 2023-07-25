@@ -1,4 +1,3 @@
-using LockerService.Application.EventBus.RabbitMq.Events;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using MassTransit;
 
@@ -13,12 +12,12 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
     private readonly IMapper _mapper;
 
     private readonly IPublishEndpoint _rabbitMqBus;
-
-
+    
     public ConfirmOrderHandler(
         ILogger<ConfirmOrderHandler> logger,
         IUnitOfWork unitOfWork,
-        IMapper mapper, IPublishEndpoint rabbitMqBus)
+        IMapper mapper, 
+        IPublishEndpoint rabbitMqBus)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -36,34 +35,24 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
         }
 
         var currentStatus = order.Status;
-        
         if (!OrderStatus.Initialized.Equals(currentStatus))
         {
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
 
         order.PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode();
-        
         order.PinCodeIssuedAt = DateTimeOffset.UtcNow;
         order.Status = OrderStatus.Waiting;
-
-        _logger.LogInformation("Order Pin Code: {pinCode}", order.PinCode);
-        
         await _unitOfWork.OrderRepository.UpdateAsync(order);
-        
-        // Save timeline
-        var timeline = new OrderTimeline()
+        await _unitOfWork.SaveChangesAsync();
+
+        // Push event
+        await _rabbitMqBus.Publish(new OrderConfirmedEvent()
         {
-            Order = order,
+            Id = order.Id,
             PreviousStatus = currentStatus,
             Status = order.Status
-        };
-        await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
-        
-        await _unitOfWork.SaveChangesAsync();
-    
-        // Push rabbit MQ
-        await _rabbitMqBus.Publish(_mapper.Map<OrderCreatedEvent>(order), cancellationToken);
+        }, cancellationToken);
         
         return _mapper.Map<OrderResponse>(order);
     }

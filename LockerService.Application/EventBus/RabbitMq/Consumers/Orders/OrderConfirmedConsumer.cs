@@ -5,30 +5,27 @@ using MassTransit;
 
 namespace LockerService.Application.EventBus.RabbitMq.Consumers.Orders;
 
-public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
+public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
 {
     private readonly ILogger<OrderConfirmedConsumer> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISmsNotificationService _smsNotificationService;
-    private readonly IMqttBus _mqttBus;
-    
-    public OrderReturnedConsumer(
+
+    public OrderConfirmedConsumer(
         ILogger<OrderConfirmedConsumer> logger, 
         IUnitOfWork unitOfWork, 
-        ISmsNotificationService smsNotificationService, 
-        IMqttBus mqttBus)
+        ISmsNotificationService smsNotificationService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _smsNotificationService = smsNotificationService;
-        _mqttBus = mqttBus;
     }
-    
-    public async Task Consume(ConsumeContext<OrderReturnedEvent> context)
+
+    public async Task Consume(ConsumeContext<OrderConfirmedEvent> context)
     {
         var eventMessage = context.Message;
-        _logger.LogInformation("Received order returned message: {0}", JsonSerializer.Serialize(eventMessage));
-
+        _logger.LogInformation("Received order confirmed message: {0}", JsonSerializer.Serialize(eventMessage));
+        
         var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
             predicate: order => order.Id == eventMessage.Id,
             includes: new ListResponse<Expression<Func<Order, object>>>()
@@ -41,12 +38,11 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
             });
         
         var order = await orderQuery.FirstOrDefaultAsync();
-        
         if (order == null)
         {
             return;
         }
-        
+
         // Save timeline
         var timeline = new OrderTimeline()
         {
@@ -56,8 +52,5 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
         };
         await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
         await _unitOfWork.SaveChangesAsync();
-
-        // Mqtt Open Box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox.Number));
     }
 }

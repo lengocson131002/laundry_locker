@@ -41,5 +41,7 @@ public class Locker : BaseAuditableEntity
 
     public IList<Box> Boxes { get; set; } = new List<Box>();
 
+    public IList<Order> Orders { get; set; } = new List<Order>();
+
     public bool CanUpdateStatus => !Equals(LockerStatus.Initialized, Status) && !Equals(LockerStatus.Disconnected, Status);
 }

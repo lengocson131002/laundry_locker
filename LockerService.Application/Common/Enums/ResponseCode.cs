@@ -48,6 +48,11 @@ public enum ResponseCode
     [Description("Locker is currently not active")] LockerErrorNotActive = 108,
     
     [Description("No any available box. Please try later")] LockerErrorNoAvailableBox = 109,
+    
+    [Description("Box not found")] LockerErrorBoxNotFound = 110,
+    
+    [Description("Box status is not allowed to do this function")] LockerErrorInvalidBoxStatus = 111,
+
 
     // Service
     [Description("Service not found")] ServiceErrorNotFound = 201,

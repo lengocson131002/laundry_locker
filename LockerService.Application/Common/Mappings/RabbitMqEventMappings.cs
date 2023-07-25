@@ -7,7 +7,7 @@ public class RabbitMqEventMappings : Profile
 {
     public RabbitMqEventMappings()
     {
-        CreateMap<Order, OrderCreatedEvent>();
+        CreateMap<Order, OrderConfirmedEvent>();
         CreateMap<Order, OrderReturnedEvent>();
     }
 }

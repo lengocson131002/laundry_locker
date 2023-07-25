@@ -14,6 +14,7 @@ public class MappingProfiles : Profile
         CreateMap<Locker, LockerResponse>();
         CreateMap<Locker, LockerDetailResponse>();
         CreateMap<LockerTimeline, LockerTimelineResponse>();
+        CreateMap<Box, BoxResponse>();
         
         // Service
         CreateMap<AddServiceCommand, Service>();
@@ -33,12 +34,12 @@ public class MappingProfiles : Profile
         // Order
         CreateMap<CreateOrderCommand, Order>();
         CreateMap<Order, OrderResponse>();
+        CreateMap<Order, BoxOrderResponse>();
         
         // Bill
         
         // OrderDetail
         CreateMap<OrderDetail, OrderItemResponse>();
-
         CreateMap<Order, OrderDetailResponse>();
         
         // Order timeline

@@ -1,4 +1,6 @@
-using LockerService.Application.Common.Services.Notification;
+using System.Text.Json;
+using LockerService.Application.Common.Constants;
+using LockerService.Application.Common.Extensions;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using MassTransit;
 
@@ -6,50 +8,49 @@ namespace LockerService.Application.EventBus.RabbitMq.Consumers.Orders;
 
 public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
 {
-    private readonly ILogger<OrderCreatedConsumer> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ISmsNotificationService _smsNotificationService;
+    private readonly IMqttBus _mqttBus;
+    private readonly IOrderTimeoutService _orderTimeoutService;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<OrderCreatedConsumer> _logger;
 
-    public OrderCreatedConsumer(
-        ILogger<OrderCreatedConsumer> logger, 
-        IUnitOfWork unitOfWork, 
-        ISmsNotificationService smsNotificationService)
+    public OrderCreatedConsumer(IUnitOfWork unitOfWork, 
+        IMqttBus mqttBus, 
+        IOrderTimeoutService orderTimeoutService, 
+        IConfiguration configuration, 
+        ILogger<OrderCreatedConsumer> logger)
     {
-        _logger = logger;
         _unitOfWork = unitOfWork;
-        _smsNotificationService = smsNotificationService;
+        _mqttBus = mqttBus;
+        _orderTimeoutService = orderTimeoutService;
+        _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
     {
-        // var eventMessage = context.Message;
-        // var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
-        //     predicate: order => order.Id == eventMessage.Id,
-        //     includes: new ListResponse<Expression<Func<Order, object>>>()
-        //     {
-        //         order => order.Locker,
-        //         order => order.Locker.Location,
-        //         order => order.Locker.Location.Ward,
-        //         order => order.Locker.Location.District,
-        //         order => order.Locker.Location.Province
-        //     });
-        //
-        // var order = await orderQuery.FirstOrDefaultAsync();
-        //
-        // if (order == null)
-        // {
-        //     return;
-        // }
-        //
-        // var locker = order.Locker;
-        // var address = $"{locker.Location.Address}, {locker.Location.Ward.Name}, {locker.Location.District.Name}, {locker.Location.Province.Name}";
-        //
-        // var smsContent = string.Format(SmsTemplates.OrderCreatedSmsTemplate, service.Name, address, order.PinCode);
-        // var notifiedPhone = !string.IsNullOrWhiteSpace(order.ReceivePhone) ? order.ReceivePhone : order.OrderPhone;
-        // var smsData = new SmsNotificationData(notifiedPhone, smsContent);
-        //
-        // _logger.LogInformation("Send sms: {0}", JsonSerializer.Serialize(smsData));
-        //
-        // await _smsNotificationService.SendAsync(smsData);
+        var message = context.Message;
+        _logger.LogInformation("Received order created message: {0}", JsonSerializer.Serialize(message));
+
+        var order = await _unitOfWork.OrderRepository.GetByIdAsync(message.OrderId);
+        if (order == null)
+        {
+            return;
+        }
+        
+        // Create order timeline
+        var timeline = new OrderTimeline()
+        {
+            Order = order,
+            Status = message.Status
+        };
+        await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
+        await _unitOfWork.SaveChangesAsync();
+
+        // Set timeout for created order
+        var cancelTime = message.Time
+            .AddMinutes(_configuration.GetValueOrDefault("Order:TimeoutInMinutes", BaseConstants.DefaultOrderTimeoutInMinutes));
+
+        await _orderTimeoutService.CancelExpiredOrder(message.OrderId, cancelTime);
     }
 }

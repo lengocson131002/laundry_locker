@@ -1,4 +1,5 @@
 using LockerService.Application.Common.Extensions;
+using LockerService.Application.Common.Utils;
 
 namespace LockerService.Application.Orders.Commands;
 
@@ -10,19 +11,19 @@ public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
             .NotNull();
         RuleFor(req => req.Type)
             .NotNull();
-        RuleFor(req => req.OrderPhone)
+        RuleFor(req => req.SenderPhone)
             .NotNull()
             .Must(x => x.IsValidPhoneNumber())
-            .WithMessage("Invalid order phone number");
+            .WithMessage("Invalid sender phone number");
 
-        RuleFor(req => req.ReceivePhone)
+        RuleFor(req => req.ReceiverPhone)
             .Must(x => x == null || x.IsValidPhoneNumber())
-            .WithMessage("Invalid receive phone number");
+            .WithMessage("Invalid receiver phone number");
 
         RuleFor(model => model.ServiceIds)
             .Must(serviceIds => serviceIds.Any())
             .When(order => OrderType.Laundry.Equals(order.Type))
-            .WithMessage("Services is required for landry type");
+            .WithMessage("Services is required for laundry order");
     }
 }
 
@@ -32,21 +33,11 @@ public class CreateOrderCommand : IRequest<OrderResponse>
     
     public OrderType Type { get; set; }
     
-    private string _oPhone = default!;
-    
-    public string OrderPhone
-    {
-        get => this._oPhone;
-        set => this._oPhone = value.Trim();
-    }
+    [TrimString(true)]
+    public string SenderPhone { get; set;  } = default!;
 
-    private string? _rPhone;
-    
-    public string? ReceivePhone
-    {
-        get => this._rPhone;
-        set => this._rPhone = value?.Trim();
-    }
+    [TrimString(true)]
+    public string? ReceiverPhone { get; set; }
 
-    public IList<int> ServiceIds { get; set; } = new List<int>();
+    public IList<long> ServiceIds { get; set; } = new List<long>();
 }

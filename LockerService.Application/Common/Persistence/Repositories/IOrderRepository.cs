@@ -4,5 +4,5 @@ public interface IOrderRepository : IBaseRepository<Order>
 {
     Task<string> GenerateOrderPinCode(int length = 6);
 
-    Task<Order?> GetOrderByPinCode(string pinCode);
+    IQueryable<Order> GetOrderByPinCode(string pinCode);
 }

@@ -30,4 +30,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     
     IStaffLockerRepository StaffLockerRepository { get; }
     
+    IBoxRepository BoxRepository { get; }
+    
 }

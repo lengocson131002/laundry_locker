@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -32,4 +33,12 @@ public static class StringExtensions
         return Regex.Replace(src, "^(84|0)", "+84");
     }
 
+    public static bool IsValidIpAddress(this string src)
+    {
+        if (src.Split(".").Length != 4)
+        {
+            return false;
+        }
+        return IPAddress.TryParse(src, out IPAddress _);
+    }
 }

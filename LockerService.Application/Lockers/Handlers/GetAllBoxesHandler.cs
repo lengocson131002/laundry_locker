@@ -19,6 +19,7 @@ public class GetAllBoxesHandler : IRequestHandler<GetAllBoxesQuery, ListResponse
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
-        return new ListResponse<BoxResponse>(await _unitOfWork.LockerRepository.GetAllBoxes(request.LockerId));
+        var boxes = await _unitOfWork.LockerRepository.GetAllBoxes(request.LockerId);
+        return new ListResponse<BoxResponse>(_mapper.Map<IList<Box>, IList<BoxResponse>>(boxes));
     }
 }

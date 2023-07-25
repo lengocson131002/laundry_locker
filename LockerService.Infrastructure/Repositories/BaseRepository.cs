@@ -47,13 +47,20 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public async Task<T> AddAsync(T entity)
     {
+        if (_dbContext.Entry(entity).State == EntityState.Detached)
+        {
+            _dbContext.Set<T>().Attach(entity);
+        }
         await _dbContext.Set<T>().AddAsync(entity);
         return entity;
     }
 
     public Task UpdateAsync(T entity)
     {
-        if (_dbContext.Entry(entity).State == EntityState.Detached) _dbContext.Set<T>().Attach(entity);
+        if (_dbContext.Entry(entity).State == EntityState.Detached)
+        {
+            _dbContext.Set<T>().Attach(entity);
+        }
 
         _dbContext.Entry(entity).State = EntityState.Modified;
 
@@ -63,7 +70,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public Task DeleteAsync(T entity)
     {
-        if (_dbContext.Entry(entity).State == EntityState.Detached) _dbContext.Set<T>().Attach(entity);
+        if (_dbContext.Entry(entity).State == EntityState.Detached)
+        {
+            _dbContext.Set<T>().Attach(entity);
+        }
 
         _dbContext.Set<T>().Remove(entity);
 
@@ -72,7 +82,15 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public async Task AddRange(IEnumerable<T> entities)
     {
-        await _dbContext.Set<T>().AddRangeAsync(entities);
+        var listEntities = entities.ToList();
+        listEntities.ForEach(entity =>
+        {
+            if (_dbContext.Entry(entity).State == EntityState.Detached)
+            {
+                _dbContext.Set<T>().Attach(entity);
+            }
+        });
+        await _dbContext.Set<T>().AddRangeAsync(listEntities);
     }
 
     public Task DeleteRange(IEnumerable<T> entities)
@@ -80,7 +98,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         var listEntities = entities.ToList();
         listEntities.ForEach(entity =>
         {
-            if (_dbContext.Entry(entity).State == EntityState.Detached) _dbContext.Set<T>().Attach(entity);
+            if (_dbContext.Entry(entity).State == EntityState.Detached)
+            {
+                _dbContext.Set<T>().Attach(entity);
+            }
         });
 
         _dbContext.Set<T>().RemoveRange(listEntities);
