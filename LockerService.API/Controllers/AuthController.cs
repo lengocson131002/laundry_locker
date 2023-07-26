@@ -1,6 +1,5 @@
 using LockerService.Application.Auth.Queries;
 using LockerService.Application.Common.Extensions;
-using LockerService.Application.Lockers.Queries;
 using LockerService.Infrastructure.Common.Constants;
 
 namespace LockerService.API.Controllers;
@@ -21,7 +20,7 @@ public class AuthController : ApiControllerBase
     public async Task<ActionResult<TokenResponse>> LoginAdmin([FromBody] AdminLoginRequest request)
     {
         var response = await Mediator.Send(request);
-        SetHttpCookieToken(response);
+        await SetHttpCookieToken(response);
         return response;
     }
 
@@ -44,7 +43,7 @@ public class AuthController : ApiControllerBase
     public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
     {
         var response = await Mediator.Send(request);
-        SetHttpCookieToken(response);
+        await SetHttpCookieToken(response);
         return response;
     }
 
