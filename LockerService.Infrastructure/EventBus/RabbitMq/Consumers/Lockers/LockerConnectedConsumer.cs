@@ -1,9 +1,6 @@
-using System.Text.Json;
-using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
-using LockerService.Domain.Events;
-using MassTransit;
+using LockerService.Domain.Enums;
 
-namespace LockerService.Application.EventBus.RabbitMq.Consumers.Lockers;
+namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 
 public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
 {

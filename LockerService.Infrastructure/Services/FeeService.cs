@@ -1,8 +1,6 @@
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Common.Exceptions;
-using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Services;
-using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Infrastructure.Services;

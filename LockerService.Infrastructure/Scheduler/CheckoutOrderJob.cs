@@ -1,12 +1,5 @@
-using System.Linq.Expressions;
-using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Services;
-using LockerService.Application.EventBus.RabbitMq.Events.Orders;
-using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace LockerService.Infrastructure.Scheduler;

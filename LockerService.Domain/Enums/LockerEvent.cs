@@ -1,4 +1,4 @@
-namespace LockerService.Domain.Events;
+namespace LockerService.Domain.Enums;
 
 public enum LockerEvent
 {

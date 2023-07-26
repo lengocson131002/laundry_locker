@@ -1,5 +1,5 @@
+using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
-using MassTransit;
 
 namespace LockerService.Application.Orders.Handlers;
 
@@ -11,13 +11,13 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
 
     private readonly IMapper _mapper;
 
-    private readonly IPublishEndpoint _rabbitMqBus;
+    private readonly IRabbitMqBus _rabbitMqBus;
     
     public ConfirmOrderHandler(
         ILogger<ConfirmOrderHandler> logger,
         IUnitOfWork unitOfWork,
         IMapper mapper, 
-        IPublishEndpoint rabbitMqBus)
+        IRabbitMqBus rabbitMqBus)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -47,7 +47,7 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
         await _unitOfWork.SaveChangesAsync();
 
         // Push event
-        await _rabbitMqBus.Publish(new OrderConfirmedEvent()
+        await _rabbitMqBus.PublishAsync(new OrderConfirmedEvent()
         {
             Id = order.Id,
             PreviousStatus = currentStatus,

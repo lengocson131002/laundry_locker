@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Persistence.Repositories;
-using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Persistence;
 

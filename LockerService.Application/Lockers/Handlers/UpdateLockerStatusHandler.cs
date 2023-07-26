@@ -1,5 +1,5 @@
+using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
-using MassTransit;
 
 namespace LockerService.Application.Lockers.Handlers;
 
@@ -7,9 +7,9 @@ public class UpdateLockerStatusHandler :
     IRequestHandler<UpdateLockerStatusCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IPublishEndpoint _rabbitMqBus;
+    private readonly IRabbitMqBus _rabbitMqBus;
 
-    public UpdateLockerStatusHandler(IUnitOfWork unitOfWork, IPublishEndpoint rabbitMqBus)
+    public UpdateLockerStatusHandler(IUnitOfWork unitOfWork, IRabbitMqBus rabbitMqBus)
     {
         _unitOfWork = unitOfWork;
         _rabbitMqBus = rabbitMqBus;
@@ -35,7 +35,7 @@ public class UpdateLockerStatusHandler :
         await _unitOfWork.LockerRepository.UpdateAsync(locker);
         await _unitOfWork.SaveChangesAsync();
 
-        await _rabbitMqBus.Publish(new LockerUpdatedStatusEvent()
+        await _rabbitMqBus.PublishAsync(new LockerUpdatedStatusEvent()
         {
             LockerId = locker.Id,
             Status = locker.Status,

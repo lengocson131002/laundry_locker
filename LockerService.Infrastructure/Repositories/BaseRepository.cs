@@ -1,6 +1,4 @@
-using System.Linq.Expressions;
 using LockerService.Application.Common.Persistence.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace LockerService.Infrastructure.Repositories;
 

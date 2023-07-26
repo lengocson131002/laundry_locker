@@ -1,7 +1,4 @@
-using System.Text.Json;
 using LockerService.Application.Common.Security;
-using LockerService.Application.EventBus.Mqtt;
-using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Protocol;
 

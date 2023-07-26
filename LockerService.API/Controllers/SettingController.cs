@@ -6,9 +6,9 @@ namespace LockerService.API.Controllers;
 [Route("/api/v1/settings")]
 public class SettingController : ApiControllerBase
 {
-    [HttpGet]
-    public async Task<ActionResult<ListResponse<SettingResource>>> GetAllSettings()
-    {
-        
-    }
+    // [HttpGet]
+    // public async Task<ActionResult<ListResponse<SettingResource>>> GetAllSettings()
+    // {
+    //     
+    // }
 }

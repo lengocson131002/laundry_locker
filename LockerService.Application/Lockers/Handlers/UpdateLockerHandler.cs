@@ -1,7 +1,5 @@
+using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
-using LockerService.Domain.Events;
-using MassTransit;
-using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace LockerService.Application.Lockers.Handlers;
@@ -10,11 +8,11 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IPublishEndpoint _rabbitMqBus;
+    private readonly IRabbitMqBus _rabbitMqBus;
+    
     public UpdateLockerHandler(
         IMapper mapper,
-        IUnitOfWork unitOfWork, 
-        IPublishEndpoint rabbitMqBus)
+        IUnitOfWork unitOfWork, IRabbitMqBus rabbitMqBus)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
@@ -142,7 +140,7 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
         // Save changes
         await _unitOfWork.SaveChangesAsync();
         
-        await _rabbitMqBus.Publish(new LockerUpdatedInfoEvent()
+        await _rabbitMqBus.PublishAsync(new LockerUpdatedInfoEvent()
         {
             Id = locker.Id,
             Time = DateTimeOffset.UtcNow,

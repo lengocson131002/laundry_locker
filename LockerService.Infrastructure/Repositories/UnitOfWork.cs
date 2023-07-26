@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Infrastructure.Persistence;
 

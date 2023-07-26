@@ -1,7 +1,5 @@
 using System.Data;
-using LockerService.Application.Common.Persistence;
 using LockerService.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace LockerService.Infrastructure.Repositories;

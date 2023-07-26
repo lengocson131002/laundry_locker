@@ -1,6 +1,6 @@
+using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
-using MassTransit;
 
 namespace LockerService.Application.Orders.Handlers;
 
@@ -8,14 +8,14 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
 {
     private readonly ILogger<CreateOrderHandler> _logger;
     private readonly IMapper _mapper;
-    private readonly IPublishEndpoint _rabbitMqBus;
+    private readonly IRabbitMqBus _rabbitMqBus;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateOrderHandler(
         ILogger<CreateOrderHandler> logger,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        IPublishEndpoint rabbitMqBus)
+        IRabbitMqBus rabbitMqBus)
     {
         _logger = logger;
         _mapper = mapper;
@@ -39,7 +39,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
         if (availableBox == null)
         {
             var exception = new ApiException(ResponseCode.LockerErrorNoAvailableBox);
-            await _rabbitMqBus.Publish(new LockerOverloadedEvent
+            await _rabbitMqBus.PublishAsync(new LockerOverloadedEvent
             {
                 LockerId = locker.Id,
                 Time = DateTimeOffset.UtcNow,
@@ -123,7 +123,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
         _logger.LogInformation("Create new order: {0}", order.Id);
 
         // push event
-        await _rabbitMqBus.Publish(new OrderCreatedEvent()
+        await _rabbitMqBus.PublishAsync(new OrderCreatedEvent()
         {
             OrderId = order.Id,
             Time = DateTimeOffset.UtcNow,

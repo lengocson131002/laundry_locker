@@ -1,5 +1,5 @@
+using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
-using MassTransit;
 
 namespace LockerService.Application.Orders.Handlers;
 
@@ -8,13 +8,14 @@ public class ProcessOrderHandler : IRequestHandler<ProcessOrderCommand, OrderRes
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ProcessOrderHandler> _logger;
     private readonly IMapper _mapper;
-    private readonly IPublishEndpoint _rabbitMqBus;
+    private readonly IRabbitMqBus _rabbitMqBus;
     private readonly ICurrentPrincipalService _currentPrincipalService;
     
     public ProcessOrderHandler(
         ILogger<ProcessOrderHandler> logger, 
         IUnitOfWork unitOfWork, 
-        IMapper mapper, IPublishEndpoint rabbitMqBus, 
+        IMapper mapper, 
+        IRabbitMqBus rabbitMqBus, 
         ICurrentPrincipalService currentPrincipalService)
     {
         _logger = logger;
@@ -67,7 +68,7 @@ public class ProcessOrderHandler : IRequestHandler<ProcessOrderCommand, OrderRes
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
 
-        await _rabbitMqBus.Publish(new OrderProcessingEvent()
+        await _rabbitMqBus.PublishAsync(new OrderProcessingEvent()
         {
             Id = order.Id,
             PreviousStatus = currentStatus,

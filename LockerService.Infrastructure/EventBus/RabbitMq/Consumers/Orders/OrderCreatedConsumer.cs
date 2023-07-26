@@ -1,10 +1,8 @@
-using System.Text.Json;
-using LockerService.Application.Common.Constants;
-using LockerService.Application.Common.Extensions;
-using LockerService.Application.EventBus.RabbitMq.Events.Orders;
-using MassTransit;
+using LockerService.Application.Common.Services;
+using LockerService.Infrastructure.Common;
+using Microsoft.Extensions.Configuration;
 
-namespace LockerService.Application.EventBus.RabbitMq.Consumers.Orders;
+namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 
 public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
 {

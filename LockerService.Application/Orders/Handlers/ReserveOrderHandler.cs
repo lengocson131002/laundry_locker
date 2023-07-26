@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Extensions;
-using LockerService.Domain.Events;
 
 namespace LockerService.Application.Orders.Handlers;
 

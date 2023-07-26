@@ -1,8 +1,4 @@
-using System.Text.Json;
-using LockerService.Application.EventBus.RabbitMq.Events.Orders;
-using MassTransit;
-
-namespace LockerService.Application.EventBus.RabbitMq.Consumers.Orders;
+namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 
 public class OrderCompletedConsumer : IConsumer<OrderCompletedEvent>
 {

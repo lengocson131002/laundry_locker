@@ -1,6 +1,5 @@
+using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
-using LockerService.Domain.Events;
-using MassTransit;
 
 namespace LockerService.Application.Lockers.Handlers;
 
@@ -9,9 +8,8 @@ public class ConnectLockerHandler : IRequestHandler<ConnectLockerCommand, Locker
     private readonly ILogger<ConnectLockerHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IPublishEndpoint _rabbitMqBus;
-    
-    public ConnectLockerHandler(IUnitOfWork unitOfWork, ILogger<ConnectLockerHandler> logger, IMapper mapper, IPublishEndpoint rabbitMqBus)
+    private readonly IRabbitMqBus _rabbitMqBus;
+    public ConnectLockerHandler(IUnitOfWork unitOfWork, ILogger<ConnectLockerHandler> logger, IMapper mapper, IRabbitMqBus rabbitMqBus)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -45,7 +43,7 @@ public class ConnectLockerHandler : IRequestHandler<ConnectLockerCommand, Locker
         
         _logger.LogInformation("Locker {0} connected to server", locker.Id);
         
-        await _rabbitMqBus.Publish(new LockerConnectedEvent()
+        await _rabbitMqBus.PublishAsync(new LockerConnectedEvent()
         {
             LockerId = locker.Id,
         }, cancellationToken);

@@ -1,6 +1,5 @@
 using LockerService.Application.Common.Services;
 using LockerService.Infrastructure.Scheduler;
-using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace LockerService.Infrastructure.Services;

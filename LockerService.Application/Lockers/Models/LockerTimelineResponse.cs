@@ -1,5 +1,3 @@
-using LockerService.Domain.Events;
-
 namespace LockerService.Application.Lockers.Models;
 
 public class LockerTimelineResponse
