@@ -35,6 +35,8 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     private IBoxRepository? _boxRepository;
 
     private ITokenRepository? _tokenRepository;
+
+    private ISettingRepository? _settingRepository;
     
     private readonly ApplicationDbContext _dbContext;
 
@@ -76,4 +78,6 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     public IBoxRepository BoxRepository => _boxRepository ??= new BoxRepository(_dbContext);
  
     public ITokenRepository TokenRepository => _tokenRepository ??= new TokenRepository(_dbContext);
+
+    public ISettingRepository SettingRepository => _settingRepository ??= new SettingRepository(_dbContext);
 }

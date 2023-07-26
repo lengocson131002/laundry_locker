@@ -25,6 +25,8 @@ public class GetAllStoresQuery : PaginationRequest<Store>, IRequest<PaginationRe
 
     public DateTimeOffset? CreatedTo { get; set; }
 
+    public IList<long>? ExcludedIds { get; set; }
+    
     public override Expression<Func<Store, bool>> GetExpressions()
     {
         if (Query is not null)
@@ -72,7 +74,12 @@ public class GetAllStoresQuery : PaginationRequest<Store>, IRequest<PaginationRe
         {
             Expression = Expression.And(store => store.CreatedAt <= CreatedTo);
         }
-
+        
+        if (ExcludedIds != null)
+        {
+            Expression = Expression.And(store => ExcludedIds.All(id => store.Id != id));
+        }
+        
         return Expression;
     }
 }

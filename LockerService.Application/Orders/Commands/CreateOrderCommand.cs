@@ -23,7 +23,28 @@ public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
         RuleFor(model => model.ServiceIds)
             .Must(serviceIds => serviceIds.Any())
             .When(order => OrderType.Laundry.Equals(order.Type))
-            .WithMessage("Services is required for laundry order");
+            .WithMessage("Services is required for laundry order")
+            .Must(UniqueServices)
+            .When(order => OrderType.Laundry.Equals(order.Type))
+            .WithMessage("ServiceIds must contains unique ids");
+    }
+
+    public bool UniqueServices(IList<long> serviceIds)
+    {
+        var encounteredIds = new HashSet<long>();
+
+        foreach (var element in serviceIds)
+        {
+            if (!encounteredIds.Contains(element))
+            {
+               encounteredIds.Add(element);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

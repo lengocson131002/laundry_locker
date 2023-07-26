@@ -1,5 +1,6 @@
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Common.Exceptions;
+using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Services;
 using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
@@ -8,52 +9,45 @@ namespace LockerService.Infrastructure.Services;
 
 public class FeeService : IFeeService
 {
-    public double CalculateFree(in Order order)
+    private readonly IUnitOfWork _unitOfWork;
+
+    public FeeService(IUnitOfWork unitOfWork)
     {
-        // var service = order.Service;
-        // switch (service?.FeeType)
-        // {
-        //     case FeeType.ByTime:
-        //     {
-        //         var  timespan = DateTimeOffset.Now - order.CreatedAt;
-        //         var orderTimeInHours = Round(timespan.TotalHours);
-        //         if (service.Price == null)
-        //         {
-        //             throw new ApiException(ResponseCode.OrderErrorServiceFeeIsMissing);
-        //         }
-        //
-        //         order.Amount = orderTimeInHours;
-        //         return Round(orderTimeInHours * (double)service.Price);
-        //     }
-        //     
-        //     case FeeType.ByUnitPrice:
-        //         if (order.Amount == null || order.Amount <= 0)
-        //         {
-        //             throw new ApiException(ResponseCode.OrderErrorAmountIsRequired);
-        //         }
-        //         
-        //         if (service.Price == null)
-        //         {
-        //             throw new ApiException(ResponseCode.OrderErrorServiceFeeIsMissing);
-        //         }
-        //         
-        //         return Round((double) order.Amount * (double) service.Price);
-        //     
-        //     case FeeType.ByInputPrice:
-        //         if (order.Fee == null || order.Fee <= 0)
-        //         {
-        //             throw new ApiException(ResponseCode.OrderErrorFeeIsRequired);
-        //         }
-        //
-        //         return Round((double) order.Fee);
-        //     
-        //     default:
-        //         throw new ApiException(ResponseCode.OrderErrorServiceFeeTypeIsMissing);
-        // }
-        return 0;
+        _unitOfWork = unitOfWork;
     }
 
-    private double Round(double fee)
+    public async Task CalculateFree(Order order)
+    {
+        switch (order.Type)
+        {
+            case OrderType.Storage:
+                await CalculateStoreFee(order);
+                break;
+            case OrderType.Laundry:
+                await CalculateLaundryFree(order);
+                break;
+        }
+    }
+
+    private Task CalculateStoreFee(Order order)
+    {
+        order.Price = 100000;
+        return Task.CompletedTask;
+    }
+
+    private Task CalculateLaundryFree(Order order)
+    {
+        if (!order.UpdatedInfo)
+        {
+            throw new ApiException(ResponseCode.OrderDetailErrorInfoRequired);
+        }
+
+        var servicePrice = order.Details.Sum(item => item.Price * (decimal) item.Quantity!);
+        order.Price = Round(servicePrice);
+        return Task.CompletedTask;
+    }
+
+    private decimal Round(decimal fee)
     {
         return Math.Round(fee, 2, MidpointRounding.AwayFromZero);
     }

@@ -8,6 +8,8 @@ public class GetAllCustomersQuery : PaginationRequest<Account>, IRequest<Paginat
     
     public AccountStatus? Status { get; set; }
     
+    public IList<long>? ExcludedIds { get; set; }
+
     public override Expression<Func<Account, bool>> GetExpressions()
     {
         if (!string.IsNullOrWhiteSpace(Search))
@@ -24,6 +26,11 @@ public class GetAllCustomersQuery : PaginationRequest<Account>, IRequest<Paginat
         if (Status != null)
         {
             Expression = Expression.And(cus => Status.Equals(cus.Status));
+        }
+
+        if (ExcludedIds != null)
+        {
+            Expression = Expression.And(cus => ExcludedIds.All(id => cus.Id != id));
         }
 
         Expression = Expression.And(acc => Role.Customer.Equals(acc.Role));

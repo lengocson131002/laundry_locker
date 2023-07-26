@@ -111,6 +111,9 @@ public static class ConfigureServices
         // Notification
         services.AddScoped<ISmsNotificationService, TwilioNotificationService>();
         
+        // Payment
+        services.AddScoped<IPaymentService, PaymentService>();
+        
         return services;
     }
 

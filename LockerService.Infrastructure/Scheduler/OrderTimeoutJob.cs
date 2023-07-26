@@ -1,6 +1,5 @@
 using LockerService.Application.Common.Persistence;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
-using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
 using MassTransit;
 using Microsoft.Extensions.Logging;

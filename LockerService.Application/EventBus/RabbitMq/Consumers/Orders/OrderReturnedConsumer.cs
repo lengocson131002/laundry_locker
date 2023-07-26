@@ -31,13 +31,17 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
 
         var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
             predicate: order => order.Id == eventMessage.Id,
-            includes: new ListResponse<Expression<Func<Order, object>>>()
+            includes: new List<Expression<Func<Order, object>>>()
             {
                 order => order.Locker,
                 order => order.Locker.Location,
                 order => order.Locker.Location.Ward,
                 order => order.Locker.Location.District,
-                order => order.Locker.Location.Province
+                order => order.Locker.Location.Province,
+                order => order.SendBox,
+                order => order.ReceiveBox,
+                order => order.Sender,
+                order => order.Receiver
             });
         
         var order = await orderQuery.FirstOrDefaultAsync();

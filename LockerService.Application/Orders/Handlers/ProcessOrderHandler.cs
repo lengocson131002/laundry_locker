@@ -9,16 +9,19 @@ public class ProcessOrderHandler : IRequestHandler<ProcessOrderCommand, OrderRes
     private readonly ILogger<ProcessOrderHandler> _logger;
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _rabbitMqBus;
+    private readonly ICurrentPrincipalService _currentPrincipalService;
     
     public ProcessOrderHandler(
         ILogger<ProcessOrderHandler> logger, 
         IUnitOfWork unitOfWork, 
-        IMapper mapper, IPublishEndpoint rabbitMqBus)
+        IMapper mapper, IPublishEndpoint rabbitMqBus, 
+        ICurrentPrincipalService currentPrincipalService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _rabbitMqBus = rabbitMqBus;
+        _currentPrincipalService = currentPrincipalService;
     }
 
     public async Task<OrderResponse> Handle(ProcessOrderCommand request, CancellationToken cancellationToken)
@@ -35,8 +38,32 @@ public class ProcessOrderHandler : IRequestHandler<ProcessOrderCommand, OrderRes
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
 
+        /*
+         * Check staff
+         * Only staff manage locker can process orders from this locker
+         */
+        
+        var currentAccId = _currentPrincipalService.CurrentSubjectId;
+        if (currentAccId == null)
+        {
+            throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
+        }
+        var currentAcc = await _unitOfWork.AccountRepository.GetByIdAsync(currentAccId);
+        if (currentAcc == null)
+        {
+            throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
+        }
+
+        var isManaging = await _unitOfWork.StaffLockerRepository.IsManaging(currentAcc.Id, order.LockerId); 
+        if (!isManaging)
+        {
+            throw new ApiException(ResponseCode.StaffLockerErrorNoPermission);
+        }
+        
         var currentStatus = order.Status;
         order.Status = OrderStatus.Processing;
+        order.Staff = currentAcc;
+        
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
 

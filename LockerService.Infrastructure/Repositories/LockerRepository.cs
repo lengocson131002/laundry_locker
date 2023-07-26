@@ -52,6 +52,7 @@ public class LockerRepository : BaseRepository<Locker>, ILockerRepository
     {
         return _dbContext.Boxes
             .Where(box => box.LockerId == lockerId)
+            .OrderBy(box => box.Number)
             .GroupJoin(
                 _dbContext.Orders
                     .Include(order => order.Sender)

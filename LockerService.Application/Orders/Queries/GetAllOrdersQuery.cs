@@ -2,17 +2,9 @@ namespace LockerService.Application.Orders.Queries;
 
 public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationResponse<Order, OrderResponse>>
 {
-    private string? _query;
-
-    public string? Query
-    {
-        get => _query;
-        set => _query = value?.Trim().ToLower();
-    }
-
+    public string? Query { get; set; }
+    
     public int? LockerId { get; set; }
-
-    public int? BoxOrder { get; set; }
 
     public OrderType? Type { get; set; }
 
@@ -22,7 +14,12 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 
     public DateTimeOffset? To { get; set; }
 
+    public long? StaffId { get; set; }
+    
+    public long? CustomerId { get; set; }
 
+    public IList<long>? ExcludedIds { get; set; } 
+        
     public override Expression<Func<Order, bool>> GetExpressions()
     {
         Expression = Expression.And(order => LockerId == null || order.LockerId == LockerId);
@@ -35,17 +32,29 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 
         Expression = Expression.And(order => To == null || order.CreatedAt.UtcDateTime <= To);
 
+        Expression = Expression.And(order => StaffId == null || order.StaffId == StaffId);
+
+        Expression = Expression.And(order => CustomerId == null || order.SenderId == CustomerId || order.ReceiverId == CustomerId);
+        
         if (!string.IsNullOrWhiteSpace(Query))
         {
+            Query = Query.Trim().ToLower();
             Expression<Func<Order, bool>> queryExpression = PredicateBuilder.New<Order>();
             queryExpression = queryExpression.Or(order => order.Locker.Name.ToLower().Contains(Query));
+            queryExpression = queryExpression.Or(order => order.Staff != null &&
+                                                          (order.Staff.PhoneNumber.ToLower().Contains(Query)
+                                                           || order.Staff.FullName.ToLower().Contains(Query)));
+
+            queryExpression = queryExpression.Or(order => order.Sender.PhoneNumber.ToLower().Contains(Query)
+                                                          || (order.Receiver != null && order.Receiver.PhoneNumber
+                                                              .ToLower().Contains(Query)));
+            
             Expression = Expression.And(queryExpression);
         }
-
-        if (BoxOrder != null)
+        
+        if (ExcludedIds != null)
         {
-            Expression<Func<Order, bool>> boxOrderExpression = PredicateBuilder.New<Order>();
-            Expression = Expression.And(boxOrderExpression);
+            Expression = Expression.And(order => ExcludedIds.All(id => order.Id != id));
         }
 
         return Expression;

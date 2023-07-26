@@ -29,15 +29,35 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         List<Expression<Func<T, object>>>? includes = null,
         bool disableTracking = false)
     {
+        return Task.FromResult(Get(predicate, orderBy, includes, disableTracking));
+    }
+
+    public IQueryable<T> Get(
+        Expression<Func<T, bool>>? predicate = null, 
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, 
+        List<Expression<Func<T, object>>>? includes = null, 
+        bool disableTracking = false)
+    {
         IQueryable<T> query = _dbContext.Set<T>();
 
-        if (disableTracking) query = query.AsNoTracking();
+        if (disableTracking)
+        {
+            query = query.AsNoTracking();
+        }
 
-        if (includes != null) query = includes.Aggregate(query, (current, include) => current.Include(include));
+        if (includes != null)
+        {
+            query = includes.Aggregate(query, (current, include) => current.Include(include));
+        }
 
-        if (predicate != null) query = query.Where(predicate);
+        if (predicate != null)
+        {
+            query = query.Where(predicate);
+        }
 
-        return Task.FromResult(orderBy != null ? orderBy(query).AsQueryable() : query.AsQueryable());
+        return orderBy != null 
+            ? orderBy(query).AsQueryable() 
+            : query.AsQueryable();
     }
 
     public virtual async Task<T?> GetByIdAsync(object id)

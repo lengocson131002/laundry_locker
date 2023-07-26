@@ -62,7 +62,8 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
 
                 var orderDetail = new OrderDetail
                 {
-                    Service = service
+                    Service = service,
+                    Price = service.Price
                 };
 
                 details.Add(orderDetail);
@@ -72,7 +73,12 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
 
         // Check sender and receiver
         var senderPhone = command.SenderPhone;
-        var sender = await _unitOfWork.AccountRepository.FindCustomer(senderPhone);
+        var sender = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(senderPhone);
+        if (sender != null && !sender.IsActive)
+        {
+            throw new ApiException(ResponseCode.OrderErrorInactiveAccount);
+        }
+        
         if (sender == null)
         {
             sender = new Account
@@ -88,7 +94,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
         Account? receiver = null;
         if (!string.IsNullOrEmpty(receiverPhone) && !Equals(senderPhone, receiverPhone))
         {
-            receiver = await _unitOfWork.AccountRepository.FindCustomer(receiverPhone);
+            receiver = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(receiverPhone);
             if (receiver == null)
             {
                 receiver = new Account

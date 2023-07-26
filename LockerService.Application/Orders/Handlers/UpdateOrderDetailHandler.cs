@@ -24,16 +24,23 @@ public class UpdateOrderDetailHandler : IRequestHandler<UpdateOrderDetailCommand
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
 
-        var orderDetail = await _unitOfWork.OrderDetailRepository.GetByIdAsync(request.DetailId);
-        if (orderDetail == null || orderDetail.OrderId != order.Id)
+        var orderDetail = await _unitOfWork.OrderDetailRepository.Get(
+            predicate: detail => detail.Id == request.DetailId && detail.OrderId == request.OrderId,
+            includes: new List<Expression<Func<OrderDetail, object>>>()
+            {
+                detail => detail.Service
+            }
+        ).FirstOrDefaultAsync(cancellationToken);
+        
+        if (orderDetail == null)
         {
-            throw new ApiException(ResponseCode.OrderErrorDetailNotFound);
+            throw new ApiException(ResponseCode.OrderDetailErrorNotFound);
         }
 
         orderDetail.Quantity = request.Quantity;
         await _unitOfWork.OrderDetailRepository.UpdateAsync(orderDetail);
         await _unitOfWork.SaveChangesAsync();
         
-        return _mapper.Map<OrderItemResponse>(order);
+        return _mapper.Map<OrderItemResponse>(orderDetail);
     }
 }

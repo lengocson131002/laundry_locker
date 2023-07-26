@@ -1,4 +1,5 @@
 using LockerService.Application.Common.Enums;
+using LockerService.Application.Customers.Commands;
 using LockerService.Application.Customers.Models;
 using LockerService.Application.Customers.Queries;
 
@@ -26,5 +27,20 @@ public class CustomerController : ApiControllerBase
     {
         var query = new GetCustomerDetailQuery(id);
         return await Mediator.Send(query);
+    }
+    
+    [HttpGet("by-phone")]
+    public async Task<ActionResult<CustomerDetailResponse>> GetCustomerDetail([FromQuery] string phone)
+    {
+        var query = new GetCustomerByPhoneQuery(phone.Trim());
+        return await Mediator.Send(query);
+    }
+
+    [HttpPut("{id:long}/status")]
+    public async Task<ActionResult<StatusResponse>> UpdateCustomerStatus([FromRoute] long id, [FromBody] UpdateCustomerStatusCommand command)
+    {
+        command.Id = id;
+        await Mediator.Send(command);
+        return new StatusResponse(true);
     }
 }

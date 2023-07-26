@@ -6,7 +6,7 @@ public interface ICurrentPrincipalService
 {
     public string? CurrentPrincipal { get; }
     
-    public int? CurrentSubjectId { get; }   
+    public long? CurrentSubjectId { get; }   
     
     public ClaimsPrincipal GetCurrentPrincipalFromToken(string token);
 

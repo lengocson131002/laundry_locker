@@ -11,6 +11,11 @@ public interface IBaseRepository<T> where T : class
         List<Expression<Func<T, object>>>? includes = null,
         bool disableTracking = false);
 
+    IQueryable<T> Get(Expression<Func<T, bool>>? predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        List<Expression<Func<T, object>>>? includes = null,
+        bool disableTracking = false);
+    
     Task<T?> GetByIdAsync(object id);
 
     Task<T> AddAsync(T entity);

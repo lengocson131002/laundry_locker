@@ -6,6 +6,8 @@ public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<Paginati
 
     public ServiceStatus? Status { get; set; }
     
+    public IList<long>? ExcludedIds { get; set; }
+
     public override Expression<Func<Service, bool>> GetExpressions()
     {
         if (!string.IsNullOrWhiteSpace(Search))
@@ -17,6 +19,11 @@ public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<Paginati
         if (Status != null)
         {
             Expression = Expression.And(service => Status.Equals(service.Status));
+        }
+        
+        if (ExcludedIds != null)
+        {
+            Expression = Expression.And(service => ExcludedIds.All(id => service.Id != id));
         }
 
         return Expression;

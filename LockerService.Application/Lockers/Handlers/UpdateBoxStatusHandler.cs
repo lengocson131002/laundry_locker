@@ -25,7 +25,7 @@ public class UpdateBoxStatusHandler: IRequestHandler<UpdateBoxStatusCommand, Sta
         var box = await _unitOfWork.BoxRepository.FindBox(lockerId, boxNumber);
         if (box == null)
         {
-            throw new ApiException(ResponseCode.LockerErrorNotFound);
+            throw new ApiException(ResponseCode.LockerErrorBoxNotFound);
         }
 
         if (box.IsActive == request.IsActive)

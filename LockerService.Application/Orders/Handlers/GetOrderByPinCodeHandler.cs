@@ -8,10 +8,13 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
 
     private readonly IMapper _mapper;
 
-    public GetOrderByPinCodeHandler(IMapper mapper, IUnitOfWork unitOfWork)
+    private readonly IFeeService _feeService;
+
+    public GetOrderByPinCodeHandler(IMapper mapper, IUnitOfWork unitOfWork, IFeeService feeService)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _feeService = feeService;
     }
 
     public async Task<OrderDetailResponse> Handle(GetOrderByPinCodeQuery request, CancellationToken cancellationToken)
@@ -22,19 +25,25 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
             .Include(order => order.ReceiveBox)
             .Include(order => order.Sender)
             .Include(order => order.Receiver)
+            .Include(order => order.Staff)
             .Include(order => order.Bill)
             .Include(order => order.Details)
+                .ThenInclude(detail => detail.Service)
             .Include(order => order.Timelines)
             .Include(order => order.Locker.Location)
             .Include(order => order.Locker.Location.Ward)
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
             .FirstOrDefaultAsync(cancellationToken);
-
         
         if (order == null)
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
+        }
+        
+        if (order.UpdatedInfo)
+        {
+            await _feeService.CalculateFree(order);
         }
         
         order.Timelines = order.Timelines.OrderBy(timeline => timeline.CreatedAt).ToList();

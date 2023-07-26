@@ -19,32 +19,15 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, Pagi
     {
         var query = await _unitOfWork.AccountRepository.GetAsync(
             predicate: request.GetExpressions(),
+            orderBy: request.GetOrder(),
             disableTracking: true
         );
 
-        // Count total orders
-        var countQuery = query.Select(acc => new
-        {   
-            Account = acc,
-            OrderCount = acc.ReceiveOrders.Count + acc.SendOrders.Count
-        });
-
-        if (!string.IsNullOrWhiteSpace(request.SortColumn))
-        {
-            countQuery = countQuery.OrderBy($"{request.SortColumn} {request.SortDir.ToString().ToLower()}");
-        }
-
-        var count = countQuery.Count();
-        var customers = countQuery
-            .AsEnumerable()
-            .Select(item =>
-            {
-                var customResponse = _mapper.Map<CustomerResponse>(item.Account);
-                return customResponse;
-            })
-            .ToList();
-        
-        return new PaginationResponse<Account, CustomerResponse>(customers, count, request.PageNumber, request.PageSize);
+        return new PaginationResponse<Account, CustomerResponse>(
+            query,
+            request.PageNumber,
+            request.PageSize,
+            cus => _mapper.Map<CustomerResponse>(cus));
     }
 
 }

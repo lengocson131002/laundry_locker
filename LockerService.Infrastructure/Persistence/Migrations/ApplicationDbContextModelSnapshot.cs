@@ -150,8 +150,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Method")
                         .HasColumnType("integer");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
+                    b.Property<long>("ReferenceOrderId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ReferenceTransactionId")
                         .HasColumnType("text");
@@ -617,7 +617,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal?>("Price")
+                    b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
                     b.Property<float?>("Quantity")
@@ -939,7 +939,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Store", "Store")
-                        .WithMany()
+                        .WithMany("Staffs")
                         .HasForeignKey("StoreId");
 
                     b.Navigation("Store");
@@ -1003,7 +1003,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LockerService.Domain.Entities.Store", "Store")
-                        .WithMany()
+                        .WithMany("Lockers")
                         .HasForeignKey("StoreId");
 
                     b.Navigation("Location");
@@ -1040,13 +1040,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasForeignKey("BillId");
 
                     b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("LockerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LockerService.Domain.Entities.Box", "ReceiveBox")
-                        .WithMany()
+                        .WithMany("ReceiveOrders")
                         .HasForeignKey("ReceiveBoxId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1056,7 +1056,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ReceiverId");
 
                     b.HasOne("LockerService.Domain.Entities.Box", "SendBox")
-                        .WithMany()
+                        .WithMany("SendOrders")
                         .HasForeignKey("SendBoxId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1119,7 +1119,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("LockerService.Domain.Entities.StaffLocker", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
-                        .WithMany()
+                        .WithMany("StaffLockers")
                         .HasForeignKey("LockerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1166,11 +1166,22 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("StaffLockers");
                 });
 
+            modelBuilder.Entity("LockerService.Domain.Entities.Box", b =>
+                {
+                    b.Navigation("ReceiveOrders");
+
+                    b.Navigation("SendOrders");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Locker", b =>
                 {
                     b.Navigation("Boxes");
 
                     b.Navigation("Hardwares");
+
+                    b.Navigation("Orders");
+
+                    b.Navigation("StaffLockers");
 
                     b.Navigation("Timelines");
                 });
@@ -1180,6 +1191,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Details");
 
                     b.Navigation("Timelines");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.Store", b =>
+                {
+                    b.Navigation("Lockers");
+
+                    b.Navigation("Staffs");
                 });
 #pragma warning restore 612, 618
         }

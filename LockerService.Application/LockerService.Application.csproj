@@ -39,7 +39,6 @@
         <Folder Include="Accounts\Queries" />
         <Folder Include="Common\Commands" />
         <Folder Include="Common\Interfaces" />
-        <Folder Include="Customers\Commands" />
         <Folder Include="Dashboard\Commands" />
         <Folder Include="EventBus\RabbitMq\Consumers\Acounts" />
         <Folder Include="EventBus\RabbitMq\Events\Accounts" />
@@ -47,6 +46,7 @@
         <Folder Include="Notifications\Handlers" />
         <Folder Include="Notifications\Models" />
         <Folder Include="Notifications\Queries" />
+        <Folder Include="Settings\Commands" />
     </ItemGroup>
 
 </Project>

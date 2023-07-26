@@ -86,8 +86,8 @@ public enum ResponseCode
     [Description("Fee of this order's service is missing")] OrderErrorServiceFeeIsMissing = 408,
     
     [Description("FeeType of this order's service is missing")] OrderErrorServiceFeeTypeIsMissing = 409,
-
-    [Description("Order item detail not found")] OrderErrorDetailNotFound = 410,
+    
+    [Description("Inactive account is not allowed to create order")] OrderErrorInactiveAccount = 410,
 
     // Address
     [Description("Province not found")] AddressErrorProvinceNotFound = 501,
@@ -124,11 +124,24 @@ public enum ResponseCode
     [Description("Assignment not found")] StaffLockerErrorNotFound = 901,
     
     [Description("Assignment existed")] StaffLockerErrorExisted = 902,
+    
+    [Description("Staff has no permission on the request locker")] StaffLockerErrorNoPermission = 903,
 
     // Account
     [Description("Username existed")] AccountErrorUsernameExisted = 1001,
     
     [Description("Phone Number existed")] AccountErrorPhoneNumberExisted = 1002,
-
     
+    [Description("Account's status is not allowed to do this function")] AccountErrorInvalidStatus = 1003,
+
+    // Bill
+    [Description("Bill not found")] BillErrorNotFound = 1101,
+    
+    // OrderDetail
+    [Description("Order item detail not found")] OrderDetailErrorNotFound = 1201,
+    
+    [Description("Please update order's details")] OrderDetailErrorInfoRequired = 1202,
+    
+    [Description("Order item detail existed")] OrderDetailExisted = 1203,
+
 }

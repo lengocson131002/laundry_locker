@@ -1,3 +1,4 @@
+using LockerService.Application.Bills.Models;
 using LockerService.Application.Customers.Models;
 using LockerService.Application.Locations.Commands;
 using LockerService.Application.Services.Commands;
@@ -37,6 +38,7 @@ public class MappingProfiles : Profile
         CreateMap<Order, BoxOrderResponse>();
         
         // Bill
+        CreateMap<Bill, BillResponse>();
         
         // OrderDetail
         CreateMap<OrderDetail, OrderItemResponse>();

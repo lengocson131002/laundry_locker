@@ -33,4 +33,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     
     IBoxRepository BoxRepository { get; }
     
+    ISettingRepository SettingRepository { get; }
+    
 }

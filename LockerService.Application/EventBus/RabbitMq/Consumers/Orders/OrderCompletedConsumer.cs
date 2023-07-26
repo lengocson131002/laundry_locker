@@ -22,7 +22,17 @@ public class OrderCompletedConsumer : IConsumer<OrderCompletedEvent>
         var message = context.Message;
         _logger.LogInformation("Received order completed message: {0}", JsonSerializer.Serialize(message));
 
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(message.Id);
+        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
+            predicate: order => order.Id == message.Id,
+            includes: new List<Expression<Func<Order, object>>>()
+            {
+                order => order.Sender,
+                order => order.Receiver,
+                order => order.SendBox,
+                order => order.ReceiveBox,
+                order => order.Locker
+            });
+        var order = await orderQuery.FirstOrDefaultAsync();
         if (order == null)
         {
             return;

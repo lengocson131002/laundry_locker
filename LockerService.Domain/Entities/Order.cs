@@ -75,4 +75,15 @@ public class Order : BaseAuditableEntity
     public bool IsProcessing => OrderStatus.Processing.Equals(Status);
 
     public bool IsReturned => OrderStatus.Returned.Equals(Status);
+
+    public bool CanCheckout => (OrderType.Storage.Equals(Type) && OrderStatus.Waiting.Equals(Status)) 
+                               ||  (OrderType.Laundry.Equals(Type) && OrderStatus.Returned.Equals(Status));
+    
+    public bool UpdatedInfo
+    {
+        get
+        {
+            return Details.Any() && Details.All(item => item.Quantity != null);
+        }
+    }
 }

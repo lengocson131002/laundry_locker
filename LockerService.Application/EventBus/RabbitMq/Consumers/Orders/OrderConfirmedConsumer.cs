@@ -28,7 +28,7 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
         
         var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
             predicate: order => order.Id == eventMessage.Id,
-            includes: new ListResponse<Expression<Func<Order, object>>>()
+            includes: new List<Expression<Func<Order, object>>>()
             {
                 order => order.Locker,
                 order => order.Locker.Location,

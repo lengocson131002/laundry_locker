@@ -6,6 +6,8 @@ public class OrderResponse
 {
     public long Id { get; set; }
     
+    public OrderType Type { get; set; }
+    
     public string? PinCode { get; set; }
     
     public DateTimeOffset? PinCodeIssuedAt { get; set; }
@@ -17,6 +19,8 @@ public class OrderResponse
     public CustomerResponse Sender { get; set; } = default!;
 
     public CustomerResponse Receiver { get; set; } = default!;
+
+    public StaffResponse Staff { get; set; } = default!;
 
     public DateTimeOffset? ReceiveAt { get; set; }
 

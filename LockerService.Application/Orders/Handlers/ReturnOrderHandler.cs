@@ -26,8 +26,14 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
 
     public async Task<OrderResponse> Handle(ReturnOrderCommand request, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(request.Id);
-        
+        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
+            predicate: order => order.Id == request.Id,
+            includes: new List<Expression<Func<Order, object>>>()
+            {
+                order => order.Details
+            });
+
+        var order = await orderQuery.FirstOrDefaultAsync(cancellationToken);
         if (order == null || !OrderType.Laundry.Equals(order.Type))
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
@@ -36,6 +42,11 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
         if (!order.IsProcessing)
         {
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
+        }
+
+        if (!order.UpdatedInfo)
+        {
+            throw new ApiException(ResponseCode.OrderDetailErrorInfoRequired);
         }
 
         var lockerId = order.LockerId;

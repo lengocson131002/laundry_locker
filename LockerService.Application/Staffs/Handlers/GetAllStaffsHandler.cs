@@ -20,6 +20,10 @@ public class GetAllStaffsHandler : IRequestHandler<GetAllStaffsQuery, Pagination
     {
         var staffs = await _unitOfWork.AccountRepository.GetAsync(
             predicate: request.GetExpressions(),
+            includes: new List<Expression<Func<Account, object>>>()
+            {
+                staff => staff.Store
+            },
             orderBy: request.GetOrder()
         );
 

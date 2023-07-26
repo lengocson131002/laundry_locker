@@ -16,7 +16,8 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
     
     public string? WardCode { get; set; }
 
-    
+    public IList<long>? ExcludedIds { get; set; }
+
     public override Expression<Func<Locker, bool>> GetExpressions()
     {
         if (Search != null)
@@ -54,6 +55,11 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
         {
             Expression = Expression.And(locker =>
                 locker.Staffs.FirstOrDefault(staff => StaffId.Equals(staff.Id)) != null);
+        }
+            
+        if (ExcludedIds != null)
+        {
+            Expression = Expression.And(locker => ExcludedIds.All(id => locker.Id != id));
         }
         
         return Expression;
