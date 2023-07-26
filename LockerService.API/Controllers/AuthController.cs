@@ -1,5 +1,7 @@
 using LockerService.Application.Auth.Queries;
+using LockerService.Application.Common.Extensions;
 using LockerService.Application.Lockers.Queries;
+using LockerService.Infrastructure.Common.Constants;
 
 namespace LockerService.API.Controllers;
 
@@ -7,11 +9,20 @@ namespace LockerService.API.Controllers;
 [Route("/api/v1/auth")]
 public class AuthController : ApiControllerBase
 {
+    private readonly IConfiguration _configuration;
+
+    public AuthController(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     [HttpPost("admin/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginAdmin([FromBody] AdminLoginRequest request)
     {
-        return await Mediator.Send(request);
+        var response = await Mediator.Send(request);
+        SetHttpCookieToken(response);
+        return response;
     }
 
     [HttpGet("admin/profile")]
@@ -32,14 +43,18 @@ public class AuthController : ApiControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
     {
-        return await Mediator.Send(request);
+        var response = await Mediator.Send(request);
+        SetHttpCookieToken(response);
+        return response;
     }
 
     [HttpPost("customer/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginCustomer([FromBody] CustomerLoginRequest request)
     {
-        return await Mediator.Send(request);
+        var response = await Mediator.Send(request);
+        await SetHttpCookieToken(response);
+        return response;
     }
 
     [HttpPost("customer/verify")]
@@ -51,9 +66,16 @@ public class AuthController : ApiControllerBase
 
     [HttpPost("refresh")]
     [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
+    public async Task<ActionResult<TokenResponse>> RefreshToken()
     {
-        return await Mediator.Send(request);
+        var refreshToken = Request.Cookies[TokenCookieConstants.RefreshTokenCookie] ?? string.Empty;
+        var request = new RefreshTokenRequest()
+        {
+            RefreshToken = refreshToken
+        };
+        var response = await Mediator.Send(request); 
+        await SetHttpCookieToken(response);
+        return response;
     }
 
     [HttpPut("password")]
@@ -61,5 +83,36 @@ public class AuthController : ApiControllerBase
     public async Task<ActionResult<StatusResponse>> ChangePassword([FromBody] UpdatePasswordCommand request)
     {
         return await Mediator.Send(request);
+    }
+
+    private Task SetHttpCookieToken(TokenResponse token)
+    {
+        var tokenExpireInMinutes = _configuration.GetValueOrDefault("Jwt:TokenExpire", 5);
+        var refreshTokenExpireInMinutes = _configuration.GetValueOrDefault("Jwt:RefreshTokenExpire", 30);
+        
+        HttpContext.Response.Cookies.Append(
+            TokenCookieConstants.AccessTokenCookie, 
+            token.AccessToken, 
+            new CookieOptions()
+            {
+                Expires = DateTimeOffset.UtcNow.AddMinutes(tokenExpireInMinutes),
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+        
+        HttpContext.Response.Cookies.Append(
+            TokenCookieConstants.RefreshTokenCookie, 
+            token.RefreshToken, 
+            new CookieOptions()
+            {
+                Expires = DateTimeOffset.UtcNow.AddMinutes(refreshTokenExpireInMinutes),
+                HttpOnly = true,
+                Secure = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.None
+            });
+
+        return Task.CompletedTask;
     }
 }

@@ -4,6 +4,7 @@ using LockerService.Application.Common.Security;
 using LockerService.Application.Common.Services;
 using LockerService.Application.Common.Services.Notification;
 using LockerService.Application.EventBus.Mqtt;
+using LockerService.Infrastructure.Common.Constants;
 using LockerService.Infrastructure.EventBus.Mqtt;
 using LockerService.Infrastructure.Persistence;
 using LockerService.Infrastructure.Repositories;
@@ -54,7 +55,15 @@ public static class ConfigureServices
         services.AddScoped<IJwtService, JwtService>();
 
         // Authentication, Authorization
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = TokenCookieConstants.AccessTokenCookie;
+            })
             .AddJwtBearer(options =>
             {
                 // Validate JWT Token
@@ -67,6 +76,14 @@ public static class ConfigureServices
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new ArgumentException("Jwt:Key is required")))
+                };
+                options.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies[TokenCookieConstants.AccessTokenCookie];
+                        return Task.CompletedTask;
+                    }
                 };
             });
         
