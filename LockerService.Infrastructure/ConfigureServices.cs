@@ -58,7 +58,7 @@ public static class ConfigureServices
             .ValidateOnStart();
         
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<RedisSettings>>().Value);
-            
+    
         services.AddSingleton<ICacheService, CacheService>();
         services.AddStackExchangeRedisCache(redisOptions =>
         {
@@ -67,7 +67,9 @@ public static class ConfigureServices
             var connection = $"{settings.Host}:{settings.Port},password={settings.Password}";
             redisOptions.Configuration = connection;
         });
-            
+
+        services.AddScoped<ISettingService, SettingService>();
+        
         // Storage
         services.AddOptions<AwsS3Settings>()
             .BindConfiguration(AwsS3Settings.ConfigSection)
@@ -166,6 +168,7 @@ public static class ConfigureServices
             config.AddConsumer<OrderReturnedConsumer>();
             config.AddConsumer<OrderCompletedConsumer>();
             config.AddConsumer<OrderCanceledConsumer>();
+            config.AddConsumer<OrderReservedConsumer>();
             
             // Locker events consumers
             config.AddConsumer<LockerConnectedConsumer>();
@@ -203,7 +206,6 @@ public static class ConfigureServices
 
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<QuartzSettings>>().Value);
         
-        services.AddScoped<IOrderTimeoutService, OrderTimeoutService>();
         services.AddQuartz(q =>
         {
             q.UseMicrosoftDependencyInjectionJobFactory();
@@ -224,7 +226,7 @@ public static class ConfigureServices
         });
         
         // Fee
-        services.AddScoped<IFeeService, FeeService>();
+        services.AddScoped<IOrderService, OrderService>();
         
         // Address
         services.AddHostedService<ImportAddressService>();

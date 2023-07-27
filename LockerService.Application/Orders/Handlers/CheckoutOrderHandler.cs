@@ -7,14 +7,14 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, BillRe
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IFeeService _feeService;
+    private readonly IOrderService _orderService;
     private readonly IPaymentService _paymentService;
 
-    public CheckoutOrderHandler(IUnitOfWork unitOfWork, IMapper mapper, IFeeService feeService, IPaymentService paymentService)
+    public CheckoutOrderHandler(IUnitOfWork unitOfWork, IMapper mapper, IOrderService orderService, IPaymentService paymentService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _feeService = feeService;
+        _orderService = orderService;
         _paymentService = paymentService;
     }
 
@@ -38,7 +38,7 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, BillRe
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
 
-        await _feeService.CalculateFree(order);
+        await _orderService.CalculateFree(order);
         
         var bill = Bill.CreateBill(order, command.Method);
         

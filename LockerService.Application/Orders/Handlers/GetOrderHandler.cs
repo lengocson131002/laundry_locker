@@ -8,13 +8,13 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
 
     private readonly IMapper _mapper;
 
-    private readonly IFeeService _feeService;
+    private readonly IOrderService _orderService;
 
-    public GetOrderHandler(IMapper mapper, IUnitOfWork unitOfWork, IFeeService feeService)
+    public GetOrderHandler(IMapper mapper, IUnitOfWork unitOfWork, IOrderService orderService)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _feeService = feeService;
+        _orderService = orderService;
     }
 
     public async Task<OrderDetailResponse> Handle(GetOrderQuery request, CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
 
         if (order.UpdatedInfo)
         {
-            await _feeService.CalculateFree(order);
+            await _orderService.CalculateFree(order);
         }
 
         order.Timelines = order.Timelines.OrderBy(timeline => timeline.CreatedAt).ToList();

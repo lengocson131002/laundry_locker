@@ -8,13 +8,13 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
 
     private readonly IMapper _mapper;
 
-    private readonly IFeeService _feeService;
+    private readonly IOrderService _orderService;
 
-    public GetOrderByPinCodeHandler(IMapper mapper, IUnitOfWork unitOfWork, IFeeService feeService)
+    public GetOrderByPinCodeHandler(IMapper mapper, IUnitOfWork unitOfWork, IOrderService orderService)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _feeService = feeService;
+        _orderService = orderService;
     }
 
     public async Task<OrderDetailResponse> Handle(GetOrderByPinCodeQuery request, CancellationToken cancellationToken)
@@ -43,7 +43,7 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
         
         if (order.UpdatedInfo)
         {
-            await _feeService.CalculateFree(order);
+            await _orderService.CalculateFree(order);
         }
         
         order.Timelines = order.Timelines.OrderBy(timeline => timeline.CreatedAt).ToList();

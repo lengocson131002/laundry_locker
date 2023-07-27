@@ -1,6 +1,7 @@
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
+using LockerService.Domain.Entities.Settings;
 
 namespace LockerService.Application.Orders.Handlers;
 
@@ -10,23 +11,29 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
     private readonly IMapper _mapper;
     private readonly IRabbitMqBus _rabbitMqBus;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISettingService _settingService;
 
     public CreateOrderHandler(
         ILogger<CreateOrderHandler> logger,
         IMapper mapper,
         IUnitOfWork unitOfWork,
-        IRabbitMqBus rabbitMqBus)
+        IRabbitMqBus rabbitMqBus, 
+        ISettingService settingService)
     {
         _logger = logger;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _rabbitMqBus = rabbitMqBus;
+        _settingService = settingService;
     }
 
     public async Task<OrderResponse> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
         var locker = await _unitOfWork.LockerRepository.GetByIdAsync(command.LockerId);
-        if (locker == null) throw new ApiException(ResponseCode.LockerErrorNotFound);
+        if (locker == null)
+        {
+            throw new ApiException(ResponseCode.LockerErrorNotFound);
+        }
 
         // Check Locker status
         if (!LockerStatus.Active.Equals(locker.Status))
@@ -74,11 +81,21 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderRespo
         // Check sender and receiver
         var senderPhone = command.SenderPhone;
         var sender = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(senderPhone);
-        if (sender != null && !sender.IsActive)
+        if (sender != null)
         {
-            throw new ApiException(ResponseCode.OrderErrorInactiveAccount);
+            if (!sender.IsActive)
+            {
+                throw new ApiException(ResponseCode.OrderErrorInactiveAccount);
+            }
+
+            var orderSettings = await _settingService.GetSettings<OrderSettings>(cancellationToken);
+            var currentActiveOrdersCount = await _unitOfWork.OrderRepository.CountActiveOrders(sender.Id);
+            if (currentActiveOrdersCount >= orderSettings.MaxActiveOrderCount)
+            {
+                throw new ApiException(ResponseCode.OrderErrorExceedAllowOrderCount, $"Can't create order because your account has currently had over allowed active order count: {orderSettings.MaxActiveOrderCount}");
+            }
         }
-        
+
         if (sender == null)
         {
             sender = new Account

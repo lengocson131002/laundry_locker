@@ -47,6 +47,16 @@ public class CacheService : ICacheService
         CacheKeys.TryAdd(key, true);
     }
 
+    public async Task SetWithExpirationAsync<T>(string key, T value,  TimeSpan duration, CancellationToken cancellationToken = default)
+    {
+        var options = new DistributedCacheEntryOptions()
+            .SetSlidingExpiration(duration);
+
+        var cachedValue = JsonSerializer.Serialize(value);
+        await _distributedCache.SetStringAsync(key, cachedValue, options, cancellationToken);
+        CacheKeys.TryAdd(key, true);
+    }
+
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
         await _distributedCache.RemoveAsync(key, cancellationToken);

@@ -23,12 +23,6 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("reservations")]
-    public async Task<ActionResult<OrderResponse>> TakeReservationOrder([FromQuery] TakeReservationCommand command)
-    {
-        return await Mediator.Send(command);
-    }
-
     [HttpPut("{id:long}")]
     public async Task<ActionResult<OrderResponse>> UpdateOrder([FromRoute] long id, [FromBody] UpdateOrderCommand request)
     {

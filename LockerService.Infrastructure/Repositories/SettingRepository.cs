@@ -16,7 +16,7 @@ public class SettingRepository: BaseRepository<Setting>, ISettingRepository
         _scopeFactory = scopeFactory;
     }
 
-    public async Task<T> GetSettings<T>() where T : ISetting, new()
+    public async Task<Setting> GetSettingsEntity<T>() where T : ISetting, new()
     {
         using var scope = _scopeFactory.CreateScope();
         var scopeDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -30,7 +30,20 @@ public class SettingRepository: BaseRepository<Setting>, ISettingRepository
             await scopeDbContext.Settings.AddAsync(setting);
             await scopeDbContext.SaveChangesAsync();
         }
-        return JsonSerializer.Deserialize<T>(setting.Value) ?? throw new InvalidOperationException("Setting was not created");
+
+        return setting;
+    } 
+        
+    public async Task<T> GetSettings<T>() where T : ISetting, new()
+    {
+        var settings = await GetSettingsEntity<T>();
+        return JsonSerializer.Deserialize<T>(settings.Value) ?? throw new InvalidOperationException("Setting was not created");
     }
 
+    public async Task UpdateSettings<T>(T value) where T : ISetting, new()
+    {
+        var settings = await GetSettingsEntity<T>();
+        settings.Value = JsonSerializer.Serialize(value);
+        _dbContext.Settings.Update(settings);
+    }
 }

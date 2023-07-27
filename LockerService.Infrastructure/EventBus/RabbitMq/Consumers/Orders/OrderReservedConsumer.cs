@@ -1,38 +1,32 @@
 using LockerService.Application.Common.Services;
 using LockerService.Domain.Entities.Settings;
-using LockerService.Infrastructure.Common;
-using Microsoft.Extensions.Configuration;
 
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 
-public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
+public class OrderReservedConsumer : IConsumer<OrderReservedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMqttBus _mqttBus;
-    private readonly IOrderService _orderService;
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<OrderCreatedConsumer> _logger;
     private readonly ISettingService _settingService;
+    private readonly ILogger<OrderReservedConsumer> _logger;
+    private readonly IOrderService _orderService;
 
-    public OrderCreatedConsumer(IUnitOfWork unitOfWork, 
+    public OrderReservedConsumer(IUnitOfWork unitOfWork, 
         IMqttBus mqttBus, 
-        IOrderService orderService, 
-        IConfiguration configuration, 
-        ILogger<OrderCreatedConsumer> logger, 
-        ISettingService settingService)
+        ISettingService settingService, 
+        ILogger<OrderReservedConsumer> logger, IOrderService orderService)
     {
         _unitOfWork = unitOfWork;
         _mqttBus = mqttBus;
-        _orderService = orderService;
-        _configuration = configuration;
-        _logger = logger;
         _settingService = settingService;
+        _logger = logger;
+        _orderService = orderService;
     }
 
-    public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
+    public async Task Consume(ConsumeContext<OrderReservedEvent> context)
     {
         var message = context.Message;
-        _logger.LogInformation("Received order created message: {0}", JsonSerializer.Serialize(message));
+        _logger.LogInformation("Received order reserve message: {0}", JsonSerializer.Serialize(message));
 
         var order = await _unitOfWork.OrderRepository.GetByIdAsync(message.OrderId);
         if (order == null)
@@ -51,8 +45,8 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
 
         // Set timeout for created order
         var orderSettings = await _settingService.GetSettings<OrderSettings>();
-        var cancelTime = message.Time
-            .AddMinutes(_configuration.GetValueOrDefault("Order:TimeoutInMinutes", orderSettings.InitTimeoutInMinutes));
+        var cancelTime = order.CreatedAt
+            .AddMinutes(orderSettings.ReservationInitTimeoutInMinutes);
 
         await _orderService.CancelExpiredOrder(message.OrderId, cancelTime);
     }

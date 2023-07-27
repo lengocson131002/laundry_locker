@@ -88,6 +88,8 @@ public enum ResponseCode
     [Description("FeeType of this order's service is missing")] OrderErrorServiceFeeTypeIsMissing = 409,
     
     [Description("Inactive account is not allowed to create order")] OrderErrorInactiveAccount = 410,
+    
+    [Description("Can't create order because your account has currently had over allowed active order count")] OrderErrorExceedAllowOrderCount = 410,
 
     // Address
     [Description("Province not found")] AddressErrorProvinceNotFound = 501,

@@ -8,9 +8,9 @@ public class Setting : BaseAuditableEntity
 {
     [Key]
     public long Id { get; set; }
+
     public string Key { get; set; } = default!;
 
-    [Column(TypeName = "jsonb")]
     public string Value { get; set; } = default!;
 
     public Setting()

@@ -8,6 +8,7 @@ public class AccountSettings : ISetting
 
     public AccountSettings()
     {
-        
+        MaxWrongLoginCount = 5;
+        WrongLoginBlockTimeInMinutes = 15;
     }
 }

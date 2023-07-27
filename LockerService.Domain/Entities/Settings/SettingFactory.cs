@@ -1,6 +1,6 @@
 namespace LockerService.Domain.Entities.Settings;
 
-public class SettingFactory<T> where T : ISetting, new()
+public abstract class SettingFactory<T> where T : ISetting, new()
 {
     public static T Initialize()
     {

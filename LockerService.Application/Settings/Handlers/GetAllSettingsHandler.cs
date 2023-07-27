@@ -1,9 +1,10 @@
 using LockerService.Application.Settings.Models;
 using LockerService.Application.Settings.Queries;
+using LockerService.Domain.Entities.Settings;
 
 namespace LockerService.Application.Settings.Handlers;
 
-public class GetAllSettingsHandler : IRequestHandler<GetAllSettingsQuery, ListResponse<SettingResponse>>
+public class GetAllSettingsHandler : IRequestHandler<GetSettingsQuery,SettingsResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -14,14 +15,20 @@ public class GetAllSettingsHandler : IRequestHandler<GetAllSettingsQuery, ListRe
         _mapper = mapper;
     }
 
-    public async Task<ListResponse<SettingResponse>> Handle(GetAllSettingsQuery request, CancellationToken cancellationToken)
+    public async Task<SettingsResponse> Handle(GetSettingsQuery request, CancellationToken cancellationToken)
     {
-        var query = await _unitOfWork.SettingRepository.GetAsync(
-            predicate: request.GetExpressions(),
-            orderBy: request.GetOrder(),
-            disableTracking: true);
+        var settingRepo = _unitOfWork.SettingRepository;
+        var infoSettingsTask = settingRepo.GetSettings<InformationSettings>();
+        var accountSettingsTask = settingRepo.GetSettings<AccountSettings>();
+        var orderSettingsTask = settingRepo.GetSettings<OrderSettings>();
 
-        var settingResponses = _mapper.Map<List<Setting>, List<SettingResponse>>(query.ToList());
-        return new ListResponse<SettingResponse>(settingResponses);
+        await Task.WhenAll(infoSettingsTask, accountSettingsTask, orderSettingsTask);
+        
+        return new SettingsResponse()
+        {
+            InformationSettings = infoSettingsTask.Result,
+            AccountSettings = accountSettingsTask.Result,
+            OrderSettings = orderSettingsTask.Result
+        };
     }
 }

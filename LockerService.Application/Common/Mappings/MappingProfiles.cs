@@ -2,7 +2,9 @@ using LockerService.Application.Bills.Models;
 using LockerService.Application.Customers.Models;
 using LockerService.Application.Locations.Commands;
 using LockerService.Application.Services.Commands;
+using LockerService.Application.Settings.Commands;
 using LockerService.Application.Staffs.Models;
+using LockerService.Domain.Entities.Settings;
 
 namespace LockerService.Application.Common.Mappings;
 
@@ -59,6 +61,11 @@ public class MappingProfiles : Profile
         CreateMap<AddStoreCommand, Store>();
         CreateMap<Store, StoreResponse>();
         CreateMap<Store, StoreDetailResponse>();
+        
+        // Settings
+        CreateMap<InformationSettingsCommand, InformationSettings>();
+        CreateMap<AccountSettingsCommand, AccountSettings>();
+        CreateMap<OrderSettingsCommand, OrderSettings>();
     }
 
 }

@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Persistence.Repositories;
-using LockerService.Application.Common.Utils;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Persistence;
 
@@ -32,6 +31,15 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
             .Where(order => pinCode.Equals(order.PinCode)
                             && !OrderStatus.Completed.Equals(order.Status)
                             && !OrderStatus.Canceled.Equals(order.Status));
+    }
+
+    public Task<int> CountActiveOrders(long customerId)
+    {
+        return _dbContext.Orders
+            .Where(order => order.SenderId == customerId 
+                            && !OrderStatus.Completed.Equals(order.Status) 
+                            && !OrderStatus.Canceled.Equals(order.Status))
+            .CountAsync();
     }
 
     private string GeneratePinCode(int length)

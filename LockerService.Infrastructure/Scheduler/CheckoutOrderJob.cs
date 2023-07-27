@@ -12,14 +12,14 @@ public class CheckoutOrderJob : IJob
     private readonly ILogger<OrderTimeoutJob> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPublishEndpoint _rabbitMqBus;
-    private readonly IFeeService _feeService;
+    private readonly IOrderService _orderService;
 
-    public CheckoutOrderJob(ILogger<OrderTimeoutJob> logger, IUnitOfWork unitOfWork, IPublishEndpoint rabbitMqBus, IFeeService feeService)
+    public CheckoutOrderJob(ILogger<OrderTimeoutJob> logger, IUnitOfWork unitOfWork, IPublishEndpoint rabbitMqBus, IOrderService orderService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _rabbitMqBus = rabbitMqBus;
-        _feeService = feeService;
+        _orderService = orderService;
     }
 
     public async Task Execute(IJobExecutionContext context)
@@ -46,7 +46,7 @@ public class CheckoutOrderJob : IJob
 
         var currStatus = order.Status;
         
-        await _feeService.CalculateFree(order);
+        await _orderService.CalculateFree(order);
         
         var bill = Bill.CreateBill(order, method);
         order.Bill = bill;
