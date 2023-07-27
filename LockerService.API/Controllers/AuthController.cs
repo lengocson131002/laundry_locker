@@ -110,7 +110,6 @@ public class AuthController : ApiControllerBase
                 HttpOnly = true,
                 Secure = true,
                 IsEssential = true,
-                Domain = "http://localhost:3000",
                 SameSite = SameSiteMode.None
             });
         
@@ -123,7 +122,6 @@ public class AuthController : ApiControllerBase
                 HttpOnly = true,
                 Secure = true,
                 IsEssential = true,
-                Domain = "http://localhost:3000",
                 SameSite = SameSiteMode.None
             });
 
