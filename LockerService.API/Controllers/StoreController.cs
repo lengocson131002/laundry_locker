@@ -7,7 +7,6 @@ namespace LockerService.API.Controllers;
 public class StoreController : ApiControllerBase
 {
     [HttpGet("")]
-    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<PaginationResponse<Store, StoreResponse>>> GetAllStores(
         [FromQuery] GetAllStoresQuery request)
     {
@@ -21,7 +20,6 @@ public class StoreController : ApiControllerBase
     }
 
     [HttpGet("{id:long}")]
-    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StoreDetailResponse>> GetStore([FromRoute] long id)
     {
         return await Mediator.Send(new GetStoreQuery

@@ -5,7 +5,7 @@ public class RevokeStaffCommandValidator : AbstractValidator<RevokeStaffCommand>
     public RevokeStaffCommandValidator()
     {
         RuleFor(model => model.StaffIds)
-            .NotNull()
+            .NotEmpty()
             .Must(UniqueStaffs)
             .WithMessage("StaffIds must contains unique ids");
     }

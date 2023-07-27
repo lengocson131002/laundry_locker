@@ -5,7 +5,7 @@ public class AssignStaffCommandValidator : AbstractValidator<AssignStaffCommand>
     public AssignStaffCommandValidator()
     {
         RuleFor(model => model.StaffIds)
-            .NotNull()
+            .NotEmpty()
             .Must(UniqueStaffs)
             .WithMessage("StaffIds must contains unique ids");
     }

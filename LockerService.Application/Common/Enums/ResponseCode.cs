@@ -125,7 +125,7 @@ public enum ResponseCode
     // Staff Locker
     [Description("Assignment not found")] StaffLockerErrorNotFound = 901,
     
-    [Description("Assignment existed")] StaffLockerErrorExisted = 902,
+    [Description("Staff assigned to locker")] StaffLockerErrorExisted = 902,
     
     [Description("Staff has no permission on the request locker")] StaffLockerErrorNoPermission = 903,
 

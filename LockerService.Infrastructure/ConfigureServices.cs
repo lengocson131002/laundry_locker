@@ -95,10 +95,6 @@ public static class ConfigureServices
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddCookie(options =>
-            {
-                options.Cookie.Name = TokenCookieConstants.AccessTokenCookie;
-            })
             .AddJwtBearer(options =>
             {
                 using var sc = services.BuildServiceProvider().CreateScope();
@@ -113,14 +109,6 @@ public static class ConfigureServices
                     ValidIssuer = settings.Issuer,
                     ValidAudience = settings.Issuer,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Key))
-                };
-                options.Events = new JwtBearerEvents()
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Cookies[TokenCookieConstants.AccessTokenCookie];
-                        return Task.CompletedTask;
-                    }
                 };
             });
         // ApiKey 

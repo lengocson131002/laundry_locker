@@ -20,7 +20,6 @@ public class AuthController : ApiControllerBase
     public async Task<ActionResult<TokenResponse>> LoginAdmin([FromBody] AdminLoginRequest request)
     {
         var response = await Mediator.Send(request);
-        await SetHttpCookieToken(response);
         return response;
     }
 
@@ -43,7 +42,6 @@ public class AuthController : ApiControllerBase
     public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
     {
         var response = await Mediator.Send(request);
-        await SetHttpCookieToken(response);
         return response;
     }
 
@@ -52,7 +50,6 @@ public class AuthController : ApiControllerBase
     public async Task<ActionResult<TokenResponse>> LoginCustomer([FromBody] CustomerLoginRequest request)
     {
         var response = await Mediator.Send(request);
-        await SetHttpCookieToken(response);
         return response;
     }
 
@@ -65,19 +62,9 @@ public class AuthController : ApiControllerBase
 
     [HttpPost("refresh")]
     [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> RefreshToken([From])
+    public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        var refreshToken = Request.Cookies[TokenCookieConstants.RefreshTokenCookie];
-        if (refreshToken == null)
-        {
-            return Unauthorized();
-        }
-        var request = new RefreshTokenRequest()
-        {
-            RefreshToken = refreshToken
-        };
         var response = await Mediator.Send(request); 
-        await SetHttpCookieToken(response);
         return response;
     }
 
@@ -121,7 +108,6 @@ public class AuthController : ApiControllerBase
                 Expires = DateTimeOffset.UtcNow.AddMinutes(refreshTokenExpireInMinutes),
                 HttpOnly = true,
                 Secure = true,
-                IsEssential = true,
                 SameSite = SameSiteMode.None
             });
 

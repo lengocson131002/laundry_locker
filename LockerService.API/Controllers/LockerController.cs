@@ -41,6 +41,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPost("{id:long}/staffs")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> AssignStaffs([FromRoute] long id, [FromBody] AssignStaffCommand command)
     {
         command.LockerId = id;
@@ -48,6 +49,7 @@ public class LockerController : ApiControllerBase
     }
     
     [HttpDelete("{id:long}/staffs")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> UnAssignStaffs([FromRoute] long id, [FromBody] RevokeStaffCommand command)
     {
         command.LockerId = id;

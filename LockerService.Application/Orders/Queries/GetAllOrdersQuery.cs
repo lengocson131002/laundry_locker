@@ -5,7 +5,7 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 {
     public string? Query { get; set; }
     
-    public IList<long>? LockerIds { get; set; }
+    public long? LockerId { get; set; }
 
     public OrderType? Type { get; set; }
 
@@ -15,17 +15,17 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 
     public DateTimeOffset? To { get; set; }
 
-    public IList<long>? StaffIds { get; set; }
+    public long? StaffId { get; set; }
     
-    public IList<long>? CustomerIds { get; set; }
+    public long? CustomerId { get; set; }
 
     public IList<long>? ExcludedIds { get; set; }
     
-    public IList<long>? StoreIds { get; set; }
+    public long? StoreId { get; set; }
         
     public override Expression<Func<Order, bool>> GetExpressions()
     {
-        Expression = Expression.And(order => LockerIds == null || LockerIds.Any(lId => lId == order.LockerId));
+        Expression = Expression.And(order => LockerId == null || LockerId == order.LockerId);
 
         Expression = Expression.And(order => Type == null || order.Type == Type);
 
@@ -35,13 +35,13 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 
         Expression = Expression.And(order => To == null || order.CreatedAt.UtcDateTime <= To);
 
-        Expression = Expression.And(order => StaffIds == null || StaffIds.Any(sId => sId == order.StaffId.Value));
+        Expression = Expression.And(order => StaffId == null || StaffId == order.StaffId.Value);
 
-        Expression = Expression.And(order => CustomerIds == null 
-                                             || CustomerIds.Any(cId => cId == order.ReceiverId.Value) 
-                                             || CustomerIds.Any(cId => cId == order.SenderId));
+        Expression = Expression.And(order => CustomerId == null 
+                                             || CustomerId == order.ReceiverId.Value 
+                                             || CustomerId == order.SenderId);
 
-        Expression = Expression.And(order => StoreIds == null || StoreIds.Any(sId => sId == order.Locker.StoreId));
+        Expression = Expression.And(order => StoreId == null || StoreId == order.Locker.StoreId);
             
         if (!string.IsNullOrWhiteSpace(Query))
         {

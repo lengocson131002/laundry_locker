@@ -28,10 +28,7 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
         var currentLoggedInAccount = await _currentAccountService.GetCurrentAccount();
         if (currentLoggedInAccount != null && Equals(currentLoggedInAccount.Role, Role.Staff))
         {
-            request.StaffIds = new List<long>()
-            {
-                currentLoggedInAccount.Id
-            };
+            request.StaffId = currentLoggedInAccount.Id;
         }
             
         var lockers = await _unitOfWork.LockerRepository.GetAsync(

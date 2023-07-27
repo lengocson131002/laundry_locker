@@ -37,6 +37,7 @@ public class CustomerController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/status")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> UpdateCustomerStatus([FromRoute] long id, [FromBody] UpdateCustomerStatusCommand command)
     {
         command.Id = id;

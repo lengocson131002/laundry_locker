@@ -16,6 +16,7 @@ public class SettingController : ApiControllerBase
     }
 
     [HttpPut]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<SettingsResponse>> UpdateSettings([FromBody] UpdateSettingsCommand command)
     {
         return await Mediator.Send(command);

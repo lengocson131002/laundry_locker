@@ -23,22 +23,16 @@ public class GetAllOrdersHandler : IRequestHandler<GetAllOrdersQuery, Pagination
             if (Equals(currentLoggedInUser.Role, Role.Staff))
             {
                 /*
-                 * Get orders in staff' orders
+                 * Get orders in staff' store
                  */
-                request.StoreIds = new List<long>()
-                {
-                    (long) currentLoggedInUser.StoreId!
-                };
+                request.StoreId = currentLoggedInUser.StoreId;
 
             } else if (Equals(currentLoggedInUser.Role, Role.Customer))
             {
                 /*
                  * Get only customer's orders
                  */
-                request.CustomerIds = new List<long>()
-                {
-                    currentLoggedInUser.Id
-                };
+                request.CustomerId = currentLoggedInUser.Id;
             }
         }
         

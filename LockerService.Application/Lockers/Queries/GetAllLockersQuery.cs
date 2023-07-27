@@ -4,9 +4,9 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
 {
     public string? Search { get; set; }
     
-    public IList<long>? StoreIds { get; set; }
+    public long? StoreId { get; set; }
     
-    public IList<long>? StaffIds { get; set; }
+    public long? StaffId { get; set; }
 
     public LockerStatus? Status { get; set; }
     
@@ -18,6 +18,8 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
 
     public IList<long>? ExcludedIds { get; set; }
 
+    public long? ForStaffId { get; set; }
+    
     public override Expression<Func<Locker, bool>> GetExpressions()
     {
         if (Search != null)
@@ -46,21 +48,26 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
             Expression = Expression.And(locker => WardCode == locker.Location.Ward.Code);
         }
 
-        if (StoreIds != null)
+        if (StoreId != null)
         {
-            Expression = Expression.And(locker => StoreIds.Any(sId => locker.StoreId == sId));
+            Expression = Expression.And(locker => StoreId == locker.StoreId);
         }
 
-        if (StaffIds != null)
+        if (StaffId != null)
         {
-            Expression = Expression.And(locker => locker.StaffLockers.Any(sl => StaffIds.Any(sId => sId == sl.StaffId)));
+            Expression = Expression.And(locker => locker.StaffLockers.Any(sl => StaffId == sl.StaffId));
         }
             
         if (ExcludedIds != null)
         {
             Expression = Expression.And(locker => ExcludedIds.All(id => locker.Id != id));
         }
-        
+
+        if (ForStaffId != null)
+        {
+            Expression = Expression.And(locker => locker.StaffLockers.All(item => item.StaffId != ForStaffId));
+        }
+            
         return Expression;
     }
 }

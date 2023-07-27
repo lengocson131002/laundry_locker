@@ -25,6 +25,8 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
 
     public IList<long>? ExcludedIds { get; set; }
     
+    public long? ForLockerId { get; set; }
+
     public override Expression<Func<Account, bool>> GetExpressions()
     {
         if (Query is not null)
@@ -83,6 +85,11 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
         if (ExcludedIds != null)
         {
             Expression = Expression.And(account => ExcludedIds.All(id => account.Id != id));
+        }
+
+        if (ForLockerId != null)
+        {
+            Expression = Expression.And(account => account.StaffLockers.All(item => item.LockerId != ForLockerId));
         }
         
         Expression = Expression.And(account => Equals(Role.Staff, account.Role));
