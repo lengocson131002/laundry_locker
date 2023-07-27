@@ -60,10 +60,6 @@ public static class ConfigureServices
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddCookie(options =>
-            {
-                options.Cookie.Name = TokenCookieConstants.AccessTokenCookie;
-            })
             .AddJwtBearer(options =>
             {
                 // Validate JWT Token
@@ -76,14 +72,6 @@ public static class ConfigureServices
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new ArgumentException("Jwt:Key is required")))
-                };
-                options.Events = new JwtBearerEvents()
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Cookies[TokenCookieConstants.AccessTokenCookie];
-                        return Task.CompletedTask;
-                    }
                 };
             });
         
