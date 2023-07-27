@@ -108,8 +108,9 @@ public class AuthController : ApiControllerBase
             {
                 Expires = DateTimeOffset.UtcNow.AddMinutes(tokenExpireInMinutes),
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Unspecified
+                Secure = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.None
             });
         
         HttpContext.Response.Cookies.Append(
@@ -119,9 +120,9 @@ public class AuthController : ApiControllerBase
             {
                 Expires = DateTimeOffset.UtcNow.AddMinutes(refreshTokenExpireInMinutes),
                 HttpOnly = true,
-                Secure = false,
+                Secure = true,
                 IsEssential = true,
-                SameSite = SameSiteMode.Unspecified
+                SameSite = SameSiteMode.None
             });
 
         return Task.CompletedTask;
