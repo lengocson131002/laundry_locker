@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Common" />
+        <Folder Include="Events" />
         <Folder Include="Exceptions" />
     </ItemGroup>
 

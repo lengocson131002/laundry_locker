@@ -6,7 +6,9 @@ public class UpdateLockerStatusCommandValidator : AbstractValidator<UpdateLocker
     {
         RuleFor(model => model.Status)
             .IsInEnum()
-            .NotNull();
+            .NotNull()
+            .Must(status => !Equals(LockerStatus.Initialized, status) && !Equals(LockerStatus.Disconnected, status))
+            .WithMessage("Invalid request locker status");
     }
 }
 

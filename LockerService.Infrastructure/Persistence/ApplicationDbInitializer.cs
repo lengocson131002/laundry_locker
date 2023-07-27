@@ -1,7 +1,4 @@
-using LockerService.Application.Common.Persistence;
 using LockerService.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace LockerService.Infrastructure.Persistence;
 

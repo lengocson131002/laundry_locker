@@ -24,7 +24,7 @@ public class UpdateStaffStatusHandler : IRequestHandler<UpdateStaffStatusCommand
             throw new ApiException(ResponseCode.StaffErrorNotFound);
         }
 
-        if (Equals(staff.Status, request.Status) || Equals(staff.Status, AccountStatus.Verifying))
+        if (Equals(staff.Status, request.Status) || Equals(request.Status, AccountStatus.Verifying))
         {
             throw new ApiException(ResponseCode.StaffErrorInvalidStatus);
         }

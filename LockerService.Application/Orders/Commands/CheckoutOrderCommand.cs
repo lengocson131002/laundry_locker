@@ -1,16 +1,11 @@
+using LockerService.Application.Bills.Models;
+
 namespace LockerService.Application.Orders.Commands;
 
-public class CheckoutOrderCommandValidation : AbstractValidator<CheckoutOrderCommand>
+public class CheckoutOrderCommand : IRequest<BillResponse>
 {
-    public CheckoutOrderCommandValidation()
-    {
-        RuleFor(model => model.PinCode)
-            .NotNull()
-            .Length(6);
-    }
-}
-
-public class CheckoutOrderCommand : IRequest<OrderResponse>
-{
-    public string PinCode { get; set; } = default!;
+    [JsonIgnore]
+    public long Id { get; set; }
+    
+    public PaymentMethod Method { get; set; }
 }

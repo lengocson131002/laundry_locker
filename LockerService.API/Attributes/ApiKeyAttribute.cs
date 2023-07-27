@@ -1,3 +1,4 @@
+using LockerService.Infrastructure.Settings;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace LockerService.API.Attributes;
@@ -16,9 +17,8 @@ public class ApiKeyAttribute : Attribute, IAsyncActionFilter
             return;
         }
         
-        var appSettings = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
-        var apiKey = appSettings.GetValue<string>(ApiKey);
-        if (!apiKeyVal.Equals(apiKey))
+        var apiSettings = context.HttpContext.RequestServices.GetRequiredService<ApiKeySettings>();
+        if (!apiKeyVal.Equals(apiSettings.Key))
         {
             context.HttpContext.Response.StatusCode = 401;
             await context.HttpContext.Response.WriteAsync("Unauthorized client");

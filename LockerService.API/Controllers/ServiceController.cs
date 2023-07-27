@@ -2,7 +2,6 @@ using LockerService.Application.Common.Enums;
 using LockerService.Application.Services.Commands;
 using LockerService.Application.Services.Models;
 using LockerService.Application.Services.Queries;
-using LockerService.Domain.Entities;
 
 namespace LockerService.API.Controllers;
 
@@ -11,6 +10,7 @@ namespace LockerService.API.Controllers;
 public class ServiceController : ApiControllerBase
 {
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ServiceResponse>> AddService([FromBody] AddServiceCommand command)
     {
         return await Mediator.Send(command);
@@ -29,6 +29,7 @@ public class ServiceController : ApiControllerBase
     }
 
     [HttpPut("{serviceId:long}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> UpdateService([FromRoute] long serviceId, [FromBody] UpdateServiceCommand command)
     {
         command.ServiceId = serviceId;
@@ -44,8 +45,10 @@ public class ServiceController : ApiControllerBase
     }
 
     [HttpPut("{serviceId:long}/status")]
-    public async Task<ActionResult<StatusResponse>> UpdateServiceStatus([FromBody] UpdateServiceCommand command)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> UpdateServiceStatus([FromRoute] long serviceId, [FromBody] UpdateServiceStatusCommand command)
     {
+        command.ServiceId = serviceId;
         await Mediator.Send(command);
         return new StatusResponse(true);
     }

@@ -5,5 +5,6 @@ public enum LockerStatus
     Initialized,
     Active,
     Inactive,
-    Maintaining
+    Maintaining,
+    Disconnected
 }

@@ -1,58 +1,53 @@
+using LockerService.Application.Bills.Models;
+using Quartz;
+
 namespace LockerService.Application.Orders.Handlers;
 
-public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, OrderResponse>
+public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, BillResponse>
 {
-    private readonly ILogger<CheckoutOrderHandler> _logger;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IMqttBus _mqttBus;
-    private readonly IFeeService _feeService;
-    
-    public CheckoutOrderHandler(IUnitOfWork unitOfWork, 
-        ILogger<CheckoutOrderHandler> logger, 
-        IMapper mapper, IMqttBus mqttBus, 
-        IFeeService feeService)
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IOrderService _orderService;
+    private readonly IPaymentService _paymentService;
+
+    public CheckoutOrderHandler(IUnitOfWork unitOfWork, IMapper mapper, IOrderService orderService, IPaymentService paymentService)
     {
         _unitOfWork = unitOfWork;
-        _logger = logger;
         _mapper = mapper;
-        _mqttBus = mqttBus;
-        _feeService = feeService;
+        _orderService = orderService;
+        _paymentService = paymentService;
     }
 
-    public async Task<OrderResponse> Handle(CheckoutOrderCommand command, CancellationToken cancellationToken)
+    public async Task<BillResponse> Handle(CheckoutOrderCommand command, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository.GetOrderByPinCode(command.PinCode);
+        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
+            predicate: order => order.Id == command.Id,
+            includes: new List<Expression<Func<Order, object>>>()
+            {
+                order => order.Details
+            });
+
+        var order = await orderQuery.FirstOrDefaultAsync(cancellationToken);
         if (order == null)
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        var currentStatus = order.Status;
-        
-        if (!order.IsWaiting && !order.IsReturned)
+        if (!order.CanCheckout)
         {
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
 
-        order.Status = OrderStatus.Completed;
-        order.ReceiveAt = DateTimeOffset.UtcNow;
-        await _unitOfWork.OrderRepository.UpdateAsync(order);
+        await _orderService.CalculateFree(order);
         
-        // Save timeline
-        var timeline = new OrderTimeline()
-        {
-            Order = order,
-            PreviousStatus = currentStatus,
-            Status = order.Status
-        };
-        await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
+        var bill = Bill.CreateBill(order, command.Method);
         
-        await _unitOfWork.SaveChangesAsync();
+        /*
+         * Test only
+         * Set job to complete order in 30s
+         */
+        await _paymentService.Pay(order, command.Method);
         
-        // Mqtt Open Box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox.Number));
-        
-        return _mapper.Map<OrderResponse>(order);
+        return _mapper.Map<BillResponse>(bill);
     }
 }

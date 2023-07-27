@@ -2,7 +2,7 @@ namespace LockerService.Application.Common.Utils;
 
 public class LockerCodeUtils
 {
-    private const string LockerCodePrefix = "LOCKER_";
+    private const string LockerCodePrefix = "LO";
 
     public static string GenerateLockerCode(int id)
     {

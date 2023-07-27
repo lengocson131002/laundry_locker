@@ -30,10 +30,7 @@ public class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, OrderRespo
         }
 
         order.Description = request.Description ??= order.Description;
-
         await _unitOfWork.OrderRepository.UpdateAsync(order);
-        _logger.LogInformation("update order Amount/Fee. Order ID: {orderId} ", order.Id);
-
         await _unitOfWork.SaveChangesAsync();
         
         return _mapper.Map<OrderResponse>(order);

@@ -16,9 +16,6 @@
         <PackageReference Include="FluentValidation" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
         <PackageReference Include="LinqKit" />
-        <PackageReference Include="MassTransit" />
-        <PackageReference Include="MassTransit.AspNetCore" />
-        <PackageReference Include="MassTransit.RabbitMQ" />
         <PackageReference Include="MediatR" />
         <PackageReference Include="Microsoft.AspNetCore.Http" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
@@ -40,6 +37,7 @@
         <Folder Include="Common\Commands" />
         <Folder Include="Common\Interfaces" />
         <Folder Include="Dashboard\Commands" />
+        <Folder Include="EventBus\RabbitMq\Events\Accounts" />
         <Folder Include="Notifications\Commands" />
         <Folder Include="Notifications\Handlers" />
         <Folder Include="Notifications\Models" />

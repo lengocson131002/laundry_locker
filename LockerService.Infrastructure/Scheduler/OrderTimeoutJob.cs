@@ -1,7 +1,4 @@
-using LockerService.Application.Common.Persistence;
-using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
-using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace LockerService.Infrastructure.Scheduler;
@@ -12,45 +9,47 @@ public class OrderTimeoutJob : IJob
     
     private readonly ILogger<OrderTimeoutJob> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublishEndpoint _rabbitMqBus;
 
     public OrderTimeoutJob(
         ILogger<OrderTimeoutJob> logger, 
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork, IPublishEndpoint rabbitMqBus)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _rabbitMqBus = rabbitMqBus;
     }
 
     public async Task Execute(IJobExecutionContext context)
     {
         var dataMap = context.JobDetail.JobDataMap;
 
-        var orderId = dataMap.GetIntValue(OrderIdKey);
+        var orderId = dataMap.GetLongValue(OrderIdKey);
 
-        if (orderId == null)
+        if (orderId == 0)
         {
             return;
         }
         
         var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-
-        if (order != null && order.IsInitialized)
+        if (order == null || !order.IsInitialized)
         {
-            
-            // Save timeline
-            var timeline = new OrderTimeline()
-            {
-                Order = order,
-                PreviousStatus = order.Status,
-                Status = OrderStatus.Canceled
-            };
-            await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
-            
-            order.Status = OrderStatus.Canceled;
-            await _unitOfWork.SaveChangesAsync();
-            
-            _logger.LogInformation("Clear expired order {orderId} at {time}", orderId, DateTimeOffset.UtcNow);
+            return;
         }
-
+        
+        var currentStatus = order.Status;
+        
+        order.Status = OrderStatus.Canceled;
+        await _unitOfWork.OrderRepository.UpdateAsync(order);
+        await _unitOfWork.SaveChangesAsync();
+        
+        await _rabbitMqBus.Publish(new OrderCanceledEvent()
+        {
+            Id = orderId,
+            PreviousStatus = currentStatus,
+            Status = order.Status
+        });
+        
+        _logger.LogInformation("Clear expired order {orderId} at {time}", orderId, DateTimeOffset.UtcNow);
     }
 }

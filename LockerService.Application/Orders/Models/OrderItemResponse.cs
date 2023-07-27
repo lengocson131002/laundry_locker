@@ -10,5 +10,9 @@ public class OrderItemResponse
     
     public decimal? Price { get; set; }
     
-    public long OrderId { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    
+    public DateTimeOffset UpdatedAt { get; set; }
+    
+    public DateTimeOffset? DeletedAt { get; set; }
 }

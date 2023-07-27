@@ -15,7 +15,7 @@ public class OrderDetail : BaseAuditableEntity
     
     public float? Quantity { get; set; }
     
-    public decimal? Price { get; set; }
+    public decimal Price { get; set; }
     
     public long OrderId { get; set; }
 

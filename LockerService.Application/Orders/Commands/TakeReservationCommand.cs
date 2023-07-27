@@ -4,13 +4,12 @@ public class TakeReservationCommandValidator : AbstractValidator<TakeReservation
 {
     public TakeReservationCommandValidator()
     {
-        RuleFor(model => model.PinCode)
-            .NotNull()
-            .Length(6);
+        RuleFor(model => model.Id)
+            .NotNull();
     }
 }
 
 public class TakeReservationCommand : IRequest<OrderResponse>
 {
-    public string PinCode { get; set; } = default!;
+    public long Id { get; set; } = default!;
 }

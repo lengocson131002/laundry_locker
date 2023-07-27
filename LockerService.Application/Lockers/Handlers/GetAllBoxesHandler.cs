@@ -1,6 +1,6 @@
 namespace LockerService.Application.Lockers.Handlers;
 
-public class GetAllBoxesHandler : IRequestHandler<GetAllBoxesQuery, ListResponse<BoxStatus>>
+public class GetAllBoxesHandler : IRequestHandler<GetAllBoxesQuery, ListResponse<BoxResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -11,7 +11,7 @@ public class GetAllBoxesHandler : IRequestHandler<GetAllBoxesQuery, ListResponse
         _mapper = mapper;
     }
 
-    public async Task<ListResponse<BoxStatus>> Handle(GetAllBoxesQuery request, CancellationToken cancellationToken)
+    public async Task<ListResponse<BoxResponse>> Handle(GetAllBoxesQuery request, CancellationToken cancellationToken)
     {
         var locker = await _unitOfWork.LockerRepository.GetByIdAsync(request.LockerId);
         if (locker == null)
@@ -19,6 +19,7 @@ public class GetAllBoxesHandler : IRequestHandler<GetAllBoxesQuery, ListResponse
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
-        return new ListResponse<BoxStatus>(await _unitOfWork.LockerRepository.GetAllBoxes(request.LockerId));
+        var boxes = await _unitOfWork.LockerRepository.GetAllBoxes(request.LockerId);
+        return new ListResponse<BoxResponse>(_mapper.Map<IList<Box>, IList<BoxResponse>>(boxes));
     }
 }

@@ -3,11 +3,13 @@ using LockerService.Application.Hardwares.Commands;
 using LockerService.Application.Hardwares.Models;
 using LockerService.Application.Hardwares.Queries;
 using LockerService.Domain.Entities;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/lockers/{id:long}/hardwares")]
+[Authorize(Roles = "Admin")]
 public class HardwareController : ApiControllerBase
 {
     [HttpGet]

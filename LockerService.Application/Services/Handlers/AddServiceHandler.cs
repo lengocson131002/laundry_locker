@@ -18,14 +18,13 @@ public class AddServiceHandler : IRequestHandler<AddServiceCommand, ServiceRespo
         _unitOfWork = unitOfWork;
     }
 
-
     public async Task<ServiceResponse> Handle(AddServiceCommand request, CancellationToken cancellationToken)
     {
         var service = _mapper.Map<Service>(request);
         
         // check exist name
         var query = await _unitOfWork.ServiceRepository.GetAsync(
-            predicate: ser => ser.Name.Equals(service.Name, StringComparison.OrdinalIgnoreCase)
+            predicate: ser => ser.Name.Equals(service.Name)
         );
 
         if (query.Any())

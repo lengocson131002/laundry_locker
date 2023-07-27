@@ -1,7 +1,6 @@
 using LockerService.Application.Common.Services.Notification;
 using LockerService.Application.Common.Services.Notification.Data;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;

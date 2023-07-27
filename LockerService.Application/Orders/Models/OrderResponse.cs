@@ -1,32 +1,32 @@
+using LockerService.Application.Customers.Models;
+
 namespace LockerService.Application.Orders.Models;
 
 public class OrderResponse
 {
     public long Id { get; set; }
     
+    public OrderType Type { get; set; }
+    
     public string? PinCode { get; set; }
     
-    public DateTimeOffset? PinCodeIssuedAt { get; set; } 
-    
-    public int SendBox { get; set; }
-    
-    public string SendPhone { get; set; } = default!;
+    public DateTimeOffset? PinCodeIssuedAt { get; set; }
 
-    public int SenderId { get; set; }
+    public BoxResponse SendBox { get; set; } = default!;
 
-    public int ReceiveBox { get; set; }
-    
-    public string? ReceivePhone { get; set; }
+    public BoxResponse ReceiveBox { get; set; } = default!;
 
-    public int? ReceiverId { get; set; }
+    public CustomerResponse Sender { get; set; } = default!;
+
+    public CustomerResponse Receiver { get; set; } = default!;
+
+    public StaffResponse Staff { get; set; } = default!;
 
     public DateTimeOffset? ReceiveAt { get; set; }
 
     public OrderStatus Status { get; set; }
-    
-    public int LockerId { get; set; }
-    
-    public string LockerName { get; set; } = default!;
+
+    public LockerResponse Locker { get; set; } = default!;
 
     public decimal Price { get; set; }
 

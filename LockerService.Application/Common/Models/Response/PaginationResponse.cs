@@ -46,7 +46,7 @@ public class PaginationResponse<TEntity, TResponse> where TEntity : class where 
 
     public bool HasPrevious => PageNumber > 1;
 
-    public bool HasNex => PageNumber < TotalPages;
+    public bool HasNext => PageNumber < TotalPages;
 
     public IList<TResponse> Items { get; }
 }

@@ -4,7 +4,7 @@ public class BillResponse
 {
     public long Id { get; set; }
     
-    public long OrderId { get; set; }
+    public long ReferenceOrderId { get; set; }
     
     public decimal Amount { get; set; }
 

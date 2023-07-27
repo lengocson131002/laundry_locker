@@ -9,4 +9,6 @@ public interface IAccountRepository : IBaseRepository<Account>
     public Task<Account?> GetCustomerByUsername(string username);
     
     public Task<Account?> GetCustomerByPhoneNumber(string phoneNumber);
+
+    public Task<Account?> GetCustomerById(long id);
 }

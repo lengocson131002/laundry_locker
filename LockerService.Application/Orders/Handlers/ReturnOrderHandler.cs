@@ -1,6 +1,6 @@
-using LockerService.Application.EventBus.RabbitMq.Events;
-using LockerService.Domain.Events;
-using MassTransit;
+using LockerService.Application.EventBus.RabbitMq;
+using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
+using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 
 namespace LockerService.Application.Orders.Handlers;
 
@@ -8,80 +8,73 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IMqttBus _mqttBus;
-    private readonly IPublishEndpoint _rabbitMqBus;
+    private readonly IRabbitMqBus _rabbitMqBus;
 
     public ReturnOrderHandler(
         IUnitOfWork unitOfWork,
         IMapper mapper,
-        IMqttBus mqttBus, IPublishEndpoint rabbitMqBus)
+        IRabbitMqBus rabbitMqBus)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _mqttBus = mqttBus;
         _rabbitMqBus = rabbitMqBus;
     }
 
     public async Task<OrderResponse> Handle(ReturnOrderCommand request, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository.GetOrderByPinCode(request.PinCode);
+        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
+            predicate: order => order.Id == request.Id,
+            includes: new List<Expression<Func<Order, object>>>()
+            {
+                order => order.Details
+            });
+
+        var order = await orderQuery.FirstOrDefaultAsync(cancellationToken);
         if (order == null || !OrderType.Laundry.Equals(order.Type))
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        var currentStatus = order.Status;
         if (!order.IsProcessing)
         {
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
 
-        try
+        if (!order.UpdatedInfo)
         {
-            var availableBox = await _unitOfWork.LockerRepository.FindAvailableBox(order.LockerId);
-            if (availableBox == null)
-            {
-                throw new ApiException(ResponseCode.LockerErrorNoAvailableBox);
-            }
-
-            // order.ReceiveBox = (int)availableBox;
-            order.Status = OrderStatus.Returned;
-            await _unitOfWork.OrderRepository.UpdateAsync(order);
-
-            // Save timeline
-            var timeline = new OrderTimeline()
-            {
-                Order = order,
-                PreviousStatus = currentStatus,
-                Status = order.Status
-            };
-            await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
-            await _unitOfWork.SaveChangesAsync();
-
-            // Mqtt Open Box
-            await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox.Number));
-
-            // Push rabbit MQ
-            await _rabbitMqBus.Publish(_mapper.Map<OrderReturnedEvent>(order), cancellationToken);
-            return _mapper.Map<OrderResponse>(order);
+            throw new ApiException(ResponseCode.OrderDetailErrorInfoRequired);
         }
-        catch (ApiException ex)
+
+        var lockerId = order.LockerId;
+        var availableBox = await _unitOfWork.LockerRepository.FindAvailableBox(lockerId);
+        if (availableBox == null)
         {
-            if (ex.ErrorCode == (int)ResponseCode.LockerErrorNoAvailableBox)
+            var exception = new ApiException(ResponseCode.LockerErrorNoAvailableBox);
+            await _rabbitMqBus.PublishAsync(new LockerOverloadedEvent()
             {
-                var locker = order.Locker;
-                var overloadEvent = new LockerTimeline()
-                {
-                    Locker = locker,
-                    Status = locker.Status,
-                    Event = LockerEvent.Overload
-                };
+                LockerId = lockerId,
+                Time = DateTimeOffset.UtcNow,
+                ErrorCode = exception.ErrorCode,
+                Error = exception.ErrorMessage
+            }, cancellationToken);
 
-                await _unitOfWork.LockerTimelineRepository.AddAsync(overloadEvent);
-                await _unitOfWork.SaveChangesAsync();
-            }
-
-            throw;
+            throw exception;
         }
+
+        var currentStatus = order.Status;
+        order.ReceiveBox = availableBox;
+        order.Status = OrderStatus.Returned;
+        await _unitOfWork.OrderRepository.UpdateAsync(order);
+        await _unitOfWork.SaveChangesAsync();
+
+        // Push rabbit MQ
+        await _rabbitMqBus.PublishAsync(new OrderReturnedEvent()
+        {
+            Id = order.Id,
+            PreviousStatus = currentStatus,
+            Status = order.Status
+        }, cancellationToken);
+        
+        return _mapper.Map<OrderResponse>(order);
     }
 }

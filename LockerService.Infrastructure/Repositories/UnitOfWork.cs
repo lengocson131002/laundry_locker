@@ -1,6 +1,6 @@
-using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Infrastructure.Persistence;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LockerService.Infrastructure.Repositories;
 
@@ -32,13 +32,20 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     private IStaffLockerRepository? _staffLockerRepository;
 
+    private IBoxRepository? _boxRepository;
+
     private ITokenRepository? _tokenRepository;
+
+    private ISettingRepository? _settingRepository;
     
     private readonly ApplicationDbContext _dbContext;
 
-    public UnitOfWork(ApplicationDbContext dbContext) : base(dbContext)
+    private readonly IServiceScopeFactory _scopeFactory;
+
+    public UnitOfWork(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory) : base(dbContext)
     {
         _dbContext = dbContext;
+        _scopeFactory = scopeFactory;
     }
 
     public IAccountRepository AccountRepository => _accountRepository ??= new AccountRepository(_dbContext);
@@ -70,6 +77,10 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     public IStoreRepository StoreRepository => _storeRepository ??= new StoreRepository(_dbContext);
     
     public IStaffLockerRepository StaffLockerRepository => _staffLockerRepository ??= new StaffLockerRepository(_dbContext);
+
+    public IBoxRepository BoxRepository => _boxRepository ??= new BoxRepository(_dbContext);
  
     public ITokenRepository TokenRepository => _tokenRepository ??= new TokenRepository(_dbContext);
+
+    public ISettingRepository SettingRepository => _settingRepository ??= new SettingRepository(_dbContext, _scopeFactory);
 }

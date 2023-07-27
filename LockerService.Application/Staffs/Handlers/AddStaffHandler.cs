@@ -28,33 +28,25 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
         }
 
         var staff = await _unitOfWork.AccountRepository.GetStaffByPhoneNumber(request.PhoneNumber);
-        if (staff is null)
+        if (staff != null)
         {
-            staff = new Account()
-            {
-                Username = request.PhoneNumber,
-                PhoneNumber = request.PhoneNumber,
-                FullName = request.FullName,
-                Avatar = request.Avatar,
-                Password = request.Password,
-                Description = request.Description,
-                Status = AccountStatus.Verifying,
-                Role = Role.Staff,
-                Store = store,
-            };
-
-            await _unitOfWork.AccountRepository.AddAsync(staff);
+            throw new ApiException(ResponseCode.StaffErrorExisted);
         }
-        else
+        
+        staff = new Account()
         {
-            if (staff.Store is not null)
-            {
-                throw new ApiException(ResponseCode.StaffErrorBelongToAStore);
-            }
+            Username = request.PhoneNumber,
+            PhoneNumber = request.PhoneNumber,
+            FullName = request.FullName,
+            Avatar = request.Avatar,
+            Password = request.Password,
+            Description = request.Description,
+            Status = AccountStatus.Verifying,
+            Role = Role.Staff,
+            Store = store,
+        };
 
-            staff.Store = store;
-            await _unitOfWork.AccountRepository.UpdateAsync(staff);
-        }
+        await _unitOfWork.AccountRepository.AddAsync(staff);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
