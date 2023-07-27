@@ -83,6 +83,14 @@ public class AuthController : ApiControllerBase
     {
         return await Mediator.Send(request);
     }
+    
+    [HttpGet("logout")]
+    public ActionResult Logout()
+    {
+        Response.Cookies.Delete(TokenCookieConstants.AccessTokenCookie);
+        Response.Cookies.Delete(TokenCookieConstants.RefreshTokenCookie);
+        return Ok();
+    }
 
     private Task SetHttpCookieToken(TokenResponse token)
     {
@@ -114,4 +122,5 @@ public class AuthController : ApiControllerBase
 
         return Task.CompletedTask;
     }
+
 }
