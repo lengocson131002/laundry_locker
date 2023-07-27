@@ -65,7 +65,7 @@ public class AuthController : ApiControllerBase
 
     [HttpPost("refresh")]
     [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> RefreshToken()
+    public async Task<ActionResult<TokenResponse>> RefreshToken([From])
     {
         var refreshToken = Request.Cookies[TokenCookieConstants.RefreshTokenCookie];
         if (refreshToken == null)
@@ -109,6 +109,7 @@ public class AuthController : ApiControllerBase
                 Expires = DateTimeOffset.UtcNow.AddMinutes(tokenExpireInMinutes),
                 HttpOnly = true,
                 Secure = true,
+                IsEssential = true,
                 SameSite = SameSiteMode.None
             });
         

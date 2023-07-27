@@ -30,29 +30,29 @@ public class RevokeStaffHandler : IRequestHandler<RevokeStaffCommand, StatusResp
         {
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
-
-        // Check staff
-        var staffQuery = await _unitOfWork.AccountRepository.GetAsync(
-            predicate: staff => staff.Id == request.StaffId);
-
-        var staff = staffQuery.FirstOrDefault();
-        if (staff is null)
-        {
-            throw new ApiException(ResponseCode.StaffErrorNotFound);
-        }
-
-        var slQuery =
-            await _unitOfWork.StaffLockerRepository.GetAsync(
-                al => Equals(al.StaffId, request.StaffId)
-                      && Equals(al.LockerId, request.LockerId));
-        
-        var staffLocker = slQuery.FirstOrDefault();
-        if (staffLocker is null)
-        {
-            throw new ApiException(ResponseCode.StaffLockerErrorNotFound);
-        }
-
-        await _unitOfWork.StaffLockerRepository.DeleteAsync(staffLocker);
+        //
+        // // Check staff
+        // var staffQuery = await _unitOfWork.AccountRepository.GetAsync(
+        //     predicate: staff => staff.Id == request.StaffId);
+        //
+        // var staff = staffQuery.FirstOrDefault();
+        // if (staff is null)
+        // {
+        //     throw new ApiException(ResponseCode.StaffErrorNotFound);
+        // }
+        //
+        // var slQuery =
+        //     await _unitOfWork.StaffLockerRepository.GetAsync(
+        //         al => Equals(al.StaffId, request.StaffId)
+        //               && Equals(al.LockerId, request.LockerId));
+        //
+        // var staffLocker = slQuery.FirstOrDefault();
+        // if (staffLocker is null)
+        // {
+        //     throw new ApiException(ResponseCode.StaffLockerErrorNotFound);
+        // }
+        //
+        // await _unitOfWork.StaffLockerRepository.DeleteAsync(staffLocker);
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();

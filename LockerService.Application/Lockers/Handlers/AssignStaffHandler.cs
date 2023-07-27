@@ -27,40 +27,40 @@ public class AssignStaffHandler : IRequestHandler<AssignStaffCommand, StatusResp
         }
 
 
-        // Check staff
-        var staffQuery = await _unitOfWork.AccountRepository.GetAsync(
-            predicate: staff => staff.Id == request.StaffId);
-
-        var staff = staffQuery.FirstOrDefault();
-        if (staff is null)
-        {
-            throw new ApiException(ResponseCode.StaffErrorNotFound);
-        }
-
-        // Check duplicate
-        var slQuery =
-            await _unitOfWork.StaffLockerRepository.GetAsync(
-                al => Equals(al.StaffId, request.StaffId)
-                      && Equals(al.LockerId, request.LockerId));
-
-        if (slQuery.FirstOrDefault() is not null)
-        {
-            throw new ApiException(ResponseCode.StaffLockerErrorExisted);
-        }
-
-        // Check store
-        if (!Equals(locker.Store, staff.Store))
-        {
-            throw new ApiException(ResponseCode.StoreErrorStaffAndLockerNotInSameStore);
-        }
-
-        var staffLocker = new StaffLocker
-        {
-            Staff = staff,
-            Locker = locker,
-        };
-
-        await _unitOfWork.StaffLockerRepository.AddAsync(staffLocker);
+        // // Check staff
+        // var staffQuery = await _unitOfWork.AccountRepository.GetAsync(
+        //     predicate: staff => staff.Id == request.StaffId);
+        //
+        // var staff = staffQuery.FirstOrDefault();
+        // if (staff is null)
+        // {
+        //     throw new ApiException(ResponseCode.StaffErrorNotFound);
+        // }
+        //
+        // // Check duplicate
+        // var slQuery =
+        //     await _unitOfWork.StaffLockerRepository.GetAsync(
+        //         al => Equals(al.StaffId, request.StaffId)
+        //               && Equals(al.LockerId, request.LockerId));
+        //
+        // if (slQuery.FirstOrDefault() is not null)
+        // {
+        //     throw new ApiException(ResponseCode.StaffLockerErrorExisted);
+        // }
+        //
+        // // Check store
+        // if (!Equals(locker.Store, staff.Store))
+        // {
+        //     throw new ApiException(ResponseCode.StoreErrorStaffAndLockerNotInSameStore);
+        // }
+        //
+        // var staffLocker = new StaffLocker
+        // {
+        //     Staff = staff,
+        //     Locker = locker,
+        // };
+        //
+        // await _unitOfWork.StaffLockerRepository.AddAsync(staffLocker);
 
         await _unitOfWork.SaveChangesAsync();
         return new StatusResponse(true);
