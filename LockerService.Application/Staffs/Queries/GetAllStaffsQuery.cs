@@ -62,7 +62,7 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
 
         if (Status is not null)
         {
-            Expression = Expression.And(account => account.Status.Equals(Status));
+            Expression = Expression.And(account => account.Status == Status);
         }
 
         if (CreatedFrom is not null)

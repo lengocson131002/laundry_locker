@@ -51,8 +51,7 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
 
         // Set timeout for created order
         var orderSettings = await _settingService.GetSettings<OrderSettings>();
-        var cancelTime = message.Time
-            .AddMinutes(_configuration.GetValueOrDefault("Order:TimeoutInMinutes", orderSettings.InitTimeoutInMinutes));
+        var cancelTime = message.Time.AddMinutes(orderSettings.InitTimeoutInMinutes);
 
         await _orderService.CancelExpiredOrder(message.OrderId, cancelTime);
     }

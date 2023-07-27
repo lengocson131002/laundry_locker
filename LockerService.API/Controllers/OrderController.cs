@@ -18,12 +18,14 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpPost("reservations")]
+    [Authorize]
     public async Task<ActionResult<OrderResponse>> ReserveOrder([FromBody] ReserveOrderCommand command)
     {
         return await Mediator.Send(command);
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Roles = "Staff")]
     public async Task<ActionResult<OrderResponse>> UpdateOrder([FromRoute] long id, [FromBody] UpdateOrderCommand request)
     {
         request.Id = id;

@@ -67,7 +67,11 @@ public class AuthController : ApiControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> RefreshToken()
     {
-        var refreshToken = Request.Cookies[TokenCookieConstants.RefreshTokenCookie] ?? string.Empty;
+        var refreshToken = Request.Cookies[TokenCookieConstants.RefreshTokenCookie];
+        if (refreshToken == null)
+        {
+            return Unauthorized();
+        }
         var request = new RefreshTokenRequest()
         {
             RefreshToken = refreshToken

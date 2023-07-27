@@ -1,8 +1,3 @@
-using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Utils;
-using LockerService.Application.Locations.Commands;
-using LockerService.Application.Services.Commands;
-
 namespace LockerService.Application.Lockers.Commands;
 
 public class AddLockerCommandValidator : AbstractValidator<AddLockerCommand>
@@ -24,7 +19,27 @@ public class AddLockerCommandValidator : AbstractValidator<AddLockerCommand>
             .NotNull();
 
         RuleFor(model => model.StaffIds)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(UniqueStaffs)
+            .WithMessage("StaffIds must contains unique ids");
+    }
+    
+    private bool UniqueStaffs(IList<long> staffIds)
+    {
+        var encounteredIds = new HashSet<long>();
+
+        foreach (var element in staffIds)
+        {
+            if (!encounteredIds.Contains(element))
+            {
+                encounteredIds.Add(element);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
@@ -41,7 +56,7 @@ public class AddLockerCommand : IRequest<LockerResponse>
     [TrimString(true)]
     public string? Description { get; set; } = default!;
 
-    public long StoreId { get; set; } = default!;
+    public long StoreId { get; set; }
 
     public IList<long> StaffIds { get; set; } = default!;
 }

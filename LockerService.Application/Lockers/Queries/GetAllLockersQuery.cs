@@ -4,9 +4,9 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
 {
     public string? Search { get; set; }
     
-    public long? StoreId { get; set; }
+    public IList<long>? StoreIds { get; set; }
     
-    public long? StaffId { get; set; }
+    public IList<long>? StaffIds { get; set; }
 
     public LockerStatus? Status { get; set; }
     
@@ -28,33 +28,32 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
 
         if (Status != null)
         {
-            Expression = Expression.And(locker => locker.Status.Equals(Status));
+            Expression = Expression.And(locker => locker.Status == Status);
         }
 
         if (!string.IsNullOrWhiteSpace(ProvinceCode))
         {
-            Expression = Expression.And(locker => ProvinceCode.Equals(locker.Location.Province.Code));
+            Expression = Expression.And(locker => ProvinceCode == locker.Location.Province.Code);
         }
 
         if (!string.IsNullOrWhiteSpace(DistrictCode))
         {
-            Expression = Expression.And(locker => DistrictCode.Equals(locker.Location.District.Code));
+            Expression = Expression.And(locker => DistrictCode == locker.Location.District.Code);
         }
 
         if (!string.IsNullOrWhiteSpace(WardCode))
         {
-            Expression = Expression.And(locker => WardCode.Equals(locker.Location.Ward.Code));
+            Expression = Expression.And(locker => WardCode == locker.Location.Ward.Code);
         }
 
-        if (StoreId != null)
+        if (StoreIds != null)
         {
-            Expression = Expression.And(locker => StoreId.Equals(locker.StoreId));
+            Expression = Expression.And(locker => StoreIds.Any(sId => locker.StoreId == sId));
         }
 
-        if (StaffId != null)
+        if (StaffIds != null)
         {
-            Expression = Expression.And(locker =>
-                locker.Staffs.FirstOrDefault(staff => StaffId.Equals(staff.Id)) != null);
+            Expression = Expression.And(locker => locker.StaffLockers.Any(sl => StaffIds.Any(sId => sId == sl.StaffId)));
         }
             
         if (ExcludedIds != null)

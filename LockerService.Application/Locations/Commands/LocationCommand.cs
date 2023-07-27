@@ -17,14 +17,6 @@ public class AddLocationCommandValidator : AbstractValidator<LocationCommand>
         
         RuleFor(model => model.ProvinceCode)
             .NotEmpty();
-        
-        RuleFor(model => model.Longitude)
-            .GreaterThan(0)
-            .When(model => model.Longitude != null);
-        
-        RuleFor(model => model.Latitude)
-            .GreaterThan(0)
-            .When(model => model.Latitude != null);
     }
 }
 

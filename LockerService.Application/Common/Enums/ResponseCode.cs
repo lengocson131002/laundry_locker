@@ -113,7 +113,7 @@ public enum ResponseCode
     
     [Description("Staff has been assigned to the locker(s) in this store")] StaffErrorInAssignment = 705,
 
-    [Description("Staff existed")] StaffErrorExisted = 706,
+    [Description("Staff with request phone number existed")] StaffErrorExisted = 706,
 
     // Store
     [Description("Store not found")] StoreErrorNotFound = 801,

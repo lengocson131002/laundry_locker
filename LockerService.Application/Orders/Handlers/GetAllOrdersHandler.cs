@@ -6,15 +6,42 @@ public class GetAllOrdersHandler : IRequestHandler<GetAllOrdersQuery, Pagination
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly ICurrentAccountService _currentAccountService;
 
-    public GetAllOrdersHandler(IMapper mapper, IUnitOfWork unitOfWork)
+    public GetAllOrdersHandler(IMapper mapper, IUnitOfWork unitOfWork, ICurrentAccountService currentAccountService)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _currentAccountService = currentAccountService;
     }
 
     public async Task<PaginationResponse<Order, OrderResponse>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
     {
+        var currentLoggedInUser = await _currentAccountService.GetCurrentAccount();
+        if (currentLoggedInUser != null)
+        {
+            if (Equals(currentLoggedInUser.Role, Role.Staff))
+            {
+                /*
+                 * Get orders in staff' orders
+                 */
+                request.StoreIds = new List<long>()
+                {
+                    (long) currentLoggedInUser.StoreId!
+                };
+
+            } else if (Equals(currentLoggedInUser.Role, Role.Customer))
+            {
+                /*
+                 * Get only customer's orders
+                 */
+                request.CustomerIds = new List<long>()
+                {
+                    currentLoggedInUser.Id
+                };
+            }
+        }
+        
         var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
             predicate: request.GetExpressions(),
             orderBy: request.GetOrder(),

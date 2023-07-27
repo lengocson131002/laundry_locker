@@ -6,18 +6,34 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentAccountService _currentAccountService;
 
     public GetAllLockersHandler(
         IUnitOfWork unitOfWork, 
-        IMapper mapper)
+        IMapper mapper, ICurrentAccountService currentAccountService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _currentAccountService = currentAccountService;
     }
 
     public async Task<PaginationResponse<Locker, LockerResponse>> Handle(GetAllLockersQuery request,
         CancellationToken cancellationToken)
     {
+                
+        /*
+         * Check current logged in user
+         * if Staff, get only their managed lockers
+         */
+        var currentLoggedInAccount = await _currentAccountService.GetCurrentAccount();
+        if (currentLoggedInAccount != null && Equals(currentLoggedInAccount.Role, Role.Staff))
+        {
+            request.StaffIds = new List<long>()
+            {
+                currentLoggedInAccount.Id
+            };
+        }
+            
         var lockers = await _unitOfWork.LockerRepository.GetAsync(
                 predicate: request.GetExpressions(),
                 orderBy: request.GetOrder(),

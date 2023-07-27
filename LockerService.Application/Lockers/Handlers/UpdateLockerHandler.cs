@@ -65,7 +65,7 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
             {
                 throw new ApiException(ResponseCode.StoreErrorNotFound);
             }
-            locker.StoreId = request.StoreId;
+            locker.StoreId = request.StoreId.Value;
         }
 
         if (request.StaffIds != null)
@@ -73,8 +73,8 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
             var staffLockers = new List<StaffLocker>();
             foreach (var staffId in request.StaffIds)
             {
-                var staff = await _unitOfWork.AccountRepository.GetByIdAsync(staffId);
-                if (staff == null || !Equals(staff.Role, Role.Staff) || !Equals(staff.StoreId, locker.StoreId))
+                var staff = await _unitOfWork.AccountRepository.GetStaffById(staffId);
+                if (staff == null || !Equals(staff.StoreId, locker.StoreId))
                 {
                     throw new ApiException(ResponseCode.StaffErrorNotFound);
                 }

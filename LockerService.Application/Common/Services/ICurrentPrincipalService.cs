@@ -9,5 +9,5 @@ public interface ICurrentPrincipalService
     public long? CurrentSubjectId { get; }   
     
     public ClaimsPrincipal GetCurrentPrincipalFromToken(string token);
-
+    
 }

@@ -34,7 +34,7 @@ public class Locker : BaseAuditableEntity
 
     public Store Store { get; set; } = default!;
     
-    public long? StoreId { get; set; }
+    public long StoreId { get; set; }
 
     public string? MacAddress { get; set; }
     
