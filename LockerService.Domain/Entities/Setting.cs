@@ -13,4 +13,13 @@ public class Setting : BaseAuditableEntity
     [Column(TypeName = "jsonb")]
     public string Value { get; set; } = default!;
 
+    public Setting()
+    {
+    }
+    
+    public Setting(string key, string value)
+    {
+        Key = key;
+        Value = value;
+    }
 }

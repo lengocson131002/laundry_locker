@@ -1,8 +1,7 @@
 namespace LockerService.Domain.Entities.Settings;
 
-public class InformationSettings
+public class InformationSettings : ISetting
 {
-
     public string? CompanyName { get; set; } = default!;
     
     public string? ContactPhone { get; set; } = default!;
@@ -13,8 +12,8 @@ public class InformationSettings
     
     public TimeSpan? ClosedAt { get; set; }
 
-    public static InformationSettings Initialize()
+    public InformationSettings()
     {
-        return new InformationSettings();
+        
     }
 }

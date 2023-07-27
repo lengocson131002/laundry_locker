@@ -1,13 +1,13 @@
 namespace LockerService.Domain.Entities.Settings;
 
-public class AccountSettings
+public class AccountSettings : ISetting
 {
     public int MaxWrongLoginCount { get; set; }
     
     public int WrongLoginBlockTimeInMinutes { get; set; }
-    
-    public static AccountSettings Initialize()
+
+    public AccountSettings()
     {
-        return new AccountSettings();
+        
     }
 }

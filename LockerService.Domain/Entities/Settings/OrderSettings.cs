@@ -1,6 +1,6 @@
 namespace LockerService.Domain.Entities.Settings;
 
-public class OrderSettings
+public class OrderSettings : ISetting
 {
     public int InitTimeoutInMinutes { get; set; } 
     
@@ -8,14 +8,14 @@ public class OrderSettings
     
     public decimal StoragePrice { get; set; }
 
-    public decimal MaxTimeInHours { get; set; }
+    public int MaxTimeInHours { get; set; }
     
     public decimal ExtraFee { get; set; }
     
     public int MaxOrderCount { get; set; }
 
-    public static OrderSettings Initialize()
+    public OrderSettings()
     {
-        return new OrderSettings();
+        
     }
 }

@@ -1,5 +1,6 @@
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Infrastructure.Persistence;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LockerService.Infrastructure.Repositories;
 
@@ -39,9 +40,12 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     
     private readonly ApplicationDbContext _dbContext;
 
-    public UnitOfWork(ApplicationDbContext dbContext) : base(dbContext)
+    private readonly IServiceScopeFactory _scopeFactory;
+
+    public UnitOfWork(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory) : base(dbContext)
     {
         _dbContext = dbContext;
+        _scopeFactory = scopeFactory;
     }
 
     public IAccountRepository AccountRepository => _accountRepository ??= new AccountRepository(_dbContext);
@@ -78,5 +82,5 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
  
     public ITokenRepository TokenRepository => _tokenRepository ??= new TokenRepository(_dbContext);
 
-    public ISettingRepository SettingRepository => _settingRepository ??= new SettingRepository(_dbContext);
+    public ISettingRepository SettingRepository => _settingRepository ??= new SettingRepository(_dbContext, _scopeFactory);
 }
