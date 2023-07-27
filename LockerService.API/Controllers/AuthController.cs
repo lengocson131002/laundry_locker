@@ -84,7 +84,7 @@ public class AuthController : ApiControllerBase
         return await Mediator.Send(request);
     }
     
-    [HttpGet("logout")]
+    [HttpPost("logout")]
     public ActionResult Logout()
     {
         Response.Cookies.Delete(TokenCookieConstants.AccessTokenCookie);
