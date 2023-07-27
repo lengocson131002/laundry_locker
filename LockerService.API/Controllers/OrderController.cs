@@ -31,6 +31,16 @@ public class OrderController : ApiControllerBase
         request.Id = id;
         return await Mediator.Send(request);
     }
+    
+    [HttpPut("{id:long}/reservation")]
+    public async Task<ActionResult<OrderResponse>> UseOrderReservation([FromRoute] long id)
+    {
+        var command = new TakeReservationCommand()
+        {
+            Id = id
+        };
+        return await Mediator.Send(command);
+    }
 
     [HttpPut("{id:long}/confirm")]
     public async Task<ActionResult<OrderResponse>> ConfirmOrder([FromRoute] long id)

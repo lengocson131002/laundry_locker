@@ -125,7 +125,7 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
             LockerId = command.LockerId,
             Type = command.Type,
             Details = details,
-            Status = OrderStatus.Initialized,
+            Status = OrderStatus.Reserved,
             Sender = sender,
             Receiver = receiver,
             SendBox = availableBox,

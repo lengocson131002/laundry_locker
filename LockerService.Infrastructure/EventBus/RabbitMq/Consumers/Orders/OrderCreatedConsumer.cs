@@ -44,7 +44,8 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
         var timeline = new OrderTimeline()
         {
             Order = order,
-            Status = message.Status
+            Status = message.Status,
+            PreviousStatus = message.PreviousStatus
         };
         await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
         await _unitOfWork.SaveChangesAsync();

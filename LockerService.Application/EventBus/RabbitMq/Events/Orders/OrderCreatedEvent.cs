@@ -7,4 +7,6 @@ public class OrderCreatedEvent : RabbitMqBaseEvent
     public DateTimeOffset Time { get; set; }
     
     public OrderStatus Status { get; set; }
+    
+    public OrderStatus? PreviousStatus { get; set; }
 }
