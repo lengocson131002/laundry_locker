@@ -40,6 +40,20 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    [HttpPost("{id:long}/staffs")]
+    public async Task<ActionResult<StatusResponse>> AssignStaffs([FromRoute] long id, [FromBody] AssignStaffCommand command)
+    {
+        command.LockerId = id;
+        return await Mediator.Send(command);
+    }
+    
+    [HttpDelete("{id:long}/staffs")]
+    public async Task<ActionResult<StatusResponse>> UnAssignStaffs([FromRoute] long id, [FromBody] RevokeStaffCommand command)
+    {
+        command.LockerId = id;
+        return await Mediator.Send(command);
+    }
+    
     [HttpPut("{id:long}")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<StatusResponse>> UpdateLocker([FromRoute] long id,
