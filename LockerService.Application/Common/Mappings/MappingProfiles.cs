@@ -1,6 +1,10 @@
+using LockerService.Application.Bills.Models;
+using LockerService.Application.Customers.Models;
 using LockerService.Application.Locations.Commands;
 using LockerService.Application.Services.Commands;
+using LockerService.Application.Settings.Commands;
 using LockerService.Application.Staffs.Models;
+using LockerService.Domain.Entities.Settings;
 
 namespace LockerService.Application.Common.Mappings;
 
@@ -13,6 +17,7 @@ public class MappingProfiles : Profile
         CreateMap<Locker, LockerResponse>();
         CreateMap<Locker, LockerDetailResponse>();
         CreateMap<LockerTimeline, LockerTimelineResponse>();
+        CreateMap<Box, BoxResponse>();
         
         // Service
         CreateMap<AddServiceCommand, Service>();
@@ -32,12 +37,13 @@ public class MappingProfiles : Profile
         // Order
         CreateMap<CreateOrderCommand, Order>();
         CreateMap<Order, OrderResponse>();
+        CreateMap<Order, BoxOrderResponse>();
         
         // Bill
+        CreateMap<Bill, BillResponse>();
         
         // OrderDetail
         CreateMap<OrderDetail, OrderItemResponse>();
-
         CreateMap<Order, OrderDetailResponse>();
         
         // Order timeline
@@ -48,11 +54,18 @@ public class MappingProfiles : Profile
         CreateMap<Account, AccountDetailResponse>();
         CreateMap<Account, StaffResponse>();
         CreateMap<Account, StaffDetailResponse>();
+        CreateMap<Account, CustomerResponse>();
+        CreateMap<Account, CustomerDetailResponse>();
         
         // Store
         CreateMap<AddStoreCommand, Store>();
         CreateMap<Store, StoreResponse>();
         CreateMap<Store, StoreDetailResponse>();
+        
+        // Settings
+        CreateMap<InformationSettingsCommand, InformationSettings>();
+        CreateMap<AccountSettingsCommand, AccountSettings>();
+        CreateMap<OrderSettingsCommand, OrderSettings>();
     }
 
 }

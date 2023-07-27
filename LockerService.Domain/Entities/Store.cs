@@ -20,6 +20,8 @@ public class Store : BaseAuditableEntity
     public Location Location { get; set; } = default!;
 
     public string? Image { get; set; }
+    
+    public bool IsActive => Equals(StoreStatus.Active, Status);
 
     public IList<Account> Staffs { get; set; }
     

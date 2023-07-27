@@ -1,6 +1,4 @@
-using LockerService.Infrastructure.Common;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using LockerService.Infrastructure.Settings;
 using MQTTnet;
 using MQTTnet.Client;
 
@@ -11,25 +9,20 @@ public class MqttClientService : IMqttClientService
      private readonly IMqttClient _mqttClient;
     private readonly MqttClientOptions _options;
     private readonly ILogger<MqttClientService> _logger;
-    private readonly string? _key;
-    private readonly bool _isEncrypted;
-    public MqttClientService(IConfiguration configuration, ILogger<MqttClientService> logger)
+    private readonly MqttSettings _settings;
+    
+    public MqttClientService(ILogger<MqttClientService> logger, MqttSettings settings)
     {
+        _settings = settings;
         _mqttClient = new MqttFactory().CreateMqttClient();
         _options = new MqttClientOptionsBuilder()
-            .WithTcpServer(configuration["Mqtt:Host"], int.Parse(configuration["Mqtt:Port"] ?? "1833"))
+            .WithTcpServer(_settings.Host, _settings.Port)
             .WithClientId(Guid.NewGuid().ToString())
-            .WithCredentials(configuration["Mqtt:Username"], configuration["Mqtt:Password"])
+            .WithCredentials(_settings.Username, _settings.Password)
             .WithCleanSession()
             .Build();
         
         _logger = logger;
-        _isEncrypted = configuration.GetValueOrDefault("Mqtt:IsEncrypted", false);
-        if (_isEncrypted)
-        {
-            _key = configuration["Mqtt:SecretKey"] ?? throw new ArgumentException("MQTT secret key is required to encrypt");
-        }
-        
         ConfigureMqttClient();
     }
 
@@ -98,12 +91,12 @@ public class MqttClientService : IMqttClientService
             };
             await _mqttClient.DisconnectAsync(disconnectOption, cancellationToken);
         }
-        await _mqttClient.DisconnectAsync();
+        await _mqttClient.DisconnectAsync(cancellationToken: cancellationToken);
     }
 
     public IMqttClient MqttClient => _mqttClient;
 
-    public string? MqttSecretKey => _key;
+    public string? MqttSecretKey => _settings.SecretKey;
     
-    public bool IsEncrypted => _isEncrypted;
+    public bool IsEncrypted => _settings.IsEncrypted;
 }

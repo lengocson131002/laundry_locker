@@ -96,6 +96,7 @@ public class AuthController : ApiControllerBase
                 Expires = DateTimeOffset.UtcNow.AddMinutes(tokenExpireInMinutes),
                 HttpOnly = true,
                 Secure = true,
+                IsEssential = true,
                 SameSite = SameSiteMode.None
             });
         

@@ -1,5 +1,3 @@
-using LockerService.Domain.Events;
-
 namespace LockerService.Application.Lockers.Models;
 
 public class LockerTimelineResponse
@@ -18,5 +16,7 @@ public class LockerTimelineResponse
     
     public string? Error { get; set; }
     
-    public DateTimeOffset Time { get; set; }
+    public DateTimeOffset? CreatedAt { get; set; }
+    
+    public DateTimeOffset? UpdatedAt { get; set; }
 }

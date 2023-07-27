@@ -38,7 +38,7 @@ public class CurrentPrincipalService : ICurrentPrincipalService
         }
     }
 
-    public int? CurrentSubjectId => CurrentPrincipal != null ? int.Parse(CurrentPrincipal) : null;
+    public long? CurrentSubjectId => CurrentPrincipal != null ? long.Parse(CurrentPrincipal) : null;
     
     public ClaimsPrincipal GetCurrentPrincipalFromToken(string token)
     {

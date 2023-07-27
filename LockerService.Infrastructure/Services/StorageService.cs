@@ -6,38 +6,30 @@ using Amazon.S3.Transfer;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Common.Exceptions;
 using LockerService.Application.Common.Services;
+using LockerService.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace LockerService.Infrastructure.Services;
 
 public class StorageService : IStorageService
 {
-    private readonly string _bucketName;
-    private readonly string _region;
-    private readonly ILogger<StorageService> _logger;
+    private readonly AwsS3Settings _settings;
     private readonly IAmazonS3 _s3Client;
 
-    public StorageService(IConfiguration configuration, ILogger<StorageService> logger)
+    public StorageService(AwsS3Settings settings)
     {
-        _logger = logger;
-        _bucketName = configuration["AWS:S3:BucketName"] ?? throw new ArgumentException("AWS:S3:BucketName is required");
-        _region = configuration["AWS:S3:Region"] ?? throw new ArgumentException("AWS:S3:Region is required");
-        
-        var accessKey = configuration["AWS:S3:AccessKey"] ??
-                        throw new ArgumentException("AWS:S3:AccessKey is required");
-        var secretKey = configuration["AWS:S3:SecretKey"] ??
-                        throw new ArgumentException("AWS:S3:SecretKey is required");
-
-        _s3Client = new AmazonS3Client(accessKey, secretKey, RegionEndpoint.GetBySystemName(_region));
+        _settings = settings;
+        _s3Client = new AmazonS3Client(
+            _settings.AccessKey,
+            _settings.SecretKey, 
+            RegionEndpoint.GetBySystemName(_settings.Region));
     }
 
     public async Task<byte[]> DownloadFileAsync(string fileName)
     {
         var getObjectRequest = new GetObjectRequest
         {
-            BucketName = _bucketName,
+            BucketName = _settings.BucketName,
             Key = fileName
         };
 
@@ -57,7 +49,7 @@ public class StorageService : IStorageService
     {
         var getObjectRequest = new GetObjectRequest
         {
-            BucketName = _bucketName,
+            BucketName = _settings.BucketName,
             Key = fileName
         };
 
@@ -80,7 +72,7 @@ public class StorageService : IStorageService
         {
             InputStream = ms,
             Key = fileName, // create unique file name
-            BucketName = _bucketName,
+            BucketName = _settings.BucketName,
             ContentType = file.ContentType
         };
 
@@ -95,7 +87,7 @@ public class StorageService : IStorageService
     {
         var deleteFileRequest = new DeleteObjectRequest()
         {
-            BucketName = _bucketName,
+            BucketName = _settings.BucketName,
             Key = fileName,
             VersionId = !string.IsNullOrWhiteSpace(versionId) ? versionId : null
         };
@@ -120,7 +112,7 @@ public class StorageService : IStorageService
         {
             var getMetaObjectRequest = new GetObjectMetadataRequest()
             {
-                BucketName = _bucketName,
+                BucketName = _settings.BucketName,
                 Key = fileName,
                 VersionId = !string.IsNullOrWhiteSpace(versionId) ? versionId : null
             };
@@ -147,7 +139,7 @@ public class StorageService : IStorageService
     {
         var urlRequest = new GetPreSignedUrlRequest()
         {
-            BucketName = _bucketName,
+            BucketName = _settings.BucketName,
             Key = fileName,
             Expires = DateTime.UtcNow.AddMinutes(1)
         };
@@ -157,6 +149,6 @@ public class StorageService : IStorageService
 
     public string GetObjectUrl(string fileName)
     {
-        return $"https://{_bucketName}.s3.{_region}.amazonaws.com/{fileName}";
+        return $"https://{_settings.BucketName}.s3.{_settings.Region}.amazonaws.com/{fileName}";
     }
 }

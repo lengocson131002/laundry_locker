@@ -1,3 +1,5 @@
+using LockerService.Application.Common.Utils;
+
 namespace LockerService.Application.Locations.Commands;
 
 public class AddLocationCommandValidator : AbstractValidator<LocationCommand>
@@ -15,25 +17,21 @@ public class AddLocationCommandValidator : AbstractValidator<LocationCommand>
         
         RuleFor(model => model.ProvinceCode)
             .NotEmpty();
-        
-        RuleFor(model => model.Longitude)
-            .GreaterThan(0)
-            .When(model => model.Longitude != null);
-        
-        RuleFor(model => model.Latitude)
-            .GreaterThan(0)
-            .When(model => model.Latitude != null);
     }
 }
 
 public class LocationCommand : IRequest
 {
+    [TrimString(true)]
     public string Address { get; set; } = default!;
-    
+
+    [TrimString(true)]
     public string WardCode { get; set; } = default!;
     
+    [TrimString(true)]
     public string DistrictCode { get; set; } = default!;
     
+    [TrimString(true)]
     public string ProvinceCode { get; set; } = default!;
 
     public double? Longitude { get; set; } = default!;

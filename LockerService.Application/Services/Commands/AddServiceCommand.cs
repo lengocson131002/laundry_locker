@@ -1,3 +1,5 @@
+using LockerService.Application.Common.Utils;
+
 namespace LockerService.Application.Services.Commands;
 
 public class AddServiceCommandValidator : AbstractValidator<AddServiceCommand>
@@ -18,14 +20,18 @@ public class AddServiceCommandValidator : AbstractValidator<AddServiceCommand>
 
 public class AddServiceCommand : IRequest<ServiceResponse>
 {
+    [TrimString(true)]
     public string Name { get; set; } = default!;
 
+    [TrimString(true)]
     public string Image { get; set; } = default!;
 
-    public decimal Price { get; set; }
+    public decimal Price { get; set; } = default!;
     
+    [TrimString(true)]
     public string? Unit { get; set; }
 
+    [TrimString(true)]
     public string? Description { get; set; }
     
 }

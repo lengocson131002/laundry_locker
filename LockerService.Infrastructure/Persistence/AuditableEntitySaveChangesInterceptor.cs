@@ -1,9 +1,6 @@
 using LockerService.Application.Common.Services;
-using LockerService.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Logging;
 
 namespace LockerService.Infrastructure.Persistence;
 

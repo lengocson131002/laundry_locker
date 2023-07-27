@@ -33,12 +33,12 @@ public class UpdateStaffHandler : IRequestHandler<UpdateStaffCommand, StaffDetai
         }
 
         // Check store
-        if (request.StoreId is not null)
+        if (request.StoreId is not null && !Equals(request.StoreId, staff.StoreId))
         {
             var slQuery =
                 await _unitOfWork.StaffLockerRepository.GetAsync(sl =>
                     Equals(sl.StaffId, staff.Id));
-            if (slQuery.FirstOrDefault() is not null)
+            if (slQuery.Any())
             {
                 throw new ApiException(ResponseCode.StaffErrorInAssignment);
             }

@@ -58,4 +58,20 @@ public class StaffController : ApiControllerBase
         command.Id = id;
         return await Mediator.Send(command);
     }
+
+    [HttpPost("{id:long}/lockers")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> AssignLocker([FromRoute] long id, [FromBody] AssignLockerCommand command)
+    {
+        command.StaffId = id;
+        return await Mediator.Send(command);
+    }
+    
+    [HttpDelete("{id:long}/lockers")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<StatusResponse>> RevokeLocker([FromRoute] long id, [FromBody] RevokeLockerCommand command)
+    {
+        command.StaffId = id;
+        return await Mediator.Send(command);
+    }
 }

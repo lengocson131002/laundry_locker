@@ -21,7 +21,7 @@ public class UpdateServiceStatusHandler : IRequestHandler<UpdateServiceStatusCom
 
         if (request.Status.Equals(service.Status))
         {
-            throw new ApiException(ResponseCode.CommonError, "Service is already updated status");
+            throw new ApiException(ResponseCode.ServiceErrorInvalidStatus);
         }
 
         service.Status = request.Status;

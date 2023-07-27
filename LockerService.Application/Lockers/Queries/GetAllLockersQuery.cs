@@ -2,67 +2,72 @@ namespace LockerService.Application.Lockers.Queries;
 
 public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<PaginationResponse<Locker, LockerResponse>>
 {
-    private string? _query;
-
-    public string? Query
-    {
-        get => _query;
-        set => _query = value?.Trim().ToLower();
-    }
-
-    public string? Name { get; set; }
+    public string? Search { get; set; }
+    
+    public long? StoreId { get; set; }
+    
+    public long? StaffId { get; set; }
 
     public LockerStatus? Status { get; set; }
-
+    
     public string? ProvinceCode { get; set; }
-
+    
     public string? DistrictCode { get; set; }
-
+    
     public string? WardCode { get; set; }
 
-    public long? StoreId { get; set; }
+    public IList<long>? ExcludedIds { get; set; }
 
-
+    public long? ForStaffId { get; set; }
+    
     public override Expression<Func<Locker, bool>> GetExpressions()
     {
-        if (Query != null)
+        if (Search != null)
         {
-            Expression = Expression.And(locker => locker.Name.ToLower().Contains(_query)
-                                                  || locker.Description.ToLower().Contains(_query)
-                                                  || locker.Code.ToLower().Contains(_query));
-        }
-
-        if (Name != null)
-        {
-            Expression = Expression.And(locker => locker.Name.ToLower().Contains(Name.ToLower()));
+            Search = Search.Trim().ToLower();
+            Expression = Expression.And(locker => locker.Name.ToLower().Contains(Search));
         }
 
         if (Status != null)
         {
-            Expression = Expression.And(locker => locker.Status.Equals(Status));
+            Expression = Expression.And(locker => locker.Status == Status);
         }
 
         if (!string.IsNullOrWhiteSpace(ProvinceCode))
         {
-            Expression = Expression.And(locker => ProvinceCode.Equals(locker.Location.Province.Code));
+            Expression = Expression.And(locker => ProvinceCode == locker.Location.Province.Code);
         }
 
         if (!string.IsNullOrWhiteSpace(DistrictCode))
         {
-            Expression = Expression.And(locker => DistrictCode.Equals(locker.Location.District.Code));
+            Expression = Expression.And(locker => DistrictCode == locker.Location.District.Code);
         }
 
         if (!string.IsNullOrWhiteSpace(WardCode))
         {
-            Expression = Expression.And(locker => WardCode.Equals(locker.Location.Ward.Code));
+            Expression = Expression.And(locker => WardCode == locker.Location.Ward.Code);
         }
 
         if (StoreId != null)
         {
-            Expression = Expression.And(locker => Equals(StoreId, locker.StoreId));
+            Expression = Expression.And(locker => StoreId == locker.StoreId);
         }
 
+        if (StaffId != null)
+        {
+            Expression = Expression.And(locker => locker.StaffLockers.Any(sl => StaffId == sl.StaffId));
+        }
+            
+        if (ExcludedIds != null)
+        {
+            Expression = Expression.And(locker => ExcludedIds.All(id => locker.Id != id));
+        }
 
+        if (ForStaffId != null)
+        {
+            Expression = Expression.And(locker => locker.StaffLockers.All(item => item.StaffId != ForStaffId));
+        }
+            
         return Expression;
     }
 }

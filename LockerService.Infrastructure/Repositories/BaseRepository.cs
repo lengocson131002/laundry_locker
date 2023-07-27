@@ -1,7 +1,4 @@
-using System.Linq.Expressions;
-using LockerService.Application.Common.Persistence;
 using LockerService.Application.Common.Persistence.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace LockerService.Infrastructure.Repositories;
 
@@ -14,31 +11,51 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public Task<IQueryable<T>> GetAllAsync()
-    {
-        return Task.FromResult(_dbContext.Set<T>().AsQueryable());
-    }
-
-    public Task<IQueryable<T>> GetAsync(Expression<Func<T, bool>> predicate)
-    {
-        return Task.FromResult(_dbContext.Set<T>().Where(predicate).AsQueryable());
-    }
+    // public Task<IQueryable<T>> GetAllAsync()
+    // {
+    //     return Task.FromResult(_dbContext.Set<T>().AsQueryable());
+    // }
+    //
+    // public Task<IQueryable<T>> GetAsync(Expression<Func<T, bool>> predicate)
+    // {
+    //     return Task.FromResult(_dbContext.Set<T>().Where(predicate).AsQueryable());
+    // }
 
     public Task<IQueryable<T>> GetAsync(
-        Expression<Func<T, bool>> predicate = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-        List<Expression<Func<T, object>>> includes = null,
-        bool disableTracking = true)
+        Expression<Func<T, bool>>? predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        List<Expression<Func<T, object>>>? includes = null,
+        bool disableTracking = false)
+    {
+        return Task.FromResult(Get(predicate, orderBy, includes, disableTracking));
+    }
+
+    public IQueryable<T> Get(
+        Expression<Func<T, bool>>? predicate = null, 
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, 
+        List<Expression<Func<T, object>>>? includes = null, 
+        bool disableTracking = false)
     {
         IQueryable<T> query = _dbContext.Set<T>();
 
-        if (disableTracking) query = query.AsNoTracking();
+        if (disableTracking)
+        {
+            query = query.AsNoTracking();
+        }
 
-        if (includes != null) query = includes.Aggregate(query, (current, include) => current.Include(include));
+        if (includes != null)
+        {
+            query = includes.Aggregate(query, (current, include) => current.Include(include));
+        }
 
-        if (predicate != null) query = query.Where(predicate);
+        if (predicate != null)
+        {
+            query = query.Where(predicate);
+        }
 
-        return Task.FromResult(orderBy != null ? orderBy(query).AsQueryable() : query.AsQueryable());
+        return orderBy != null 
+            ? orderBy(query).AsQueryable() 
+            : query.AsQueryable();
     }
 
     public virtual async Task<T?> GetByIdAsync(object id)
@@ -48,13 +65,20 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public async Task<T> AddAsync(T entity)
     {
+        if (_dbContext.Entry(entity).State == EntityState.Detached)
+        {
+            _dbContext.Set<T>().Attach(entity);
+        }
         await _dbContext.Set<T>().AddAsync(entity);
         return entity;
     }
 
     public Task UpdateAsync(T entity)
     {
-        if (_dbContext.Entry(entity).State == EntityState.Detached) _dbContext.Set<T>().Attach(entity);
+        if (_dbContext.Entry(entity).State == EntityState.Detached)
+        {
+            _dbContext.Set<T>().Attach(entity);
+        }
 
         _dbContext.Entry(entity).State = EntityState.Modified;
 
@@ -64,7 +88,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public Task DeleteAsync(T entity)
     {
-        if (_dbContext.Entry(entity).State == EntityState.Detached) _dbContext.Set<T>().Attach(entity);
+        if (_dbContext.Entry(entity).State == EntityState.Detached)
+        {
+            _dbContext.Set<T>().Attach(entity);
+        }
 
         _dbContext.Set<T>().Remove(entity);
 
@@ -73,7 +100,15 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public async Task AddRange(IEnumerable<T> entities)
     {
-        await _dbContext.Set<T>().AddRangeAsync(entities);
+        var listEntities = entities.ToList();
+        listEntities.ForEach(entity =>
+        {
+            if (_dbContext.Entry(entity).State == EntityState.Detached)
+            {
+                _dbContext.Set<T>().Attach(entity);
+            }
+        });
+        await _dbContext.Set<T>().AddRangeAsync(listEntities);
     }
 
     public Task DeleteRange(IEnumerable<T> entities)
@@ -81,7 +116,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         var listEntities = entities.ToList();
         listEntities.ForEach(entity =>
         {
-            if (_dbContext.Entry(entity).State == EntityState.Detached) _dbContext.Set<T>().Attach(entity);
+            if (_dbContext.Entry(entity).State == EntityState.Detached)
+            {
+                _dbContext.Set<T>().Attach(entity);
+            }
         });
 
         _dbContext.Set<T>().RemoveRange(listEntities);

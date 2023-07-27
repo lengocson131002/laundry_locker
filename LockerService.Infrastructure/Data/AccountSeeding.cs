@@ -1,4 +1,3 @@
-using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Infrastructure.Data;

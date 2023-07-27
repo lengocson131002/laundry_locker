@@ -41,7 +41,7 @@ public enum ResponseCode
     // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,
     
-    [Description("Locker status invalid")] LockerErrorInvalidStatus = 102,
+    [Description("Locker' status is not allow to do this function")] LockerErrorInvalidStatus = 102,
 
     [Description("Update boxes failed, please scan enough box")] LockerErrorInvalidNumberOfBoxes = 103,
     
@@ -56,6 +56,11 @@ public enum ResponseCode
     [Description("Locker is currently not active")] LockerErrorNotActive = 108,
     
     [Description("No any available box. Please try later")] LockerErrorNoAvailableBox = 109,
+    
+    [Description("Box not found")] LockerErrorBoxNotFound = 110,
+    
+    [Description("Box status is not allowed to do this function")] LockerErrorInvalidBoxStatus = 111,
+
 
     // Service
     [Description("Service not found")] ServiceErrorNotFound = 201,
@@ -63,6 +68,8 @@ public enum ResponseCode
     [Description("Service's fee is required")] ServiceErrorMissingFee = 202,
 
     [Description("Existed service name")] ServiceErrorExistedName = 203,
+    
+    [Description("Service's status is not allowed to do this function")] ServiceErrorInvalidStatus = 204,
     
 
     // Order
@@ -79,8 +86,10 @@ public enum ResponseCode
     [Description("Fee of this order's service is missing")] OrderErrorServiceFeeIsMissing = 408,
     
     [Description("FeeType of this order's service is missing")] OrderErrorServiceFeeTypeIsMissing = 409,
-
-    [Description("Order item detail not found")] OrderErrorDetailNotFound = 410,
+    
+    [Description("Inactive account is not allowed to create order")] OrderErrorInactiveAccount = 410,
+    
+    [Description("Can't create order because your account has currently had over allowed active order count")] OrderErrorExceedAllowOrderCount = 410,
 
     // Address
     [Description("Province not found")] AddressErrorProvinceNotFound = 501,
@@ -104,7 +113,7 @@ public enum ResponseCode
     
     [Description("Staff has been assigned to the locker(s) in this store")] StaffErrorInAssignment = 705,
 
-    [Description("Staff existed")] StaffErrorExisted = 706,
+    [Description("Staff with request phone number existed")] StaffErrorExisted = 706,
 
     // Store
     [Description("Store not found")] StoreErrorNotFound = 801,
@@ -116,12 +125,25 @@ public enum ResponseCode
     // Staff Locker
     [Description("Assignment not found")] StaffLockerErrorNotFound = 901,
     
-    [Description("Assignment existed")] StaffLockerErrorExisted = 902,
+    [Description("Staff assigned to locker")] StaffLockerErrorExisted = 902,
+    
+    [Description("Staff has no permission on the request locker")] StaffLockerErrorNoPermission = 903,
 
     // Account
     [Description("Username existed")] AccountErrorUsernameExisted = 1001,
     
     [Description("Phone Number existed")] AccountErrorPhoneNumberExisted = 1002,
-
     
+    [Description("Account's status is not allowed to do this function")] AccountErrorInvalidStatus = 1003,
+
+    // Bill
+    [Description("Bill not found")] BillErrorNotFound = 1101,
+    
+    // OrderDetail
+    [Description("Order item detail not found")] OrderDetailErrorNotFound = 1201,
+    
+    [Description("Please update order's details")] OrderDetailErrorInfoRequired = 1202,
+    
+    [Description("Order item detail existed")] OrderDetailExisted = 1203,
+
 }

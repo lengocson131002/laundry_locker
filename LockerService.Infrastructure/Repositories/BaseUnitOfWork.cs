@@ -1,6 +1,6 @@
-using LockerService.Application.Common.Persistence;
+using System.Data;
 using LockerService.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace LockerService.Infrastructure.Repositories;
 
@@ -33,6 +33,12 @@ public class BaseUnitOfWork : IBaseUnitOfWork
                     entry.State = EntityState.Detached;
                     break;
             }
+    }
+
+    public IDbTransaction BeginTransaction()
+    {
+        var transaction = _dbContext.Database.BeginTransaction();
+        return transaction.GetDbTransaction();
     }
 
     protected virtual void Dispose(bool disposing)

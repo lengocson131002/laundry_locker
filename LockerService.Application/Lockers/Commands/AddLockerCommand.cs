@@ -1,8 +1,3 @@
-using System.Collections;
-using LockerService.Application.Common.Extensions;
-using LockerService.Application.Locations.Commands;
-using LockerService.Application.Services.Commands;
-
 namespace LockerService.Application.Lockers.Commands;
 
 public class AddLockerCommandValidator : AbstractValidator<AddLockerCommand>
@@ -13,42 +8,55 @@ public class AddLockerCommandValidator : AbstractValidator<AddLockerCommand>
             .MaximumLength(200)
             .NotEmpty();
 
-        RuleFor(model => model.Description)
-            .NotEmpty()
-            .When(model => model.Description is not null);
-
-        RuleFor(model => model.Image)
-            .NotEmpty()
-            .When(model => model.Image is not null);
-
         RuleFor(model => model.Location)
             .NotNull()
             .SetInheritanceValidator(v => { v.Add(new AddLocationCommandValidator()); });
-
-        RuleForEach(model => model.Hardwares)
-            .SetInheritanceValidator(v => { v.Add(new AddHardwareCommandValidator()); });
 
         RuleFor(model => model.Location)
             .NotNull();
 
         RuleFor(model => model.StoreId)
             .NotNull();
+
+        RuleFor(model => model.StaffIds)
+            .NotEmpty()
+            .Must(UniqueStaffs)
+            .WithMessage("StaffIds must contains unique ids");
+    }
+    
+    private bool UniqueStaffs(IList<long> staffIds)
+    {
+        var encounteredIds = new HashSet<long>();
+
+        foreach (var element in staffIds)
+        {
+            if (!encounteredIds.Contains(element))
+            {
+                encounteredIds.Add(element);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
 public class AddLockerCommand : IRequest<LockerResponse>
 {
+    [TrimString(true)]
     public string Name { get; set; } = default!;
 
-    public string? Image { get; set; }
-
-    public string? Description { get; set; }
-
+    [TrimString(true)]
+    public string Image { get; set; } = default!;
+    
     public LocationCommand Location { get; set; } = default!;
+    
+    [TrimString(true)]
+    public string? Description { get; set; } = default!;
 
-    public IEnumerable<AddHardwareCommand>? Hardwares { get; set; }
+    public long StoreId { get; set; }
 
-    public long StoreId { get; set; } = default!;
-
-    public IList<long> StaffIds { get; set; } = new List<long>();
+    public IList<long> StaffIds { get; set; } = default!;
 }

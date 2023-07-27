@@ -6,20 +6,40 @@ public class ReserveOrderCommandValidator : AbstractValidator<ReserveOrderComman
 {
     public ReserveOrderCommandValidator()
     {
-        RuleFor(req => req.LockerId).NotNull();
-        RuleFor(req => req.ServiceId).NotNull();
-        RuleFor(req => req.OrderPhone)
-            .NotNull()
-            .Must(x => x.IsValidPhoneNumber())
-            .WithMessage("Invalid order phone number");
+        RuleFor(req => req.LockerId)
+            .NotNull();
+        RuleFor(req => req.Type)
+            .NotNull();
 
-        RuleFor(req => req.ReceivePhone)
+        RuleFor(req => req.ReceiverPhone)
             .Must(x => x == null || x.IsValidPhoneNumber())
-            .WithMessage("Invalid receive phone number");
+            .WithMessage("Invalid receiver phone number");
 
-        RuleFor(req => req.ReceiveTime)
-            .Must(x => x == null || ((DateTimeOffset)x).UtcDateTime > DateTimeOffset.UtcNow)
-            .WithMessage("Received time must be later than current now");
+        RuleFor(model => model.ServiceIds)
+            .Must(serviceIds => serviceIds.Any())
+            .When(order => OrderType.Laundry.Equals(order.Type))
+            .WithMessage("Services is required for laundry order")
+            .Must(UniqueServices)
+            .When(order => OrderType.Laundry.Equals(order.Type))
+            .WithMessage("ServiceIds must contains unique ids");
+    }
+
+    public bool UniqueServices(IList<long> serviceIds)
+    {
+        var encounteredIds = new HashSet<long>();
+
+        foreach (var element in serviceIds)
+        {
+            if (!encounteredIds.Contains(element))
+            {
+                encounteredIds.Add(element);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
@@ -27,29 +47,10 @@ public class ReserveOrderCommand : IRequest<OrderResponse>
 {
     public long LockerId { get; set; }
     
-    public long ServiceId { get; set; }
-
-    private string _oPhone = default!;
+    public OrderType Type { get; set; }
     
-    public string OrderPhone
-    {
-        get => this._oPhone;
-        set => this._oPhone = value.Trim();
-    }
+    [TrimString(true)]
+    public string? ReceiverPhone { get; set; }
 
-    private string? _rPhone;
-    
-    public string? ReceivePhone
-    {
-        get => this._rPhone;
-        set => this._rPhone = value?.Trim();
-    }
-
-    private DateTimeOffset? _receiveTime;
-    
-    public DateTimeOffset? ReceiveTime
-    {
-        get => this._receiveTime;
-        set => this._receiveTime = value?.ToUniversalTime();
-    }
+    public IList<long> ServiceIds { get; set; } = new List<long>();
 }

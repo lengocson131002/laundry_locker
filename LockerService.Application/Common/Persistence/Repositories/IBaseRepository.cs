@@ -2,15 +2,20 @@ namespace LockerService.Application.Common.Persistence.Repositories;
 
 public interface IBaseRepository<T> where T : class
 {
-    Task<IQueryable<T>> GetAllAsync();
+    // Task<IQueryable<T>> GetAllAsync();
+    //
+    // Task<IQueryable<T>> GetAsync(Expression<Func<T, bool>> predicate);
 
-    Task<IQueryable<T>> GetAsync(Expression<Func<T, bool>> predicate);
+    Task<IQueryable<T>> GetAsync(Expression<Func<T, bool>>? predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        List<Expression<Func<T, object>>>? includes = null,
+        bool disableTracking = false);
 
-    Task<IQueryable<T>> GetAsync(Expression<Func<T, bool>> predicate = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-        List<Expression<Func<T, object>>> includes = null,
-        bool disableTracking = true);
-
+    IQueryable<T> Get(Expression<Func<T, bool>>? predicate = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        List<Expression<Func<T, object>>>? includes = null,
+        bool disableTracking = false);
+    
     Task<T?> GetByIdAsync(object id);
 
     Task<T> AddAsync(T entity);

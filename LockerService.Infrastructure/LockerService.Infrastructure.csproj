@@ -26,6 +26,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" />
         <PackageReference Include="MQTTnet" />
         <PackageReference Include="MQTTnet.AspNetCore" />
@@ -34,6 +35,9 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
         <PackageReference Include="Twilio" />
+        <PackageReference Include="MassTransit" />
+        <PackageReference Include="MassTransit.AspNetCore" />
+        <PackageReference Include="MassTransit.RabbitMQ" />
     </ItemGroup>
 
 </Project>

@@ -8,34 +8,47 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
 
     private readonly IMapper _mapper;
 
-    public GetOrderHandler(IMapper mapper, IUnitOfWork unitOfWork)
+    private readonly IOrderService _orderService;
+
+    public GetOrderHandler(IMapper mapper, IUnitOfWork unitOfWork, IOrderService orderService)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _orderService = orderService;
     }
 
     public async Task<OrderDetailResponse> Handle(GetOrderQuery request, CancellationToken cancellationToken)
     {
-        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
-            predicate: order => order.Id == request.Id,
-            includes: new List<Expression<Func<Order, object>>>
-            {
-                order => order.Locker,
-                order => order.Timelines,
-                order => order.Locker.Location,
-                order => order.Locker.Location.Ward,
-                order => order.Locker.Location.District,
-                order => order.Locker.Location.Province,
-            });
+        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(predicate: order => order.Id == request.Id);
+        var order = await orderQuery
+            .Include(order => order.Locker)
+            .Include(order => order.SendBox)
+            .Include(order => order.ReceiveBox)
+            .Include(order => order.Sender)
+            .Include(order => order.Receiver)
+            .Include(order => order.Staff)
+            .Include(order => order.Bill)
+            .Include(order => order.Details)
+                .ThenInclude(detail => detail.Service)
+            .Include(order => order.Timelines)
+            .Include(order => order.Locker.Location)
+            .Include(order => order.Locker.Location.Ward)
+            .Include(order => order.Locker.Location.District)
+            .Include(order => order.Locker.Location.Province)
+            .FirstOrDefaultAsync(cancellationToken);
         
-        var order = orderQuery.FirstOrDefault();
         if (order == null)
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
+        }
+
+        if (order.UpdatedInfo)
+        {
+            await _orderService.CalculateFree(order);
         }
 
         order.Timelines = order.Timelines.OrderBy(timeline => timeline.CreatedAt).ToList();
         return _mapper.Map<OrderDetailResponse>(order);
     }
     
-}
+} 

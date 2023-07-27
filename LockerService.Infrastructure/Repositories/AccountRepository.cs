@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Persistence.Repositories;
-using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Persistence;
 
@@ -42,6 +41,14 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
     {
         var accountQuery = await GetAsync(account =>
             Equals(account.PhoneNumber, phoneNumber)
+            && Equals(account.Role, Role.Customer));
+        return accountQuery.FirstOrDefault();
+    }
+
+    public async Task<Account?> GetCustomerById(long id)
+    {
+        var accountQuery = await GetAsync(account =>
+            Equals(account.Id, id)
             && Equals(account.Role, Role.Customer));
         return accountQuery.FirstOrDefault();
     }

@@ -31,4 +31,8 @@ public interface IUnitOfWork : IBaseUnitOfWork
     IStaffLockerRepository StaffLockerRepository { get; }
     ITokenRepository TokenRepository { get; }
     
+    IBoxRepository BoxRepository { get; }
+    
+    ISettingRepository SettingRepository { get; }
+    
 }

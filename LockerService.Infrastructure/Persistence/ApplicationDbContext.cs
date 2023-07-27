@@ -1,7 +1,3 @@
-using LockerService.Application.Common.Persistence;
-using LockerService.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-
 namespace LockerService.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext, IApplicationDbContext

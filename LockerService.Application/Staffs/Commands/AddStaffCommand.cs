@@ -12,8 +12,7 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
             .NotEmpty();
 
         RuleFor(model => model.Password)
-            .Must(phoneNumber => phoneNumber.IsValidPassword())
-            .WithMessage("Invalid Password");
+            .NotEmpty();
 
         RuleFor(model => model.StoreId)
             .NotNull();

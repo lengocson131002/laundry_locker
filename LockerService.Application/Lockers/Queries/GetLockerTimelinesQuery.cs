@@ -1,5 +1,3 @@
-using LockerService.Domain.Events;
-
 namespace LockerService.Application.Lockers.Queries;
 
 public class GetLockerTimelinesQuery : PaginationRequest<LockerTimeline>, IRequest<PaginationResponse<LockerTimeline, LockerTimelineResponse>>

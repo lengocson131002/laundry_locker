@@ -2,13 +2,13 @@ namespace LockerService.Application.Common.Persistence.Repositories;
 
 public interface ILockerRepository : IBaseRepository<Locker>
 {
-    Task<int?> FindAvailableBox(long lockerId);
+    Task<Box?> FindAvailableBox(long lockerId);
     
-    Task<IList<int>> FindAvailableBoxes(long lockerId);
+    Task<IList<Box>> FindAvailableBoxes(long lockerId);
 
-    Task<IList<BoxStatus>> GetAllBoxes(long lockerId);
-
-    Task<Locker?> FindByMac(string mac);
+    Task<IList<Box>> GetAllBoxes(long lockerId);
 
     Task<Locker?> FindByName(string name);
+
+    Task<Locker?> FindByCode(string code);
 }
