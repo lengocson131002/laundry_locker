@@ -4,6 +4,7 @@ using System.Text;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Common.Exceptions;
 using LockerService.Application.Common.Services;
+using LockerService.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -14,11 +15,13 @@ public class CurrentPrincipalService : ICurrentPrincipalService
 {
     private readonly IHttpContextAccessor _accessor;
     private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
-    public CurrentPrincipalService(IHttpContextAccessor accessor, IConfiguration configuration)
+    public CurrentPrincipalService(IHttpContextAccessor accessor, IConfiguration configuration, JwtSettings jwtSettings)
     {
         _accessor = accessor;
         _configuration = configuration;
+        _jwtSettings = jwtSettings;
     }
 
     // Get current login acc Id
@@ -48,11 +51,9 @@ public class CurrentPrincipalService : ICurrentPrincipalService
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = _configuration["Jwt:Issuer"],
-            ValidAudience = _configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ??
-                                                                               throw new ArgumentException(
-                                                                                   "Jwt:Key is required")))
+            ValidIssuer = _jwtSettings.Issuer,
+            ValidAudience = _jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key))
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

@@ -1,6 +1,7 @@
 using LockerService.Application.Auth.Queries;
 using LockerService.Application.Common.Extensions;
 using LockerService.Infrastructure.Common.Constants;
+using LockerService.Infrastructure.Settings;
 
 namespace LockerService.API.Controllers;
 
@@ -9,10 +10,12 @@ namespace LockerService.API.Controllers;
 public class AuthController : ApiControllerBase
 {
     private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
-    public AuthController(IConfiguration configuration)
+    public AuthController(IConfiguration configuration, JwtSettings jwtSettings)
     {
         _configuration = configuration;
+        _jwtSettings = jwtSettings;
     }
 
     [HttpPost("admin/login")]
@@ -85,8 +88,8 @@ public class AuthController : ApiControllerBase
 
     private Task SetHttpCookieToken(TokenResponse token)
     {
-        var tokenExpireInMinutes = _configuration.GetValueOrDefault("Jwt:TokenExpire", 5);
-        var refreshTokenExpireInMinutes = _configuration.GetValueOrDefault("Jwt:RefreshTokenExpire", 30);
+        var tokenExpireInMinutes = _jwtSettings.TokenExpire;
+        var refreshTokenExpireInMinutes = _jwtSettings.RefreshTokenExpire;
         
         HttpContext.Response.Cookies.Append(
             TokenCookieConstants.AccessTokenCookie, 
