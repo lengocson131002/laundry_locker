@@ -30,6 +30,37 @@ public static class ConfigureServices
     {
 
         services.AddHttpContextAccessor();
+        // Jwt service
+        services.AddOptions<JwtSettings>()
+            .BindConfiguration(JwtSettings.ConfigSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
+        services.AddSingleton(sp => sp.GetRequiredService<IOptions<JwtSettings>>().Value);
+            
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                using var sc = services.BuildServiceProvider().CreateScope();
+                var settings = sc.ServiceProvider.GetRequiredService<JwtSettings>();
+                // Validate JWT Token
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = settings.Issuer,
+                    ValidAudience = settings.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Key))
+                };
+            });
+        
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICurrentPrincipalService, CurrentPrincipalService>();
         services.AddScoped<ICurrentAccountService, CurrentAccountService>();
@@ -81,36 +112,7 @@ public static class ConfigureServices
 
         services.AddScoped<IStorageService, StorageService>();
         
-        // Jwt service
-        services.AddOptions<JwtSettings>()
-            .BindConfiguration(JwtSettings.ConfigSection)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
         
-        services.AddSingleton(sp => sp.GetRequiredService<IOptions<JwtSettings>>().Value);
-            
-        services.AddScoped<IJwtService, JwtService>();
-        services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                using var sc = services.BuildServiceProvider().CreateScope();
-                var settings = sc.ServiceProvider.GetRequiredService<JwtSettings>();
-                // Validate JWT Token
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = settings.Issuer,
-                    ValidAudience = settings.Issuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Key))
-                };
-            });
         // ApiKey 
         services.AddOptions<ApiKeySettings>()
             .BindConfiguration(ApiKeySettings.ConfigSection)
