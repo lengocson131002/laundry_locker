@@ -14,8 +14,10 @@ public abstract class MqttBaseMessage
         CreatedDate = createdDate;
     }
     
+    [JsonIgnore]
     public Guid Id { get; private set; }
     
+    [JsonIgnore]
     public DateTime CreatedDate { get; private set; }
     
     public abstract string Topic { get; } 

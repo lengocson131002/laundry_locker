@@ -25,7 +25,7 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
         if (Search != null)
         {
             Search = Search.Trim().ToLower();
-            Expression = Expression.And(locker => locker.Name.ToLower().Contains(Search));
+            Expression = Expression.And(locker => locker.Name.ToLower().Contains(Search) || locker.Code.ToLower().Contains(Search));
         }
 
         if (Status != null)

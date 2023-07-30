@@ -167,6 +167,9 @@ public static class ConfigureServices
             config.AddConsumer<LockerOverloadedConsumer>();
             config.AddConsumer<LockerUpdatedInfoConsumer>();
             config.AddConsumer<LockerUpdatedStatusConsumer>();
+            config.AddConsumer<LockerAddBoxConsumer>();
+            config.AddConsumer<LockerResetBoxesConsumer>();
+            config.AddConsumer<LockerRemoveBoxConsumer>();
             
             using var sc = services.BuildServiceProvider().CreateScope();
             var settings = sc.ServiceProvider.GetRequiredService<RabbitMqSettings>();

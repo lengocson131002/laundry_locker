@@ -45,7 +45,7 @@ public class ConnectLockerHandler : IRequestHandler<ConnectLockerCommand, Locker
         
         await _rabbitMqBus.PublishAsync(new LockerConnectedEvent()
         {
-            LockerId = locker.Id,
+            LockerCode = locker.Code,
         }, cancellationToken);
         
         return _mapper.Map<LockerResponse>(locker);

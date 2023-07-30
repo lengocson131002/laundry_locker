@@ -18,12 +18,18 @@ public class LockerDisconnectedConsumer : IConsumer<LockerDisconnectedEvent>
         var message = context.Message;
         _logger.LogInformation("Receive locker disconnected message: {0}", JsonSerializer.Serialize(message));
 
-        var locker = await _unitOfWork.LockerRepository.GetByIdAsync(message.LockerId);
+        var locker = await _unitOfWork.LockerRepository
+            .Get(locker => locker.Code == message.LockerCode)
+            .FirstOrDefaultAsync();
+        
         if (locker == null)
         {
             return;
         }
 
+        locker.Status = LockerStatus.Disconnected;
+        await _unitOfWork.LockerRepository.UpdateAsync(locker);
+        
         var @event = new LockerTimeline()
         {
             LockerId = locker.Id,

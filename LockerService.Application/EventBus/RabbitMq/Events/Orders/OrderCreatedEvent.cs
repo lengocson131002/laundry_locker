@@ -9,4 +9,5 @@ public class OrderCreatedEvent : RabbitMqBaseEvent
     public OrderStatus Status { get; set; }
     
     public OrderStatus? PreviousStatus { get; set; }
+    
 }

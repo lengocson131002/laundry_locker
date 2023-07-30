@@ -34,7 +34,15 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
         var message = context.Message;
         _logger.LogInformation("Received order created message: {0}", JsonSerializer.Serialize(message));
 
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(message.OrderId);
+        var order = await _unitOfWork.OrderRepository
+            .Get(predicate: order => order.Id == message.OrderId,
+            includes: new List<Expression<Func<Order, object>>>()
+            {
+                order => order.Locker,
+                order => order.SendBox
+            })
+            .FirstOrDefaultAsync();
+            
         if (order == null)
         {
             return;
@@ -55,5 +63,12 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
         var cancelTime = message.Time.AddMinutes(orderSettings.InitTimeoutInMinutes);
 
         await _orderService.CancelExpiredOrder(message.OrderId, cancelTime);
+        
+        // Push MQTT to open box
+        await _mqttBus.PublishAsync(new MqttOpenBoxEvent()
+        {
+            LockerCode = order.Locker.Code,
+            BoxNumber = order.SendBox.Number
+        });
     }
 }

@@ -39,6 +39,6 @@ public class LockerUpdatedStatusConsumer : IConsumer<LockerUpdatedStatusEvent>
         await _unitOfWork.SaveChangesAsync();
         
         // Push MQTT event
-        await _mqttBus.PublishAsync(new MqttUpdateLockerStatusEvent(locker.Id, locker.Status));
+        // await _mqttBus.PublishAsync(new MqttUpdateLockerInfoEvent(locker.Id, locker.Status));
     }
 }

@@ -59,6 +59,10 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
         await _unitOfWork.SaveChangesAsync();
 
         // Mqtt Open Box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent(order.LockerId, order.ReceiveBox.Number));
+        await _mqttBus.PublishAsync(new MqttOpenBoxEvent()
+        {
+            LockerCode = order.Locker.Code,
+            BoxNumber = order.ReceiveBox.Number
+        });
     }
 }

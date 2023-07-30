@@ -18,7 +18,16 @@ public class OrderProcessingConsumer : IConsumer<OrderProcessingEvent>
         var message = context.Message;
         _logger.LogInformation("Received order processing message: {0}", JsonSerializer.Serialize(message));
 
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(message.Id);
+        var order = await _unitOfWork.OrderRepository
+            .Get(
+                predicate: order => order.Id == message.Id,
+                includes: new List<Expression<Func<Order, object>>>()
+                {
+                    order => order.Locker,
+                    order => order.SendBox
+                })
+            .FirstOrDefaultAsync();
+            
         if (order == null)
         {
             return;   
@@ -33,5 +42,12 @@ public class OrderProcessingConsumer : IConsumer<OrderProcessingEvent>
         };
         await _unitOfWork.OrderTimelineRepository.AddAsync(orderTimeline);
         await _unitOfWork.SaveChangesAsync();
+        
+        // Push MQTT to open box
+        await _mqttBus.PublishAsync(new MqttOpenBoxEvent()
+        {
+            LockerCode = order.Locker.Code,
+            BoxNumber = order.SendBox.Number
+        });
     }
 }

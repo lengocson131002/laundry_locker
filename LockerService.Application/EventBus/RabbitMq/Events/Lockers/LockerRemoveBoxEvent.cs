@@ -1,6 +1,9 @@
 namespace LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 
-public class LockerDisconnectedEvent : RabbitMqBaseEvent
+public class LockerRemoveBoxEvent : RabbitMqBaseEvent
 {
     public string LockerCode { get; set; } = default!;
+    
+    public int BoxNumber { get; set; }
+    
 }
