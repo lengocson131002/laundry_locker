@@ -1,6 +1,7 @@
 using LockerService.Application.Bills.Models;
 using LockerService.Application.Customers.Models;
 using LockerService.Application.Locations.Commands;
+using LockerService.Application.Notifications.Models;
 using LockerService.Application.Services.Commands;
 using LockerService.Application.Settings.Commands;
 using LockerService.Application.Staffs.Models;
@@ -66,6 +67,9 @@ public class MappingProfiles : Profile
         CreateMap<InformationSettingsCommand, InformationSettings>();
         CreateMap<AccountSettingsCommand, AccountSettings>();
         CreateMap<OrderSettingsCommand, OrderSettings>();
+        
+        // Notifications
+        CreateMap<Notification, NotificationResponse>();
     }
 
 }
