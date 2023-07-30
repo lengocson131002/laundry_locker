@@ -1,4 +1,4 @@
-using LockerService.Application.Common.Services.Notification;
+using LockerService.Application.Common.Services.Notifications;
 
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 

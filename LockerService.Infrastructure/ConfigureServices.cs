@@ -1,9 +1,8 @@
 using System.Text;
 using LockerService.Application.Common.Security;
 using LockerService.Application.Common.Services;
-using LockerService.Application.Common.Services.Notification;
+using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.EventBus.RabbitMq;
-using LockerService.Infrastructure.Common.Constants;
 using LockerService.Infrastructure.EventBus.Mqtt;
 using LockerService.Infrastructure.EventBus.RabbitMq;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
@@ -11,7 +10,7 @@ using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 using LockerService.Infrastructure.Persistence;
 using LockerService.Infrastructure.Repositories;
 using LockerService.Infrastructure.Services;
-using LockerService.Infrastructure.Services.Notification;
+using LockerService.Infrastructure.Services.Notifications;
 using LockerService.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -226,7 +225,11 @@ public static class ConfigureServices
         services.AddHostedService<ImportAddressService>();
         
         // Notification
-        services.AddScoped<ISmsNotificationService, TwilioNotificationService>();
+        services.AddSingleton<ISmsNotificationService, TwilioNotificationService>();
+        services.AddSingleton<IWebNotificationService, WebNotificationService>();
+        services.AddSingleton<IMobileNotificationService, FirebaseNotificationService>();
+        services.AddSingleton<INotificationProvider, NotificationProvider>();
+        services.AddSingleton<INotifier, Notifier>();
         
         // Payment
         services.AddScoped<IPaymentService, PaymentService>();
