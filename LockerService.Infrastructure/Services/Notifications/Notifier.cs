@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Services.Notifications;
-using LockerService.Domain.Enums;
 
 namespace LockerService.Infrastructure.Services.Notifications;
 
@@ -15,17 +14,20 @@ public class Notifier : INotifier
     {
         _provider = provider;
         
-        // subscribe
-        _provider.Attach(NotificationType.TypeA, webNotificationService);
-        _provider.Attach(NotificationType.TypeA, mobileNotificationService);
-        
-        _provider.Attach(NotificationType.TypeB, webNotificationService);
-        _provider.Attach(NotificationType.TypeB, smsNotificationService);
-        
-        _provider.Attach(NotificationType.TypeC, webNotificationService);
-        _provider.Attach(NotificationType.TypeC, mobileNotificationService);
-        _provider.Attach(NotificationType.TypeC, smsNotificationService);
-
+        /*
+         * Subscribe notification type and corresponding handle service
+         *
+         * _provider.Attach(NotificationType.TypeA, webNotificationService);
+         * _provider.Attach(NotificationType.TypeA, mobileNotificationService);
+         *
+         * _provider.Attach(NotificationType.TypeB, webNotificationService);
+         * _provider.Attach(NotificationType.TypeB, smsNotificationService);
+         *
+         * _provider.Attach(NotificationType.TypeC, webNotificationService);
+         * _provider.Attach(NotificationType.TypeC, mobileNotificationService);
+         *_provider.Attach(NotificationType.TypeC, smsNotificationService);
+         *
+         */
     }
     
     public async Task NotifyAsync(Notification notification)

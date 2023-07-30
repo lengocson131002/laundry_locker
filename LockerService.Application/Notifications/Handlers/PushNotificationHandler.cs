@@ -25,7 +25,7 @@ public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
         {
             Type = request.Type,
             Content = "Test notification",
-            EntityType = EntityType.TestType,
+            EntityType = EntityType.Account,
             Account = currentAcc,
             Data = "Test data content"
         };
