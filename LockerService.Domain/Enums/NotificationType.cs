@@ -4,5 +4,10 @@ public enum NotificationType
 {
     OrderCreated,
     OrderProcessing,
-    OrderReturned
+    OrderReturned,
+    
+    TypeA,
+    TypeB,
+    TypeC
+
 }

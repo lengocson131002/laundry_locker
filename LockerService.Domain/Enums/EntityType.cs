@@ -5,5 +5,6 @@ public enum EntityType
     Order,
     Account,
     Locker,
-    Service
+    Service,
+    TestType
 }
