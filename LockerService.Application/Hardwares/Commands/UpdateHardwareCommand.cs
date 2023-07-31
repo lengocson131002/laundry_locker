@@ -17,13 +17,17 @@ public class UpdateHardwareCommand : IRequest<StatusResponse>
     [JsonIgnore] 
     public long HardwareId { get; set; }
     
+    [TrimString(true)]
     public string? Name { get; set; }
     
+    [TrimString(true)]
     public string? Code { get; set; }
     
+    [TrimString(true)]
     public string? Brand { get; set; }
     
     public decimal? Price { get; set; }
     
+    [TrimString(true)]
     public string? Description { get; set; }
 }

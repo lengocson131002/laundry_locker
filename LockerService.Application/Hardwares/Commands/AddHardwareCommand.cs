@@ -22,10 +22,19 @@ public class AddHardwareCommand : IRequest<HardwareResponse>
 {
     [JsonIgnore]
     public long LockerId { get; set; }
+ 
+    [TrimString(true)]
     public string Name { get; set; } = default!;
+   
+    [TrimString(true)]
     public string? Code { get; set; }
+    
+    [TrimString(true)]
     public string? Brand { get; set; }
+    
+    [TrimString(true)]
     public double? Price { get; set; }
     
+    [TrimString(true)]
     public string? Description { get; set; }
 }
