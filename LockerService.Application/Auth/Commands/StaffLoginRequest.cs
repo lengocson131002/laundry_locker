@@ -4,7 +4,7 @@ public class StaffLoginRequestValidator : AbstractValidator<StaffLoginRequest>
 {
     public StaffLoginRequestValidator()
     {
-        RuleFor(model => model.Username)
+        RuleFor(model => model.PhongNumber)
             .NotEmpty();
         RuleFor(model => model.Password)
             .NotEmpty();
@@ -13,7 +13,8 @@ public class StaffLoginRequestValidator : AbstractValidator<StaffLoginRequest>
 
 public class StaffLoginRequest : IRequest<TokenResponse>
 {
-    public string Username { get; set; } = default!;
+    [TrimString(true)]
+    public string PhongNumber { get; set; } = default!;
 
     public string Password { get; set; } = default!;
 }

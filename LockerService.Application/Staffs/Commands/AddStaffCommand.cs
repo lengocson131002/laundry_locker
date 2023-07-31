@@ -21,13 +21,18 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
 
 public class AddStaffCommand : IRequest<StaffDetailResponse>
 {
+    [TrimString(true)]
     public string FullName { get; set; } = default!;
+    
+    [TrimString(true)]
     public string PhoneNumber { get; set; } = default!;
-
+   
+    [TrimString(true)]
     public string? Avatar { get; set; }
 
     public string Password { get; set; } = default!;
 
+    [TrimString(true)]
     public string? Description { get; set; }
 
     public long StoreId { get; set; } = default!;

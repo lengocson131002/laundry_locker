@@ -24,12 +24,17 @@ public class UpdateStoreCommandValidator : AbstractValidator<UpdateStoreCommand>
 
 public class UpdateStoreCommand : IRequest<StoreResponse>
 {
-    [JsonIgnore] public long StoreId { get; set; }
+    [JsonIgnore] 
+    public long StoreId { get; set; }
 
+    [TrimString(true)]
     public string? Name { get; set; }
+    
+    [TrimString(true)]
     public string? ContactPhone { get; set; }
 
     public LocationCommand? Location { get; set; }
 
+    [TrimString(true)]
     public string? Image { get; set; }
 }

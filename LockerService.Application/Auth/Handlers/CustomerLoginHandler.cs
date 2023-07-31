@@ -16,7 +16,7 @@ public class CustomerLoginHandler : IRequestHandler<CustomerLoginRequest, TokenR
     public async Task<TokenResponse> Handle(CustomerLoginRequest request, CancellationToken cancellationToken)
     {
         var accountQuery = await _unitOfWork.AccountRepository.GetAsync(
-            predicate: account => Equals(account.Username, request.Username)
+            predicate: account => Equals(account.Username, request.PhoneNumber)
                                   && Equals(account.Role, Role.Customer)
         );
 

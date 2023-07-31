@@ -11,7 +11,8 @@ public class UpdateStoreStatusCommandValidator : AbstractValidator<UpdateStoreSt
 
 public class UpdateStoreStatusCommand : IRequest<StoreResponse>
 {
-    [JsonIgnore] public long StoreId { get; set; }
+    [JsonIgnore]
+    public long StoreId { get; set; }
 
     public StoreStatus Status { get; set; }
 }
