@@ -18,7 +18,7 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, Stat
     public async Task<StatusResponse> Handle(CustomerVerifyRequest request, CancellationToken cancellationToken)
     {
         var account = await _unitOfWork.AccountRepository.GetCustomerByUsername(request.PhoneNumber);
-        if (!Equals(account?.Status, AccountStatus.Active))
+        if (account is not null && !Equals(account.Status, AccountStatus.Active))
         {
             throw new ApiException(ResponseCode.AuthErrorAccountInactive);
         }

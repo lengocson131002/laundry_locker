@@ -1,5 +1,4 @@
 using LockerService.Application.Auth.Queries;
-using LockerService.Application.Common.Extensions;
 using LockerService.Infrastructure.Common.Constants;
 using LockerService.Infrastructure.Settings;
 
@@ -48,6 +47,13 @@ public class AuthController : ApiControllerBase
         return response;
     }
 
+    [HttpGet("staff/profile")]
+    [Authorize(Roles = "Staff")]
+    public async Task<ActionResult<AccountResponse>> GetStaffProfile()
+    {
+        return await Mediator.Send(new GetStaffProfileQuery());
+    }
+    
     [HttpPost("customer/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginCustomer([FromBody] CustomerLoginRequest request)
@@ -63,6 +69,13 @@ public class AuthController : ApiControllerBase
         return await Mediator.Send(request);
     }
 
+    [HttpGet("customer/profile")]
+    [Authorize(Roles = "Customer")]
+    public async Task<ActionResult<AccountResponse>> GetCustomerProfile()
+    {
+        return await Mediator.Send(new GetCustomerProfileQuery());
+    }
+    
     [HttpPost("refresh")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
