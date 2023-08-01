@@ -5,6 +5,7 @@ public class CustomerVerifyRequestValidator : AbstractValidator<CustomerVerifyRe
     public CustomerVerifyRequestValidator()
     {
         RuleFor(model => model.PhoneNumber)
+            .Must(x => x.IsValidPhoneNumber())
             .NotEmpty();
     }
 }

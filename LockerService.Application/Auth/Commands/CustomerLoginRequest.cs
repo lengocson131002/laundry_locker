@@ -5,6 +5,7 @@ public class CustomerLoginRequestValidator : AbstractValidator<CustomerLoginRequ
     public CustomerLoginRequestValidator()
     {
         RuleFor(model => model.PhoneNumber)
+            .Must(x => x.IsValidPhoneNumber())
             .NotEmpty();
         RuleFor(model => model.Otp)
             .NotEmpty();
