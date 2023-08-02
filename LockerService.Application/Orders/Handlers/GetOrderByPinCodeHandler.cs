@@ -40,8 +40,8 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
-        
-        if (order.UpdatedInfo)
+
+        if (Equals(order.Type, OrderType.Storage) || (Equals(order.Type, OrderType.Laundry) && order.UpdatedInfo))
         {
             await _orderService.CalculateFree(order);
         }

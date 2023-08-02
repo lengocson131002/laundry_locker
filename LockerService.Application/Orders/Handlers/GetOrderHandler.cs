@@ -42,7 +42,8 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        if (order.UpdatedInfo)
+        if ((order.Price == 0 || order.Price == null) 
+            && (Equals(order.Type, OrderType.Storage) || (Equals(order.Type, OrderType.Laundry) && order.UpdatedInfo)))
         {
             await _orderService.CalculateFree(order);
         }

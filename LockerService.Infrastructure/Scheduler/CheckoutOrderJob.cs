@@ -51,7 +51,8 @@ public class CheckoutOrderJob : IJob
         var bill = Bill.CreateBill(order, method);
         order.Bill = bill;
         order.Status = OrderStatus.Completed;
-        
+        order.ReceiveAt = DateTimeOffset.UtcNow;
+
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
         
