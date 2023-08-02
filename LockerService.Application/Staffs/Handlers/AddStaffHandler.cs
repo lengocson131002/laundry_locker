@@ -51,5 +51,8 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
         // Save changes
         await _unitOfWork.SaveChangesAsync();
         return _mapper.Map<StaffDetailResponse>(staff);
+        
+        // Push RabbitMQ event
+        
     }
 }

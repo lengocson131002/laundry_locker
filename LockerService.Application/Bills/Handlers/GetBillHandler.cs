@@ -23,7 +23,7 @@ public class GetBillHandler : IRequestHandler<BillQuery, BillResponse>
         
         if (order == null)
         {
-            throw new ApiException(ResponseCode.BillErrorNotFound);
+            throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
         return _mapper.Map<BillResponse>(order.Bill);

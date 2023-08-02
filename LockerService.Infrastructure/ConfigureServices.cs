@@ -12,6 +12,8 @@ using LockerService.Infrastructure.Repositories;
 using LockerService.Infrastructure.Services;
 using LockerService.Infrastructure.Services.Notifications;
 using LockerService.Infrastructure.Settings;
+using LockerService.Infrastructure.SignalR;
+using LockerService.Infrastructure.SignalR.Notifications;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -240,7 +242,19 @@ public static class ConfigureServices
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<TwilioSettings>>().Value);
-       
+        
+        services.AddSingleton<NotificationConnectionManager>();
+
+        services.AddSingleton<ConnectionManagerServiceResolver>(serviceProvider => type =>
+        {
+            return type switch
+            {  
+                Type _ when type == typeof(NotificationConnectionManager) 
+                    => serviceProvider.GetRequiredService<NotificationConnectionManager>(),
+                _ => throw new KeyNotFoundException()
+            };
+        });
+        
         return services;
     }
 

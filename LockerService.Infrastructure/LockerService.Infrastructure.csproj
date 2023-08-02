@@ -40,4 +40,8 @@
         <PackageReference Include="MassTransit.RabbitMQ" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="SignalR\Chat" />
+    </ItemGroup>
+
 </Project>
