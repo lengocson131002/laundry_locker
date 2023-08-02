@@ -16,7 +16,7 @@ public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenRespons
     public async Task<TokenResponse> Handle(StaffLoginRequest request, CancellationToken cancellationToken)
     {
         var userQuery = await _unitOfWork.AccountRepository.GetAsync(
-            predicate: account => Equals(account.Username, request.Username)
+            predicate: account => Equals(account.Username, request.PhoneNumber)
                                   && account.Password != null
                                   && account.Password.Equals(request.Password)
                                   && Equals(account.Role, Role.Staff)

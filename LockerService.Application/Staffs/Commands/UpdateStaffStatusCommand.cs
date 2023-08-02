@@ -12,7 +12,8 @@ public class UpdateStaffStatusCommandValidator : AbstractValidator<UpdateStaffSt
 
 public class UpdateStaffStatusCommand : IRequest<StaffDetailResponse>
 {
-    [JsonIgnore] public long Id { get; set; }
+    [JsonIgnore] 
+    public long Id { get; set; }
 
     public AccountStatus Status { get; set; }
 }

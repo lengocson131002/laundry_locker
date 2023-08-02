@@ -4,7 +4,8 @@ public class CustomerLoginRequestValidator : AbstractValidator<CustomerLoginRequ
 {
     public CustomerLoginRequestValidator()
     {
-        RuleFor(model => model.Username)
+        RuleFor(model => model.PhoneNumber)
+            .Must(x => x.IsValidPhoneNumber())
             .NotEmpty();
         RuleFor(model => model.Otp)
             .NotEmpty();
@@ -13,6 +14,9 @@ public class CustomerLoginRequestValidator : AbstractValidator<CustomerLoginRequ
 
 public class CustomerLoginRequest : IRequest<TokenResponse>
 {
-    public string Username { get; set; } = default!;
+    [TrimString(true)]
+    public string PhoneNumber { get; set; } = default!;
+    
+    [TrimString(true)]
     public string Otp { get; set; } = default!;
 }

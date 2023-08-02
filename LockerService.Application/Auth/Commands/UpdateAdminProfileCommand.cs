@@ -12,13 +12,18 @@ public class UpdateAdminProfileCommandValidator : AbstractValidator<UpdateAdminP
 
 public class UpdateAdminProfileCommand : IRequest<AccountResponse>
 {
+    [TrimString(true)]
     public string? FullName { get; set; }
-
+  
+    [TrimString(true)]
     public string? Avatar { get; set; }
-
+   
+    [TrimString(true)]
     public string? Username { get; set; }
-
+   
+    [TrimString(true)]
     public string? PhoneNumber { get; set; }
-
+    
+    [TrimString(true)]
     public string? Description { get; set; }
 }

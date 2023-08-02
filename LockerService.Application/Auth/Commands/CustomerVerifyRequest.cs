@@ -4,12 +4,14 @@ public class CustomerVerifyRequestValidator : AbstractValidator<CustomerVerifyRe
 {
     public CustomerVerifyRequestValidator()
     {
-        RuleFor(model => model.Username)
+        RuleFor(model => model.PhoneNumber)
+            .Must(x => x.IsValidPhoneNumber())
             .NotEmpty();
     }
 }
 
 public class CustomerVerifyRequest : IRequest<StatusResponse>
 {
-    public string Username { get; set; } = default!;
+    [TrimString(true)]
+    public string PhoneNumber { get; set; } = default!;
 }

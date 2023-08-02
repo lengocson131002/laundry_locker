@@ -13,6 +13,7 @@ global using LockerService.Application.Common.Models.Response;
 global using LockerService.Application.Common.Persistence;
 global using LockerService.Application.Common.Services;
 global using LockerService.Application.Common.Utils;
+global using LockerService.Application.Customers.Models;
 global using LockerService.Application.Dashboard.Models;
 global using LockerService.Application.Dashboard.Queries;
 global using LockerService.Application.EventBus.Mqtt;
