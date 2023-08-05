@@ -32,7 +32,6 @@ public class AddHardwareCommand : IRequest<HardwareResponse>
     [TrimString(true)]
     public string? Brand { get; set; }
     
-    [TrimString(true)]
     public double? Price { get; set; }
     
     [TrimString(true)]
