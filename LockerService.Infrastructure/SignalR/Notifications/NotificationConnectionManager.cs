@@ -33,10 +33,13 @@ public class NotificationConnectionManager : IConnectionManager
 
     public List<string> GetConnections(long accId)
     {
-        List<string> connections;
+        List<string> connections = new ();
         lock (_connections)
         {
-            connections = _connections[accId];
+            if (_connections.ContainsKey(accId))
+            {
+                connections = _connections[accId];
+            }
         }
         return connections;
     }

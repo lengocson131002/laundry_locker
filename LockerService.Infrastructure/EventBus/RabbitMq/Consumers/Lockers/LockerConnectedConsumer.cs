@@ -11,20 +11,20 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMqttBus _mqttBus;
     private readonly ApiKeySettings _apiKeySettings;
-    private readonly IServer _server;
+    private readonly ServerSettings _serverSettings;
 
     public LockerConnectedConsumer(
         ILogger<LockerConnectedConsumer> logger, 
         IUnitOfWork unitOfWork, 
         IMqttBus mqttBus, 
         ApiKeySettings apiKeySettings, 
-        IServer server)
+        ServerSettings serverSettings)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _mqttBus = mqttBus;
         _apiKeySettings = apiKeySettings;
-        _server = server;
+        _serverSettings = serverSettings;
     }
 
     public async Task Consume(ConsumeContext<LockerConnectedEvent> context)
@@ -59,16 +59,13 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
         await _unitOfWork.SaveChangesAsync();
         
         // Send info back to locker
-        var features = _server.Features;
-        var addresses = features.Get<IServerAddressesFeature>();
-        var host = addresses?.Addresses.FirstOrDefault();
         await _mqttBus.PublishAsync(new MqttUpdateLockerInfoEvent()
         {
             LockerId = locker.Id,
             LockerCode = locker.Code,
             LockerName = locker.Name,
             LockerStatus = locker.Status,
-            ApiHost = host,
+            ApiHost = _serverSettings.Host,
             ApiKey = _apiKeySettings.Key,
         });
     }

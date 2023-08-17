@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using LockerService.Application.Common.Security;
 using LockerService.Application.Common.Services;
 using LockerService.Application.Common.Services.Notifications;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Converters;
 using Quartz;
 
 namespace LockerService.Infrastructure;
@@ -226,25 +228,35 @@ public static class ConfigureServices
         // Address
         services.AddHostedService<ImportAddressService>();
         
-        // Notification
-        services.AddSingleton<ISmsNotificationService, TwilioNotificationService>();
-        services.AddSingleton<IWebNotificationService, WebNotificationService>();
-        services.AddSingleton<IMobileNotificationService, FirebaseNotificationService>();
-        services.AddSingleton<INotificationProvider, NotificationProvider>();
-        services.AddSingleton<INotifier, Notifier>();
-        
         // Payment
         services.AddScoped<IPaymentService, PaymentService>();
         
         // Notification
+        services.AddOptions<FcmSettings>()
+            .BindConfiguration(FcmSettings.ConfigSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<FcmSettings>(sp => sp.GetRequiredService<IOptions<FcmSettings>>().Value);
+        
+        services.AddSignalR()
+            .AddJsonProtocol(options =>
+            {
+                options.PayloadSerializerOptions.Converters
+                    .Add(new JsonStringEnumConverter());
+            });
         services.AddOptions<TwilioSettings>()
             .BindConfiguration(TwilioSettings.ConfigSection)
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<TwilioSettings>>().Value);
         
+        services.AddSingleton<ISmsNotificationService, TwilioNotificationService>();
+        services.AddSingleton<IWebNotificationService, WebNotificationService>();
+        services.AddSingleton<IMobileNotificationService, FirebaseNotificationService>();
+        services.AddSingleton<INotificationProvider, NotificationProvider>();
+        services.AddSingleton<INotifier, Notifier>();
         services.AddSingleton<NotificationConnectionManager>();
-
         services.AddSingleton<ConnectionManagerServiceResolver>(serviceProvider => type =>
         {
             return type switch
@@ -254,6 +266,14 @@ public static class ConfigureServices
                 _ => throw new KeyNotFoundException()
             };
         });
+        
+        // Server 
+        services.AddOptions<ServerSettings>()
+            .BindConfiguration(ServerSettings.ConfigSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton(sp => sp.GetRequiredService<IOptions<ServerSettings>>().Value);
         
         return services;
     }

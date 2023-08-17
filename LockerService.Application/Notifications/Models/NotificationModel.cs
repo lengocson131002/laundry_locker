@@ -1,6 +1,6 @@
 namespace LockerService.Application.Notifications.Models;
 
-public class NotificationResponse
+public class NotificationModel
 {
     public long Id { get; set; }
     

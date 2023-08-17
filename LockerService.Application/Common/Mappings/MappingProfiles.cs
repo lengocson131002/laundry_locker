@@ -69,7 +69,7 @@ public class MappingProfiles : Profile
         CreateMap<OrderSettingsCommand, OrderSettings>();
         
         // Notifications
-        CreateMap<Notification, NotificationResponse>();
+        CreateMap<Notification, NotificationModel>();
     }
 
 }

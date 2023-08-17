@@ -1,4 +1,5 @@
 using LockerService.Application.Common.Services.Notifications;
+using LockerService.Domain.Enums;
 
 namespace LockerService.Infrastructure.Services.Notifications;
 
@@ -28,6 +29,9 @@ public class Notifier : INotifier
          *_provider.Attach(NotificationType.TypeC, smsNotificationService);
          *
          */
+        
+        _provider.Attach(NotificationType.OrderCreated, webNotificationService);
+        _provider.Attach(NotificationType.OrderCreated, mobileNotificationService);
     }
     
     public async Task NotifyAsync(Notification notification)

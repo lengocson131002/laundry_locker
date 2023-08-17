@@ -6,27 +6,27 @@ namespace LockerService.Application.Notifications.Handlers;
 public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
 {
     private readonly INotifier _notifier;
-    private readonly ICurrentAccountService _currentAccountService;
-
-    public PushNotificationHandler(INotifier notifier, ICurrentAccountService currentAccountService)
+    private readonly IUnitOfWork _unitOfWork;
+    public PushNotificationHandler(INotifier notifier, IUnitOfWork unitOfWork)
     {
         _notifier = notifier;
-        _currentAccountService = currentAccountService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(PushNotificationCommand request, CancellationToken cancellationToken)
     {
-        var currentAcc = await _currentAccountService.GetCurrentAccount();
-        if (currentAcc == null)
+        var account = await _unitOfWork.AccountRepository.GetByIdAsync(request.AccountId);
+        if (account == null)
         {
-            throw new ApiException(ResponseCode.Unauthorized);
+            throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
         }
+        
         var notification = new Notification()
         {
             Type = request.Type,
             Content = "Test notification",
             EntityType = EntityType.Account,
-            Account = currentAcc,
+            AccountId = account.Id,
             Data = "Test data content"
         };
 

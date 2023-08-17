@@ -4,7 +4,6 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/notifications")]
-[Authorize]
 public class NotificationController : ApiControllerBase
 {
     [HttpPost("push")]

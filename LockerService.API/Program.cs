@@ -4,6 +4,7 @@ using LockerService.API.Middlewares;
 using LockerService.Application;
 using LockerService.Application.Common.Exceptions;
 using LockerService.Infrastructure;
+using LockerService.Infrastructure.SignalR.Notifications;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -99,5 +100,7 @@ app.UseAuthorization();
 app.UseMiddleware<LoggingMiddleware>();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notification-hub");
 
 app.Run();

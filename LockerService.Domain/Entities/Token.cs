@@ -24,6 +24,8 @@ public class Token : BaseAuditableEntity
 
     public bool IsExpired => ExpiredAt != null && ExpiredAt < DateTimeOffset.UtcNow;
 
+    public DeviceType? DeviceType { get; set; }
+    
     public Token()
     {
         Status = TokenStatus.Valid;
