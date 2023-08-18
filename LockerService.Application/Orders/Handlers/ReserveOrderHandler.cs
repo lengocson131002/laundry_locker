@@ -45,7 +45,7 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
         }
 
         // Check available boxes
-        var availableBox = await _unitOfWork.LockerRepository.FindAvailableBox(locker.Id);
+        var availableBox = await _unitOfWork.BoxRepository.FindAvailableBox(locker.Id);
         if (availableBox == null)
         {
             var exception = new ApiException(ResponseCode.LockerErrorNoAvailableBox);

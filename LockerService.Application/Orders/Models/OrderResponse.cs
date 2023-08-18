@@ -36,9 +36,12 @@ public class OrderResponse
 
     public decimal? Discount { get; set; }
     
+    public decimal? TotalPrice { get; set; }
+
     public string? Description { get; set; }
     
     public DateTimeOffset? CreatedAt { get; set; }
     
     public DateTimeOffset? UpdatedAt { get; set; }
+    
 }

@@ -73,6 +73,7 @@ public static class ConfigureServices
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
                 builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
+            options.UseProjectables();
         });
 
         // Initialize database and seeding

@@ -46,7 +46,7 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
         }
 
         var lockerId = order.LockerId;
-        var availableBox = await _unitOfWork.LockerRepository.FindAvailableBox(lockerId);
+        var availableBox = await _unitOfWork.BoxRepository.FindAvailableBox(lockerId);
         if (availableBox == null)
         {
             var exception = new ApiException(ResponseCode.LockerErrorNoAvailableBox);

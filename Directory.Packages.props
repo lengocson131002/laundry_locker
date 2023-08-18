@@ -8,6 +8,7 @@
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.7" />
     <PackageVersion Include="AWSSDK.S3" Version="3.7.104.14" />
     <PackageVersion Include="CorePush" Version="4.1.0" />
+    <PackageVersion Include="EntityFrameworkCore.Projectables" Version="3.0.3" />
     <PackageVersion Include="FluentValidation" Version="11.5.2" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
     <PackageVersion Include="Google.Protobuf" Version="3.23.0" />

@@ -23,7 +23,11 @@ public class GetStaffHandler : IRequestHandler<GetStaffQuery, StaffDetailRespons
                      && Equals(staff.Role, Role.Staff),
             includes: new List<Expression<Func<Account, object>>>()
             {
-                staff => staff.Store
+                staff => staff.Store,
+                staff => staff.Store.Location,
+                staff => staff.Store.Location.Province,
+                staff => staff.Store.Location.District,
+                staff => staff.Store.Location.Ward,
             });
 
         var staff = staffQuery.FirstOrDefault();

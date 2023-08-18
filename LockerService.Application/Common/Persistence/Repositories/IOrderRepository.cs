@@ -7,4 +7,6 @@ public interface IOrderRepository : IBaseRepository<Order>
     IQueryable<Order> GetOrderByPinCode(string pinCode);
 
     Task<int> CountActiveOrders(long customerId);
+
+    IQueryable<Order> GetCompletedOrders(DateTimeOffset? from = null, DateTimeOffset? to = null);
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -46,7 +47,7 @@ public class Order : BaseAuditableEntity
 
     public Account? Staff { get; set; }
     
-    public decimal Price { get; set; }
+    public decimal? Price { get; set; }
 
     public float? ExtraCount { get; set; }
 
@@ -64,18 +65,33 @@ public class Order : BaseAuditableEntity
 
     public IList<OrderDetail> Details { get; set; } = new List<OrderDetail>();
 
-    public bool CanProcess => OrderStatus.Waiting.Equals(Status) || OrderStatus.Returned.Equals(Status);
+    [Projectable]
+    public decimal? TotalPrice => Price != null 
+        ? Price.Value + (decimal) (ExtraCount ?? 0) * (ExtraFee ?? 0) - (Discount ?? 0)
+        : null;
 
+    [Projectable]
     public bool IsFinished => OrderStatus.Canceled.Equals(Status) || OrderStatus.Completed.Equals(Status);
+    [Projectable]
 
+    public bool IsCompleted => OrderStatus.Completed.Equals(Status);
+
+    [Projectable]
     public bool IsInitialized => OrderStatus.Initialized.Equals(Status);
 
+    [Projectable]
     public bool IsWaiting => OrderStatus.Waiting.Equals(Status);
 
+    [Projectable]
     public bool IsProcessing => OrderStatus.Processing.Equals(Status);
 
+    [Projectable]
     public bool IsReturned => OrderStatus.Returned.Equals(Status);
+    
+    [Projectable]
+    public bool CanProcess => OrderStatus.Waiting.Equals(Status) || OrderStatus.Returned.Equals(Status);
 
+    [Projectable]
     public bool CanCheckout => (OrderType.Storage.Equals(Type) && OrderStatus.Waiting.Equals(Status)) 
                                ||  (OrderType.Laundry.Equals(Type) && OrderStatus.Returned.Equals(Status));
     
@@ -86,4 +102,9 @@ public class Order : BaseAuditableEntity
             return Details.Any() && Details.All(item => item.Quantity != null);
         }
     }
+
+    [Projectable]
+    public bool IsActive => !OrderStatus.Completed.Equals(Status)
+                            && !OrderStatus.Canceled.Equals(Status);
+
 }

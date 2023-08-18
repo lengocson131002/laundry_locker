@@ -1,26 +1,33 @@
-using System.ComponentModel.DataAnnotations;
 using LockerService.Application.Dashboard.Models;
 using LockerService.Application.Dashboard.Queries;
 
 namespace LockerService.API.Controllers;
 
 [ApiController]
-[Route("/api/v1/dashboard/orders")]
+[Route("/api/v1/dashboard")]
 public class DashboardController : ApiControllerBase
 {
-    [HttpGet]
-    public async Task<ActionResult<OrderDashboardResponse>> GetOrderDashboard(
-        [Required] long lockerId, 
-        DateTimeOffset? from, 
-        DateTimeOffset? to)
+    [HttpGet("overview")]
+    public async Task<ActionResult<DashboardOverviewResponse>> GetDashboardOverview(DateTimeOffset? from, DateTimeOffset? to)
     {
-        var request = new GetOrderDashboardRequest()
+        var request = new DashboardOverviewQuery()
         {
-            LockerId = lockerId,
             From = from,
             To = to
         };
         
+        return await Mediator.Send(request);
+    }
+
+    [HttpGet("orders")]
+    public async Task<ActionResult<DashboardOrderResponse>> GetDashboardOrder(DateTimeOffset? from, DateTimeOffset? to)
+    {
+        var request = new DashboardOrderQuery()
+        {
+            From = from,
+            To = to
+        };
+
         return await Mediator.Send(request);
     }
 }

@@ -52,4 +52,16 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
             && Equals(account.Role, Role.Customer));
         return accountQuery.FirstOrDefault();
     }
+
+    public IQueryable<Account> GetStaffs()
+    {
+        return _dbContext.Accounts
+            .Where(account => Equals(account.Role, Role.Staff));
+    }
+
+    public IQueryable<Account> GetCustomers()
+    {
+        return _dbContext.Accounts
+            .Where(account => Equals(account.Role, Role.Customer));
+    }
 }

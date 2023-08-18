@@ -30,7 +30,7 @@ public class TakeReservationHandler : IRequestHandler<TakeReservationCommand, Or
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
         
-        var availableBox = await _unitOfWork.LockerRepository.FindAvailableBox(order.LockerId);
+        var availableBox = await _unitOfWork.BoxRepository.FindAvailableBox(order.LockerId);
         if (availableBox == null)
         {
             var exception = new ApiException(ResponseCode.LockerErrorNoAvailableBox);

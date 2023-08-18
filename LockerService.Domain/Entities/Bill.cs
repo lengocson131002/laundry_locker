@@ -23,14 +23,14 @@ public class Bill : BaseAuditableEntity
 
     public static Bill CreateBill(Order order, PaymentMethod method)
     {
-        var extraCount = order.ExtraCount ?? 0;
-        var extraFee = order.ExtraFee ?? 0;
-        var discount = order.Discount ?? 0;
-
+        if (!order.IsCompleted || order.TotalPrice == null)
+        {
+            throw new Exception("Order was not completed");
+        }
         return new Bill()
         {
             ReferenceOrderId = order.Id,
-            Amount = order.Price + (decimal) extraCount * extraFee - discount,
+            Amount = order.TotalPrice.Value,
             Method = method,
             Content = Equals(order.Type, OrderType.Storage) 
                 ? BillConstants.BillContentStorageOrder 

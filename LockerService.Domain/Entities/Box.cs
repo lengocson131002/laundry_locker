@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -30,9 +31,10 @@ public class Box : BaseAuditableEntity
     public Order? LastOrder { get; set; }
     
     [NotMapped]
-    public bool IsAvailable => LastOrder == null || (!OrderStatus.Initialized.Equals(LastOrder.Status)
-                                                     && !OrderStatus.Waiting.Equals(LastOrder.Status)
-                                                     && !OrderStatus.Returned.Equals(LastOrder.Status));
+    [Projectable]
+    public bool IsAvailable => IsActive && (LastOrder == null || (!OrderStatus.Initialized.Equals(LastOrder.Status)
+                                                                  && !OrderStatus.Waiting.Equals(LastOrder.Status)
+                                                                  && !OrderStatus.Returned.Equals(LastOrder.Status)));
     public Box()
     {
         IsActive = true;

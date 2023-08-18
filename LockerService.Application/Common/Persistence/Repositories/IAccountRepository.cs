@@ -11,4 +11,8 @@ public interface IAccountRepository : IBaseRepository<Account>
     public Task<Account?> GetCustomerByPhoneNumber(string phoneNumber);
 
     public Task<Account?> GetCustomerById(long id);
+
+    public IQueryable<Account> GetStaffs();
+
+    public IQueryable<Account> GetCustomers();
 }
