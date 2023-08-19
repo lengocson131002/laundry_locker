@@ -10,7 +10,7 @@ public class CustomerVerifyRequestValidator : AbstractValidator<CustomerVerifyRe
     }
 }
 
-public class CustomerVerifyRequest : IRequest<StatusResponse>
+public class CustomerVerifyRequest : IRequest<OtpResponse>
 {
     [TrimString(true)]
     public string PhoneNumber { get; set; } = default!;

@@ -2,7 +2,7 @@ using LockerService.Application.Common.Utils;
 
 namespace LockerService.Application.Auth.Handlers;
 
-public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, StatusResponse>
+public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, OtpResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
@@ -15,7 +15,7 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, Stat
         _jwtService = jwtService;
     }
 
-    public async Task<StatusResponse> Handle(CustomerVerifyRequest request, CancellationToken cancellationToken)
+    public async Task<OtpResponse> Handle(CustomerVerifyRequest request, CancellationToken cancellationToken)
     {
         var account = await _unitOfWork.AccountRepository.GetCustomerByUsername(request.PhoneNumber);
         if (account is not null && !Equals(account.Status, AccountStatus.Active))
@@ -59,6 +59,9 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, Stat
         // TODO: Handle send OTP
 
         await _unitOfWork.SaveChangesAsync();
-        return new StatusResponse(true);
+        return new OtpResponse
+        {
+            Otp = token.Value
+        };
     }
 }

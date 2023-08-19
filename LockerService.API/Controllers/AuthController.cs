@@ -64,7 +64,7 @@ public class AuthController : ApiControllerBase
 
     [HttpPost("customer/verify")]
     [AllowAnonymous]
-    public async Task<ActionResult<StatusResponse>> VerifyCustomer([FromBody] CustomerVerifyRequest request)
+    public async Task<ActionResult<OtpResponse>> VerifyCustomer([FromBody] CustomerVerifyRequest request)
     {
         return await Mediator.Send(request);
     }
