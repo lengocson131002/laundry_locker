@@ -5,6 +5,7 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/dashboard")]
+[Authorize(Roles = "Admin")]
 public class DashboardController : ApiControllerBase
 {
     [HttpGet("overview")]

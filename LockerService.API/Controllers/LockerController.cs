@@ -120,6 +120,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpGet("{id:long}/statistics")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ListResponse<LockerEventStatisticItem>>> GetLockerEventStatistic(
         [FromRoute] long id,
         [FromQuery] LockerEventStatisticQuery query)
