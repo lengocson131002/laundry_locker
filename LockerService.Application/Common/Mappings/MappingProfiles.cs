@@ -19,6 +19,7 @@ public class MappingProfiles : Profile
         CreateMap<Locker, LockerDetailResponse>();
         CreateMap<LockerTimeline, LockerTimelineResponse>();
         CreateMap<Box, BoxResponse>();
+        CreateMap<Locker, DashboardLockerLocationItem>();
         
         // Service
         CreateMap<AddServiceCommand, Service>();
@@ -62,6 +63,7 @@ public class MappingProfiles : Profile
         CreateMap<AddStoreCommand, Store>();
         CreateMap<Store, StoreResponse>();
         CreateMap<Store, StoreDetailResponse>();
+        CreateMap<Store, DashboardStoreItem>();
         
         // Settings
         CreateMap<InformationSettingsCommand, InformationSettings>();

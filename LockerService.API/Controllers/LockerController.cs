@@ -118,4 +118,14 @@ public class LockerController : ApiControllerBase
         query.LockerId = id;
         return await Mediator.Send(query);
     }
+
+    [HttpGet("{id:long}/statistics")]
+    public async Task<ActionResult<ListResponse<LockerEventStatisticItem>>> GetLockerEventStatistic(
+        [FromRoute] long id,
+        [FromQuery] LockerEventStatisticQuery query)
+    {
+        query.LockerId = id;
+        return await Mediator.Send(query);
+    }
+
 }

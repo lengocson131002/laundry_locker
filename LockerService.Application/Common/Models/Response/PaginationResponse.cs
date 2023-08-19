@@ -2,7 +2,7 @@ namespace LockerService.Application.Common.Models.Response;
 
 public class PaginationResponse<TEntity, TResponse> where TEntity : class where TResponse : class
 {
-    public PaginationResponse(IList<TResponse> items, int count, int pageNumber, int pageSize)
+    public  PaginationResponse(IList<TResponse> items, int count, int pageNumber, int pageSize)
     {
         TotalCount = count;
         PageNumber = pageNumber;
@@ -49,4 +49,27 @@ public class PaginationResponse<TEntity, TResponse> where TEntity : class where 
     public bool HasNext => PageNumber < TotalPages;
 
     public IList<TResponse> Items { get; }
+}
+
+public class PaginationResponse<TEntity> : PaginationResponse<TEntity, TEntity> where TEntity : class
+{
+    public PaginationResponse(IList<TEntity> items, int count, int pageNumber, int pageSize) 
+        : base(items, count, pageNumber, pageSize)
+    {
+    }
+
+    public PaginationResponse(IList<TEntity> items, int count, int pageNumber, int pageSize, Func<TEntity, TEntity> mapper) 
+        : base(items, count, pageNumber, pageSize, mapper)
+    {
+    }
+
+    public PaginationResponse(IQueryable<TEntity> source, int pageNumber, int pageSize, Func<TEntity, TEntity> mapper) 
+        : base(source, pageNumber, pageSize, mapper)
+    {
+    }
+
+    public PaginationResponse(IQueryable<TEntity> source, int pageNumber, int pageSize) : base(source, pageNumber, pageSize, entity => entity)
+    {
+    }
+
 }

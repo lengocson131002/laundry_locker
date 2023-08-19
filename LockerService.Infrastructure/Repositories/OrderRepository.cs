@@ -1,5 +1,6 @@
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace LockerService.Infrastructure.Repositories;
 
@@ -39,11 +40,26 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
             .CountAsync();
     }
 
-    public IQueryable<Order> GetCompletedOrders(DateTimeOffset? from, DateTimeOffset? to)
+    public IQueryable<Order> GetOrders(DateTimeOffset? from, DateTimeOffset? to)
     {
-        return _dbContext.Orders.Where(order => order.IsCompleted 
-                                                && (from == null || order.CreatedAt >= from) 
-                                                && (to == null || order.CreatedAt <= to));
+        return _dbContext.Orders.Where(order => (from == null || order.CreatedAt >= from) && (to == null || order.CreatedAt <= to));
+    }
+
+    public IQueryable<Order> GetOrders(long? storeId = null, long? lockerId = null, DateTimeOffset? from = null,
+        DateTimeOffset? to = null)
+    {
+        var query = GetOrders(from, to);
+        if (storeId != null)
+        {
+            query = query.Where(order => order.Locker.StoreId == storeId);
+        }
+
+        if (lockerId != null)
+        {
+            query = query.Where(order => order.LockerId == lockerId);
+        }
+
+        return query;
     }
 
     private string GeneratePinCode(int length)

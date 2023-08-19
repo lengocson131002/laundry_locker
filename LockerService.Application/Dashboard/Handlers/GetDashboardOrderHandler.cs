@@ -2,7 +2,6 @@ namespace LockerService.Application.Dashboard.Handlers;
 
 public class GetDashboardOrderHandler : IRequestHandler<DashboardOrderQuery, DashboardOrderResponse>
 {
-
     private readonly IUnitOfWork _unitOfWork;
 
     public GetDashboardOrderHandler(IUnitOfWork unitOfWork)
@@ -12,41 +11,84 @@ public class GetDashboardOrderHandler : IRequestHandler<DashboardOrderQuery, Das
 
     public async Task<DashboardOrderResponse> Handle(DashboardOrderQuery request, CancellationToken cancellationToken)
     {
-        var completedOrderCount = await _unitOfWork.OrderRepository
-            .GetCompletedOrders(request.From, request.To)
+        var orderQuery = _unitOfWork.OrderRepository
+            .GetOrders(request.StoreId, request.LockerId, request.From, request.To);
+
+        // Overview
+        var completedOrderCount = await orderQuery
+            .Where(order => order.IsCompleted)
             .CountAsync(cancellationToken);
 
-        var revenue = await _unitOfWork.OrderRepository
-            .GetCompletedOrders(request.From, request.To)
+        var revenue = await orderQuery
+            .Where(order => order.IsCompleted)
             .SumAsync(order => order.TotalPrice ?? 0, cancellationToken);
-
-        var orderStatuses = await _unitOfWork.OrderRepository
-            .Get(order => (request.From == null || order.CreatedAt >= request.From) 
-                          && (request.To == null || order.CreatedAt <= request.To))
-            .GroupBy(order => order.Status)
-            .Select(groupItem => new OrderStatusCount()
+        
+        var completedTypes = await orderQuery
+            .Where(order => order.IsCompleted)
+            .GroupBy(order => order.Type)
+            .Select(groupItem => new OrderTypeCount()
             {
-                Status = groupItem.Key,
-                Count = groupItem.Count()
+                Type = groupItem.Key,
+                Count = groupItem.Count(),
+                Revenue = groupItem.Sum(order => order.TotalPrice ?? 0)
             }).ToListAsync(cancellationToken);
         
-        foreach (var status in  Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+        foreach (var type in Enum.GetValues(typeof(OrderType)).Cast<OrderType>())
         {
-            if (!orderStatuses.Any(item => Equals(item.Status, status)))
+            if (!completedTypes.Any(item => Equals(item.Type, type)))
             {
-                orderStatuses.Add(new OrderStatusCount()
+                completedTypes.Add(new OrderTypeCount()
                 {
-                    Status = status,
+                    Type = type,
                     Count = 0
                 });
             }
         }
-        
-        return new DashboardOrderResponse()
+        var overview = new OrderOverview()
         {
-            CompletedOrderCount = completedOrderCount,
+            Completed = completedOrderCount,
             Revenue = revenue,
-            OrderStatuses = orderStatuses
+            OrderTypes = completedTypes
+        };
+        
+        // Status count
+        var orderStatuses = await orderQuery
+            .GroupBy(order => order.Status)
+            .Select(groupItem => new OrderStatusCount
+            {
+                Status = groupItem.Key,
+                Count = groupItem.Count()
+            }).ToListAsync(cancellationToken);
+        foreach (var status in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+        {
+            if (!orderStatuses.Any(item => Equals(item.Status, status)))
+                orderStatuses.Add(new OrderStatusCount(status));
+        }
+
+        // Type count
+        var orderTypes = await orderQuery
+        .GroupBy(order => order.Type)
+        .Select(groupItem => new OrderTypeCount()
+        {
+            Type = groupItem.Key,
+            Count = groupItem.Count(),
+            Revenue = groupItem
+                .Where(order => order.IsCompleted)
+                .Sum(order => order.TotalPrice ?? 0)
+        }).ToListAsync(cancellationToken);
+        foreach (var type in Enum.GetValues(typeof(OrderType)).Cast<OrderType>())
+        {
+            if (!orderTypes.Any(item => Equals(item.Type, type)))
+            {
+                orderTypes.Add(new OrderTypeCount(type));
+            }
+        }
+
+        return new DashboardOrderResponse
+        {
+            Overview = overview,
+            OrderStatuses = orderStatuses,
+            OrderTypes = orderTypes
         };
     }
 }

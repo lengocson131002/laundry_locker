@@ -6,4 +6,5 @@ public class DashboardOverviewQuery : IRequest<DashboardOverviewResponse>
 
     public DateTimeOffset? To { get; set; }
 
+    public long? StoreId { get; set; }
 }

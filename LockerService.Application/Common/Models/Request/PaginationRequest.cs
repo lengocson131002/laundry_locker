@@ -39,4 +39,12 @@ public abstract class PaginationRequest<T> where T : class
 
         return query => query.OrderBy($"{SortColumn} {SortDir.ToString().ToLower()}");
     }
+
+    public string? GetDynamicOrder()
+    {
+        if (string.IsNullOrWhiteSpace(SortColumn)) return null;
+        
+        return $"{SortColumn} {SortDir.ToString().ToLower()}";
+    }
+    
 }

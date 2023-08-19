@@ -8,5 +8,8 @@ public interface IOrderRepository : IBaseRepository<Order>
 
     Task<int> CountActiveOrders(long customerId);
 
-    IQueryable<Order> GetCompletedOrders(DateTimeOffset? from = null, DateTimeOffset? to = null);
+    IQueryable<Order> GetOrders(DateTimeOffset? from = null, DateTimeOffset? to = null);
+    
+    IQueryable<Order> GetOrders(long? storeId = null, long? lockerId = null, DateTimeOffset? from = null, DateTimeOffset? to = null);
+
 }
