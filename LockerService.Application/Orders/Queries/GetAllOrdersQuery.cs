@@ -22,6 +22,8 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
     public IList<long>? ExcludedIds { get; set; }
     
     public long? StoreId { get; set; }
+    
+    public long? ServiceId { get; set; }
         
     public override Expression<Func<Order, bool>> GetExpressions()
     {
@@ -42,6 +44,11 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
                                              || CustomerId == order.SenderId);
 
         Expression = Expression.And(order => StoreId == null || StoreId == order.Locker.StoreId);
+
+        if (ServiceId != null)
+        {
+            Expression = Expression.And(order => order.Details.Any(item => item.ServiceId == ServiceId));
+        }
             
         if (!string.IsNullOrWhiteSpace(Search))
         {

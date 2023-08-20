@@ -30,8 +30,9 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
         {
             request.StaffId = currentLoggedInAccount.Id;
         }
-            
-        var lockers = await _unitOfWork.LockerRepository.GetAsync(
+
+        var boxes = _unitOfWork.BoxRepository.Get();
+        var lockersQuery = _unitOfWork.LockerRepository.Get(
                 predicate: request.GetExpressions(),
                 orderBy: request.GetOrder(),
                 includes: new List<Expression<Func<Locker, object>>>()
@@ -42,12 +43,28 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
                     locker => locker.Location.Ward,
                     locker => locker.Store
                 }
-            );
+            ).GroupJoin(boxes, 
+            locker => locker.Id, 
+            box => box.LockerId, 
+            (locker, boxGroup) => new
+            {
+                Locker = locker,
+                BoxCount = boxGroup.Count(box => box.IsActive)
+            });
 
+        var count = await lockersQuery.CountAsync(cancellationToken);
+        var lockerBoxCount = await lockersQuery.ToListAsync(cancellationToken);
+        var lockers = lockerBoxCount.Select(lb =>
+        {
+            var lo = _mapper.Map<LockerResponse>(lb.Locker);
+            lo.BoxCount = lb.BoxCount;
+            return lo;
+        }).ToList();
+        
         return new PaginationResponse<Locker, LockerResponse>(
             lockers,
+            count,
             request.PageNumber,
-            request.PageSize,
-            entity => _mapper.Map<LockerResponse>(entity));
+            request.PageSize);
     }
 }

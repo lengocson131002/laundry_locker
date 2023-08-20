@@ -33,4 +33,6 @@ public class LockerResponse
     public DateTimeOffset? DeletedAt { get; set; }
     
     public long? DeletedBy { get; set; }
+    
+    public int BoxCount { get; set; } 
 }
