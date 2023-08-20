@@ -2,12 +2,12 @@ namespace LockerService.Application.Stores.Queries;
 
 public class GetAllStoresQuery : PaginationRequest<Store>, IRequest<PaginationResponse<Store, StoreResponse>>
 {
-    private string? _query;
+    private string? _search;
 
-    public string? Query
+    public string? Search
     {
-        get => _query;
-        set => _query = value?.Trim().ToLower();
+        get => _search;
+        set => _search = value?.Trim().ToLower();
     }
 
     public string? Name { get; set; }
@@ -29,10 +29,10 @@ public class GetAllStoresQuery : PaginationRequest<Store>, IRequest<PaginationRe
     
     public override Expression<Func<Store, bool>> GetExpressions()
     {
-        if (Query is not null)
+        if (Search is not null)
         {
-            Expression = Expression.And(store => (store.Location.Address != null && store.Location.Address.ToLower().Contains(Query)) ||
-                                                 store.Name.ToLower().Contains(Query));
+            Expression = Expression.And(store => (store.Location.Address != null && store.Location.Address.ToLower().Contains(Search)) ||
+                                                 store.Name.ToLower().Contains(Search));
         }
 
         if (Address is not null)

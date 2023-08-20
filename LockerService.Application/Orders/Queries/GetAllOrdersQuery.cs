@@ -3,7 +3,7 @@ namespace LockerService.Application.Orders.Queries;
 
 public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationResponse<Order, OrderResponse>>
 {
-    public string? Query { get; set; }
+    public string? Search { get; set; }
     
     public long? LockerId { get; set; }
 
@@ -43,18 +43,18 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 
         Expression = Expression.And(order => StoreId == null || StoreId == order.Locker.StoreId);
             
-        if (!string.IsNullOrWhiteSpace(Query))
+        if (!string.IsNullOrWhiteSpace(Search))
         {
-            Query = Query.Trim().ToLower();
+            Search = Search.Trim().ToLower();
             Expression<Func<Order, bool>> queryExpression = PredicateBuilder.New<Order>();
-            queryExpression = queryExpression.Or(order => order.Locker.Name.ToLower().Contains(Query));
+            queryExpression = queryExpression.Or(order => order.Locker.Name.ToLower().Contains(Search));
             queryExpression = queryExpression.Or(order => order.Staff != null &&
-                                                          (order.Staff.PhoneNumber.ToLower().Contains(Query)
-                                                           || order.Staff.FullName.ToLower().Contains(Query)));
+                                                          (order.Staff.PhoneNumber.ToLower().Contains(Search)
+                                                           || order.Staff.FullName.ToLower().Contains(Search)));
 
-            queryExpression = queryExpression.Or(order => order.Sender.PhoneNumber.ToLower().Contains(Query)
+            queryExpression = queryExpression.Or(order => order.Sender.PhoneNumber.ToLower().Contains(Search)
                                                           || (order.Receiver != null && order.Receiver.PhoneNumber
-                                                              .ToLower().Contains(Query)));
+                                                              .ToLower().Contains(Search)));
             
             Expression = Expression.And(queryExpression); 
         }

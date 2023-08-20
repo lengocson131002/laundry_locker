@@ -13,15 +13,15 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
 
     public async Task<PaginationResponse<DashboardStoreItem>> Handle(DashboardStoreQuery request, CancellationToken cancellationToken)
     {
-        var lockers = _unitOfWork.LockerRepository
-            .Get(locker => (request.From == null || locker.CreatedAt >= request.From) && (request.To == null || locker.CreatedAt <= request.To));
+        var lockers = await _unitOfWork.LockerRepository
+            .GetAsync(locker => (request.From == null || locker.CreatedAt >= request.From) && (request.To == null || locker.CreatedAt <= request.To));
         
         var staffs = _unitOfWork.AccountRepository
             .GetStaffs()
             .Where(staff => (request.From == null || staff.CreatedAt >= request.From) && (request.To == null || staff.CreatedAt <= request.To));;
         
-        var orders = _unitOfWork.OrderRepository
-            .Get(order => order.IsCompleted && (request.From == null || order.CreatedAt >= request.From) && (request.To == null || order.CreatedAt <= request.To));
+        var orders = await _unitOfWork.OrderRepository
+            .GetAsync(order => order.IsCompleted && (request.From == null || order.CreatedAt >= request.From) && (request.To == null || order.CreatedAt <= request.To));
         
         var stores = _unitOfWork.StoreRepository.Get();
 

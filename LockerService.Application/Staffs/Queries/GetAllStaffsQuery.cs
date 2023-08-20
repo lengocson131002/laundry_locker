@@ -2,12 +2,12 @@ namespace LockerService.Application.Staffs.Queries;
 
 public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<PaginationResponse<Account, StaffResponse>>
 {
-    private string? _query;
+    private string? _search;
 
-    public string? Query
+    public string? Search
     {
-        get => _query;
-        set => _query = value?.Trim().ToLower();
+        get => _search;
+        set => _search = value?.Trim().ToLower();
     }
 
     public string? Username { get; set; }
@@ -29,12 +29,12 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
 
     public override Expression<Func<Account, bool>> GetExpressions()
     {
-        if (Query is not null)
+        if (Search is not null)
         {
-            Expression = Expression.And(account => (account.FullName != null && account.FullName.ToLower().Contains(Query))
-                                                   || account.Username.ToLower().Contains(Query)
-                                                   || (account.Description != null && account.Description.ToLower().Contains(Query))
-                                                       || account.PhoneNumber.ToLower().Contains(Query));
+            Expression = Expression.And(account => (account.FullName != null && account.FullName.ToLower().Contains(Search))
+                                                   || account.Username.ToLower().Contains(Search)
+                                                   || (account.Description != null && account.Description.ToLower().Contains(Search))
+                                                       || account.PhoneNumber.ToLower().Contains(Search));
         }
 
         if (Username is not null)

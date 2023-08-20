@@ -5,7 +5,7 @@ public class GetAllHardwareQuery : PaginationRequest<Hardware>, IRequest<Paginat
     [BindNever] 
     public long? LockerId { get; set; }
         
-    public string? Query { get; set; }
+    public string? Search { get; set; }
     
     public bool? IsActive { get; set; }
 
@@ -16,9 +16,9 @@ public class GetAllHardwareQuery : PaginationRequest<Hardware>, IRequest<Paginat
             Expression = Expression.And(hardware => hardware.LockerId == LockerId);
         }
 
-        if (!string.IsNullOrWhiteSpace(Query))
+        if (!string.IsNullOrWhiteSpace(Search))
         {
-            Expression = Expression.And(hardware => hardware.Name.ToLower().Contains(Query.ToLower().Trim()));
+            Expression = Expression.And(hardware => hardware.Name.ToLower().Contains(Search.ToLower().Trim()));
         }
 
         if (IsActive != null)
