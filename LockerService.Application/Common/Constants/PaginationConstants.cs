@@ -6,5 +6,5 @@ public class PaginationConstants
 
     public static readonly int DefaultPageSize = 20;
 
-    public static readonly int MaxPageSize = 100;
+    public static readonly int MaxPageSize = 200;
 }
