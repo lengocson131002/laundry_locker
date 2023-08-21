@@ -36,7 +36,7 @@ public class WebNotificationService : IWebNotificationService
         {
             foreach (var connection in connections)
             {
-                await _notificationHubContext.Clients.Client(connection).SendAsync(ReceiveNotificationFunctionName, notification);
+                await _notificationHubContext.Clients.Client(connection).SendAsync(ReceiveNotificationFunctionName, notificationModel);
             }
         }
         

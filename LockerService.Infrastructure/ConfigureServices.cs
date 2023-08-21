@@ -6,6 +6,7 @@ using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Infrastructure.EventBus.Mqtt;
 using LockerService.Infrastructure.EventBus.RabbitMq;
+using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Acounts;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 using LockerService.Infrastructure.Persistence;
@@ -175,6 +176,9 @@ public static class ConfigureServices
             config.AddConsumer<LockerResetBoxesConsumer>();
             config.AddConsumer<LockerRemoveBoxConsumer>();
             
+            // Account event consumers
+            config.AddConsumer<OtpCreatedConsumer>();
+            
             using var sc = services.BuildServiceProvider().CreateScope();
             var settings = sc.ServiceProvider.GetRequiredService<RabbitMqSettings>();
             config.UsingRabbitMq((ctx, cfg) =>
@@ -252,7 +256,16 @@ public static class ConfigureServices
             .ValidateOnStart();
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<TwilioSettings>>().Value);
         
-        services.AddSingleton<ISmsNotificationService, TwilioNotificationService>();
+        // ZaloZns
+        services.AddOptions<ZaloZnsSettings>()
+            .BindConfiguration(ZaloZnsSettings.ConfigSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        
+        services.AddSingleton(sp => sp.GetRequiredService<IOptions<ZaloZnsSettings>>().Value);
+        services.AddScoped<ZaloAuthService>();
+        
+        services.AddSingleton<ISmsNotificationService, ZnsNotificationService>();
         services.AddSingleton<IWebNotificationService, WebNotificationService>();
         services.AddSingleton<IMobileNotificationService, FirebaseNotificationService>();
         services.AddSingleton<INotificationProvider, NotificationProvider>();
@@ -275,7 +288,7 @@ public static class ConfigureServices
             .ValidateOnStart();
 
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<ServerSettings>>().Value);
-        
+
         return services;
     }
 

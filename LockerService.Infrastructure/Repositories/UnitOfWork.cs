@@ -37,6 +37,8 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     private ITokenRepository? _tokenRepository;
 
     private ISettingRepository? _settingRepository;
+
+    private INotificationRepository? _notificationRepository;
     
     private readonly ApplicationDbContext _dbContext;
 
@@ -83,4 +85,7 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     public ITokenRepository TokenRepository => _tokenRepository ??= new TokenRepository(_dbContext);
 
     public ISettingRepository SettingRepository => _settingRepository ??= new SettingRepository(_dbContext, _scopeFactory);
+
+    public INotificationRepository NotificationRepository =>
+        _notificationRepository ??= new NotificationRepository(_dbContext);
 }

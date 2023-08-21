@@ -41,7 +41,13 @@ public class UpdateSettingHandler : IRequestHandler<UpdateSettingsCommand, Setti
             settingsResponse.OrderSettings = orderSettings;
         }
 
-        await _unitOfWork.SaveChangesAsync();
+        if (request.ZaloAuthSettings != null)
+        {
+            var zaloAuthSettings = _mapper.Map<ZaloAuthSettings>(request.ZaloAuthSettings);
+            await _settingService.UpdateSettings(zaloAuthSettings, cancellationToken);
+            settingsResponse.ZaloAuthSettings = zaloAuthSettings;
+        }
+
         return settingsResponse;
     }
 }
