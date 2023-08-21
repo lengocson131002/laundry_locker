@@ -26,6 +26,7 @@ public class SettingService : ISettingService
     {
         var key = $"{SettingRedisPrefix}{typeof(T).Name}";
         await _unitOfWork.SettingRepository.UpdateSettings(value);
+        await _unitOfWork.SaveChangesAsync();
         await _cacheService.SetAsync(key, value, cancellationToken);
     }
 }

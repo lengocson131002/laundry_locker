@@ -35,6 +35,11 @@ public class CacheService : ICacheService
         }
 
         cachedValue = await factory();
+        if (cachedValue == null)
+        {
+            throw new NullReferenceException("Cache value is null");
+        }
+        
         await SetAsync(key, cachedValue, cancellationToken);
 
         return cachedValue;

@@ -39,16 +39,17 @@ public class FirebaseNotificationService : IMobileNotificationService
             .Get(token => Equals(TokenType.DeviceId, token.Type) && Equals(TokenStatus.Valid, token.Status))
             .ToListAsync();
 
+        var firebaseNotificationData = _mapper.Map<NotificationModel>(notification);
+        var settings = new FirebaseSettings(_fcmSettings.ProjectId, _fcmSettings.PrivateKey, _fcmSettings.ClientEmail, _fcmSettings.TokenUri);
+        var fcmSender = new FirebaseSender(settings, new HttpClient());
         try
         {
             foreach (var token in deviceIds)
             {
-                var settings = new FirebaseSettings(_fcmSettings.ProjectId, _fcmSettings.PrivateKey, _fcmSettings.ClientEmail, _fcmSettings.TokenUri);
-                var fcmSender = new FirebaseSender(settings, new HttpClient());
                 var firebaseNotification = new FirebaseNotification()
                 {
                     Token = token.Value,
-                    Data = JsonSerializer.Serialize(_mapper.Map<NotificationModel>(notification))
+                    Data = JsonSerializer.Serialize(firebaseNotificationData)
                 };
                 await fcmSender.SendAsync(firebaseNotification);
             }
@@ -58,6 +59,6 @@ public class FirebaseNotificationService : IMobileNotificationService
             _logger.LogError($"[MOBILE NOTIFICATION] Error when push notification: {exception.Message}");
         }
             
-        _logger.LogInformation("[[MOBILE NOTIFICATION]] Handle firebase notification: {0}", JsonSerializer.Serialize(notification));
+        _logger.LogInformation("[[MOBILE NOTIFICATION]] Handle firebase notification: {0}", JsonSerializer.Serialize(firebaseNotificationData));
     }
 }

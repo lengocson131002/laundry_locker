@@ -69,6 +69,7 @@ public class MappingProfiles : Profile
         CreateMap<InformationSettingsCommand, InformationSettings>();
         CreateMap<AccountSettingsCommand, AccountSettings>();
         CreateMap<OrderSettingsCommand, OrderSettings>();
+        CreateMap<ZaloAuthSettingCommand, ZaloAuthSettings>();
         
         // Notifications
         CreateMap<Notification, NotificationModel>();

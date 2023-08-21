@@ -27,4 +27,6 @@ public class UpdateSettingsCommand : IRequest<SettingsResponse>
     public AccountSettingsCommand? AccountSettings { get; set; } = default!;
 
     public OrderSettingsCommand? OrderSettings { get; set; } = default!;
+
+    public ZaloAuthSettingCommand? ZaloAuthSettings { get; set; } = default!;
 }

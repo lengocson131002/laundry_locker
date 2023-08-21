@@ -1,4 +1,5 @@
-using LockerService.Application.Common.Utils;
+using LockerService.Application.EventBus.RabbitMq;
+using LockerService.Application.EventBus.RabbitMq.Events.Accounts;
 
 namespace LockerService.Application.Auth.Handlers;
 
@@ -7,12 +8,14 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, OtpR
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly ILogger<CustomerVerifyHandler> _logger;
+    private readonly IRabbitMqBus _rabbitMqBus;
 
-    public CustomerVerifyHandler(IUnitOfWork unitOfWork, ILogger<CustomerVerifyHandler> logger, IJwtService jwtService)
+    public CustomerVerifyHandler(IUnitOfWork unitOfWork, ILogger<CustomerVerifyHandler> logger, IJwtService jwtService, IRabbitMqBus rabbitMqBus)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _jwtService = jwtService;
+        _rabbitMqBus = rabbitMqBus;
     }
 
     public async Task<OtpResponse> Handle(CustomerVerifyRequest request, CancellationToken cancellationToken)
@@ -56,9 +59,14 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, OtpR
             Value = GeneratorUtils.GenerateToken(6)
         };
         await _unitOfWork.TokenRepository.AddAsync(token);
-        // TODO: Handle send OTP
-
         await _unitOfWork.SaveChangesAsync();
+
+        await _rabbitMqBus.PublishAsync(new OtpCreatedEvent()
+        {
+            AccountId = account.Id,
+            Otp = token.Value
+        }, cancellationToken);
+        
         return new OtpResponse
         {
             Otp = token.Value
