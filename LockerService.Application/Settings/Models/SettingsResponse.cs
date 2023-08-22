@@ -11,4 +11,6 @@ public class SettingsResponse
 
     public OrderSettings OrderSettings { get; set; } = default!;
 
+    public ZaloAuthSettings ZaloAuthSettings { get; set; } = default!;
+
 }

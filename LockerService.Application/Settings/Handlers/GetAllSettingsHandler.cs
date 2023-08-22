@@ -21,14 +21,16 @@ public class GetAllSettingsHandler : IRequestHandler<GetSettingsQuery,SettingsRe
         var infoSettingsTask = settingRepo.GetSettings<InformationSettings>();
         var accountSettingsTask = settingRepo.GetSettings<AccountSettings>();
         var orderSettingsTask = settingRepo.GetSettings<OrderSettings>();
+        var zaloAuthSettingsTask = settingRepo.GetSettings<ZaloAuthSettings>();
 
-        await Task.WhenAll(infoSettingsTask, accountSettingsTask, orderSettingsTask);
+        await Task.WhenAll(infoSettingsTask, accountSettingsTask, orderSettingsTask, zaloAuthSettingsTask);
         
         return new SettingsResponse()
         {
             InformationSettings = infoSettingsTask.Result,
             AccountSettings = accountSettingsTask.Result,
-            OrderSettings = orderSettingsTask.Result
+            OrderSettings = orderSettingsTask.Result,
+            ZaloAuthSettings = zaloAuthSettingsTask.Result
         };
     }
 }
