@@ -144,6 +144,10 @@ public enum ResponseCode
     
     [Description("Please update order's details")] OrderDetailErrorInfoRequired = 1202,
     
-    [Description("Order item detail existed")] OrderDetailExisted = 1203,
+    [Description("Order item detail existed")] OrderDetailErrorExisted = 1203,
 
+    // Notification 
+    [Description("Notification not found")] NotificationErrorNotFound = 1301,
+    
+    [Description("Notification's status is not allowed to do this function")] NotificationErrorInvalidStatus = 1302
 }

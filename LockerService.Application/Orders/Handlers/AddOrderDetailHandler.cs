@@ -33,7 +33,7 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Orde
             .AnyAsync(cancellationToken);
         if (existed)
         {
-            throw new ApiException(ResponseCode.OrderDetailExisted);
+            throw new ApiException(ResponseCode.OrderDetailErrorExisted);
         }
 
         var orderDetail = new OrderDetail()

@@ -26,4 +26,5 @@ public class NotificationModel
     
     public DateTimeOffset? DeletedAt { get; set; }
     
+    public bool Deleted { get; set; }
 }

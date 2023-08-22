@@ -36,7 +36,6 @@
         <Folder Include="Common\Commands" />
         <Folder Include="Common\Interfaces" />
         <Folder Include="Dashboard\Commands" />
-        <Folder Include="Notifications\Queries" />
     </ItemGroup>
 
 </Project>

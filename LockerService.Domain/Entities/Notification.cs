@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -27,5 +28,6 @@ public class Notification : BaseAuditableEntity
 
     public DateTimeOffset? ReadAt { get; set; }
 
+    [Projectable]
     public bool IsRead => ReadAt != null;
 }
