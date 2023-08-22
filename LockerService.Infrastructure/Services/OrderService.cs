@@ -16,7 +16,9 @@ public class OrderService : IOrderService
 
     private readonly ILogger<OrderService> _logger;
     
-    private readonly ISchedulerFactory _schedulerFactory; 
+    private readonly ISchedulerFactory _schedulerFactory;
+
+    private const int MinStorageDurationInHour = 1; 
 
     public OrderService(IUnitOfWork unitOfWork, ISettingService settingService, ILogger<OrderService> logger, ISchedulerFactory schedulerFactory)
     {
@@ -66,7 +68,7 @@ public class OrderService : IOrderService
     private async Task CalculateStoreFee(Order order)
     {
         var orderSettings = await _settingService.GetSettings<OrderSettings>();
-        var duration = GetOrderDuration(order);
+        var duration = Math.Max(MinStorageDurationInHour, GetOrderDuration(order));
         order.Price = (decimal) duration * orderSettings.StoragePrice;
     }
 
