@@ -14,28 +14,30 @@ public class FirebaseNotificationService : IMobileNotificationService
     
     private readonly FcmSettings _fcmSettings;
 
-    private readonly IUnitOfWork _unitOfWork;
-
     private readonly IMapper _mapper;
 
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+
     public FirebaseNotificationService(
-        IServiceProvider serviceProvider,
         ILogger<FirebaseNotificationService> logger, 
         FcmSettings fcmSettings, 
-        IMapper mapper)
+        IMapper mapper, 
+        IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
         _fcmSettings = fcmSettings;
         _mapper = mapper;
+        _serviceScopeFactory = serviceScopeFactory;
 
-        using var scope = serviceProvider.CreateScope();
-        _unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        
     }
 
     public async Task NotifyAsync(Notification notification)
     {
         // get device ids
-        var deviceIds = await _unitOfWork.TokenRepository
+        using var scope = _serviceScopeFactory.CreateScope();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        var deviceIds = await unitOfWork.TokenRepository
             .Get(token => Equals(TokenType.DeviceId, token.Type) && Equals(TokenStatus.Valid, token.Status))
             .ToListAsync();
 

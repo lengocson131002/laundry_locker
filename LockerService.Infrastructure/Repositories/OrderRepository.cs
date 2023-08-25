@@ -62,6 +62,24 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
         return query;
     }
 
+    public IQueryable<Order> GetOrder(long id)
+    {
+        return Get(
+            predicate: order => order.Id == id,
+            includes: new List<Expression<Func<Order, object>>>()
+            {
+                order => order.Locker,
+                order => order.Sender,
+                order => order.Receiver,
+                order => order.Staff,
+                order => order.Locker.Store,
+                order => order.Locker.Location,
+                order => order.Locker.Location.Ward,
+                order => order.Locker.Location.District,
+                order => order.Locker.Location.Province,
+            });
+    }
+
     private string GeneratePinCode(int length)
     {
         var rand = new Random();

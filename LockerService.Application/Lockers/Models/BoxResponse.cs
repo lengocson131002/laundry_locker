@@ -25,6 +25,8 @@ public class BoxOrderResponse
     
     public string? PinCode { get; set; }
     
+    public OrderType Type { get; set; }
+    
     public DateTimeOffset? PinCodeIssuedAt { get; set; }
 
     public CustomerResponse Sender { get; set; } = default!;

@@ -1,6 +1,7 @@
 using LockerService.Application.Common.Services.Notifications;
 using LockerService.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
+using INotificationService = LockerService.Application.Common.Services.Notifications.INotificationService;
 
 namespace LockerService.Infrastructure.Services.Notifications;
 
@@ -34,17 +35,54 @@ public class Notifier : INotifier
          *
          */
         
-        _provider.Attach(NotificationType.AccountOtpCreated, smsNotificationService);
+        // Account notifications
+        _provider.Attach(NotificationType.AccountOtpCreated, new List<INotificationService>()
+        {
+            smsNotificationService
+        });
+        
+        _provider.Attach(NotificationType.AccountStaffCreated, new List<INotificationService>()
+        {
+            smsNotificationService
+        });
+        
+        
+        // Order notifications
+        _provider.Attach(NotificationType.OrderCreated, new List<INotificationService>()
+        {
+            mobileNotificationService,
+            smsNotificationService
+        });
+        
+        _provider.Attach(NotificationType.OrderReturned, new List<INotificationService>()
+        {
+            mobileNotificationService,
+            smsNotificationService
+        });
+        
+        _provider.Attach(NotificationType.OrderCanceled, new List<INotificationService>()
+        {
+            mobileNotificationService,
+            smsNotificationService
+        });
+        
+        _provider.Attach(NotificationType.OrderCompleted, new List<INotificationService>()
+        {
+            mobileNotificationService    
+        });
     }
     
     public async Task NotifyAsync(Notification notification)
     {
         await _provider.NotifyAsync(notification);
-        
-        // persist notification into database
-        using var scope = _serviceScopeFactory.CreateScope();
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        await unitOfWork.NotificationRepository.AddAsync(notification);
-        await unitOfWork.SaveChangesAsync();
+
+        if (notification.Saved)
+        {
+            // persist notification into database
+            using var scope = _serviceScopeFactory.CreateScope();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            await unitOfWork.NotificationRepository.AddAsync(notification);
+            await unitOfWork.SaveChangesAsync();
+        }
     }
 }

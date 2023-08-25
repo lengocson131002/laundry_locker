@@ -13,4 +13,5 @@ public class SettingsResponse
 
     public ZaloAuthSettings ZaloAuthSettings { get; set; } = default!;
 
+    public TimeSettings TimeSettings { get; set; } = default!;
 }

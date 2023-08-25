@@ -23,10 +23,11 @@ public class Bill : BaseAuditableEntity
 
     public static Bill CreateBill(Order order, PaymentMethod method)
     {
-        if (!order.IsCompleted || order.TotalPrice == null)
+        if (order.TotalPrice == null)
         {
             throw new Exception("Order was not completed");
         }
+        
         return new Bill()
         {
             ReferenceOrderId = order.Id,
@@ -34,7 +35,9 @@ public class Bill : BaseAuditableEntity
             Method = method,
             Content = Equals(order.Type, OrderType.Storage) 
                 ? BillConstants.BillContentStorageOrder 
-                : BillConstants.BillContentLaundryOrder
+                : BillConstants.BillContentLaundryOrder,
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
         };
     }
 }

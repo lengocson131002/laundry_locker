@@ -39,6 +39,8 @@ public class Order : BaseAuditableEntity
 
     public OrderStatus Status { get; set; } = OrderStatus.Initialized;
     
+    public OrderCancelReason? CancelReason { get; set; }
+        
     public long LockerId { get; set; }
     
     public Locker Locker { get; set; } = default!;

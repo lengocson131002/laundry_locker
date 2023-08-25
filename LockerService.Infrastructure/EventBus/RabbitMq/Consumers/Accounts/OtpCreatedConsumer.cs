@@ -2,7 +2,7 @@ using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.EventBus.RabbitMq.Events.Accounts;
 using LockerService.Domain.Enums;
 
-namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Acounts;
+namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Accounts;
 
 public class OtpCreatedConsumer : IConsumer<OtpCreatedEvent>
 {
@@ -31,6 +31,7 @@ public class OtpCreatedConsumer : IConsumer<OtpCreatedEvent>
             Data = eventMessage.Otp,
             Type = NotificationType.AccountOtpCreated,
             EntityType = EntityType.Account,
+            Saved = false
         };
 
         await _notifier.NotifyAsync(notification);

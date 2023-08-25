@@ -1,3 +1,6 @@
+using LockerService.Application.EventBus.RabbitMq;
+using LockerService.Application.EventBus.RabbitMq.Events.Accounts;
+
 namespace LockerService.Application.Staffs.Handlers;
 
 public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailResponse>
@@ -6,14 +9,16 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
     private readonly IJwtService _jwtService;
     private readonly ILogger<AddStaffHandler> _logger;
     private readonly IMapper _mapper;
+    private readonly IRabbitMqBus _rabbitMqBus;
 
     public AddStaffHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<AddStaffHandler> logger,
-        IJwtService jwtService)
+        IJwtService jwtService, IRabbitMqBus rabbitMqBus)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _logger = logger;
         _jwtService = jwtService;
+        _rabbitMqBus = rabbitMqBus;
     }
 
     public async Task<StaffDetailResponse> Handle(AddStaffCommand request, CancellationToken cancellationToken)
@@ -50,9 +55,17 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
 
         // Save changes
         await _unitOfWork.SaveChangesAsync();
-        return _mapper.Map<StaffDetailResponse>(staff);
         
         // Push RabbitMQ event
-        
+        await _rabbitMqBus.PublishAsync(new StaffCreatedEvent()
+        {
+            AccountId = staff.Id,
+            Username = staff.Username,
+            Password = staff.Password,
+            FullName = staff.FullName,
+            Role = staff.Role
+        }, cancellationToken);
+            
+        return _mapper.Map<StaffDetailResponse>(staff);
     }
 }

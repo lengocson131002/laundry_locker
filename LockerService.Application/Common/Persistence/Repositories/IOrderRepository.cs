@@ -12,4 +12,6 @@ public interface IOrderRepository : IBaseRepository<Order>
     
     IQueryable<Order> GetOrders(long? storeId = null, long? lockerId = null, DateTimeOffset? from = null, DateTimeOffset? to = null);
 
+    IQueryable<Order> GetOrder(long id);
+
 }

@@ -17,6 +17,14 @@ public class UpdateSettingsCommandValidator : AbstractValidator<UpdateSettingsCo
         RuleFor(model => model.OrderSettings)
             .SetInheritanceValidator(v => v.Add(new OrderSettingsCommandValidator()))
             .When(model => model.OrderSettings != null);
+        
+        RuleFor(model => model.ZaloAuthSettings)
+            .SetInheritanceValidator(v => v.Add(new ZaloAuthSettingCommandValidator()))
+            .When(model => model.ZaloAuthSettings != null);
+        
+        RuleFor(model => model.TimeSettings)
+            .SetInheritanceValidator(v => v.Add(new TimeSettingsCommandValidator()))
+            .When(model => model.TimeSettings != null);
     }
 }
 
@@ -28,5 +36,7 @@ public class UpdateSettingsCommand : IRequest<SettingsResponse>
 
     public OrderSettingsCommand? OrderSettings { get; set; } = default!;
 
-    public ZaloAuthSettingCommand? ZaloAuthSettings { get; set; } = default!;
+    public ZaloAuthSettingsCommand? ZaloAuthSettings { get; set; } = default!;
+
+    public TimeSettingsCommand? TimeSettings { get; set; } = default!;
 }
