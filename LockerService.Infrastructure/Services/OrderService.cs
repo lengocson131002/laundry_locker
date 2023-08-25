@@ -30,6 +30,11 @@ public class OrderService : IOrderService
 
     public async Task CalculateFree(Order order)
     {
+        if ((order.Price != null && order.Price != 0) || (Equals(order.Type, OrderType.Laundry) && !order.UpdatedInfo))
+        {
+            return;
+        }
+        
         switch (order.Type)
         {
             case OrderType.Storage:

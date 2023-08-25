@@ -1,6 +1,6 @@
 namespace LockerService.Application.Settings.Commands;
 
-public class ZaloAuthSettingCommandValidator : AbstractValidator<ZaloAuthSettingCommand>
+public class ZaloAuthSettingCommandValidator : AbstractValidator<ZaloAuthSettingsCommand>
 {
     public ZaloAuthSettingCommandValidator()
     {
@@ -11,7 +11,7 @@ public class ZaloAuthSettingCommandValidator : AbstractValidator<ZaloAuthSetting
             .NotEmpty();
     }
 }
-public class ZaloAuthSettingCommand
+public class ZaloAuthSettingsCommand
 {
     public string AccessToken { get; set; } = default!;
 

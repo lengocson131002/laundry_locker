@@ -4,7 +4,9 @@ namespace LockerService.Infrastructure.HttpClients;
 
 public class RetryHandler : DelegatingHandler
 {
-    public RetryHandler(HttpMessageHandler innerHandler) : base(innerHandler) {}
+    public RetryHandler() : base(new HttpClientHandler())
+    {
+    }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {

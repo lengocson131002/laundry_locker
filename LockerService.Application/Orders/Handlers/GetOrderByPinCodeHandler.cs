@@ -41,11 +41,7 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        if ((order.Price == 0 || order.Price == null) 
-            && (Equals(order.Type, OrderType.Storage) || (Equals(order.Type, OrderType.Laundry) && order.UpdatedInfo)))
-        {
-            await _orderService.CalculateFree(order);
-        }
+        await _orderService.CalculateFree(order);
         
         order.Timelines = order.Timelines.OrderBy(timeline => timeline.CreatedAt).ToList();
         return _mapper.Map<OrderDetailResponse>(order);

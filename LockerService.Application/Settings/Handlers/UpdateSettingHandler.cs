@@ -48,6 +48,13 @@ public class UpdateSettingHandler : IRequestHandler<UpdateSettingsCommand, Setti
             settingsResponse.ZaloAuthSettings = zaloAuthSettings;
         }
 
+        if (request.TimeSettings != null)
+        {
+            var timeSettings = _mapper.Map<TimeSettings>(request.TimeSettings);
+            await _settingService.UpdateSettings(timeSettings, cancellationToken);
+            settingsResponse.TimeSettings = timeSettings;
+        }
+
         return settingsResponse;
     }
 }

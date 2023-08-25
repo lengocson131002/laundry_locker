@@ -26,4 +26,16 @@ public class ZaloZnsTemplates
 {
     [Required]
     public string Otp { get; set; } = default!;
+
+    [Required]
+    public string StaffAccountCreated { get; set; } = default!;
+
+    [Required]
+    public string OrderCreated { get; set; } = default!;
+
+    [Required]
+    public string OrderReturned { get; set; } = default!;
+
+    [Required]
+    public string OrderCanceled { get; set; } = default!;
 }

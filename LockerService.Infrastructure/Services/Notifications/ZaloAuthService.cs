@@ -19,7 +19,7 @@ public class ZaloAuthService
 
     public async Task<ZaloAuthSettings?> GetAccessToken(string refreshToken)
     {
-        using var httpClient = new HttpClient(new RetryHandler(new HttpClientHandler()));
+        using var httpClient = new HttpClient(new RetryHandler());
         httpClient.DefaultRequestHeaders.Add("secret_key", _znsSettings.SecretKey);
         httpClient.Timeout = TimeSpan.FromSeconds(30);
         

@@ -30,4 +30,7 @@ public class Notification : BaseAuditableEntity
 
     [Projectable]
     public bool IsRead => ReadAt != null;
+
+    [NotMapped] 
+    public bool Saved { get; set; } = true;
 }

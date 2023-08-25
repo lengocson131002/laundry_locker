@@ -6,7 +6,7 @@ using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Infrastructure.EventBus.Mqtt;
 using LockerService.Infrastructure.EventBus.RabbitMq;
-using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Acounts;
+using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Accounts;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 using LockerService.Infrastructure.Persistence;
@@ -178,6 +178,7 @@ public static class ConfigureServices
             
             // Account event consumers
             config.AddConsumer<OtpCreatedConsumer>();
+            config.AddConsumer<StaffCreatedConsumer>();
             
             using var sc = services.BuildServiceProvider().CreateScope();
             var settings = sc.ServiceProvider.GetRequiredService<RabbitMqSettings>();

@@ -28,7 +28,8 @@ public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
             EntityType = EntityType.Account,
             AccountId = account.Id,
             Account = account,
-            Data = request.Data
+            Data = request.Data,
+            Saved = false
         };
 
         await _notifier.NotifyAsync(notification);

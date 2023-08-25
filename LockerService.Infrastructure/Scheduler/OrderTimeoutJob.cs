@@ -40,6 +40,8 @@ public class OrderTimeoutJob : IJob
         var currentStatus = order.Status;
         
         order.Status = OrderStatus.Canceled;
+        order.CancelReason = OrderCancelReason.Timeout;
+        
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
         

@@ -11,4 +11,11 @@ public class OrderDetailRepository : BaseRepository<OrderDetail>, IOrderDetailRe
     {
         _dbContext = dbContext;
     }
+
+    public async Task<IList<OrderDetail>> GetOrderDetails(long orderId)
+    {
+        return await _dbContext.OrderDetails.Where(item => item.OrderId == orderId)
+            .Include(item => item.Service)
+            .ToListAsync();
+    }
 }

@@ -41,4 +41,19 @@ public static class StringExtensions
         }
         return IPAddress.TryParse(src, out IPAddress _);
     }
+
+    public static bool IsValidTimeZone(this string tz)
+    {
+        try
+        {
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(tz);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // ignored
+        }
+
+        return false;
+    }
 }
