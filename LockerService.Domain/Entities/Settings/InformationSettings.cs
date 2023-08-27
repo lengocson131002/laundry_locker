@@ -12,7 +12,7 @@ public class InformationSettings : ISetting
 
     public string? Zalo { get; set; } = default!;
         
-    public TimeSpan? OpenAt { get; set; }
+    public TimeSpan? OpenedAt { get; set; }
     
     public TimeSpan? ClosedAt { get; set; }
 
@@ -23,7 +23,7 @@ public class InformationSettings : ISetting
         ContactEmail =  string.Empty;
         Facebook =  string.Empty;
         Zalo =  string.Empty;
-        OpenAt = new TimeSpan(8, 0, 0);
+        OpenedAt = new TimeSpan(8, 0, 0);
         ClosedAt = new TimeSpan(22, 0, 0);
     }
 }

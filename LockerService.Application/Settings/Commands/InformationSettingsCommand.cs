@@ -26,7 +26,7 @@ public class InformationSettingsCommand
     [TrimString(true)]
     public string? Zalo { get; set; } = default!;
 
-    public TimeSpan? OpenAt { get; set; }
+    public TimeSpan? OpenedAt { get; set; }
     
     public TimeSpan? ClosedAt { get; set; }
 }
