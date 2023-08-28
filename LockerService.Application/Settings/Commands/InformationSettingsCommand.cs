@@ -6,6 +6,10 @@ public class InformationSettingsCommandValidator : AbstractValidator<Information
     {
         RuleFor(model => model.CompanyName)
             .NotEmpty();
+
+        RuleFor((model => model.ContactPhone))
+            .Must(phone => phone == null || phone.IsValidPhoneNumber())
+            .WithMessage("Invalid phone number");
     }
 }
 

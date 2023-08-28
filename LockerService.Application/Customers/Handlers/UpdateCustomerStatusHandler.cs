@@ -22,7 +22,7 @@ public class UpdateCustomerStatusHandler : IRequestHandler<UpdateCustomerStatusC
             throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
         }
 
-        if (Equals(customer.Status, request.Status) || Equals(customer.Status, AccountStatus.Verifying))
+        if (Equals(customer.Status, request.Status) || Equals(request.Status, AccountStatus.Verifying))
         {
             throw new ApiException(ResponseCode.AccountErrorInvalidStatus);
         }
