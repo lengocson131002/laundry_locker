@@ -17,11 +17,6 @@ public class AddLockerCommandValidator : AbstractValidator<AddLockerCommand>
 
         RuleFor(model => model.StoreId)
             .NotNull();
-
-        RuleFor(model => model.StaffIds)
-            .NotEmpty()
-            .Must(UniqueStaffs)
-            .WithMessage("StaffIds must contains unique ids");
     }
     
     private bool UniqueStaffs(IList<long> staffIds)
@@ -58,5 +53,4 @@ public class AddLockerCommand : IRequest<LockerResponse>
 
     public long StoreId { get; set; }
 
-    public IList<long> StaffIds { get; set; } = default!;
 }

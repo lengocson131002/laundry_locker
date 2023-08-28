@@ -80,28 +80,7 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
             Latitude = location.Latitude
         };
 
-        var staffLockers = new List<StaffLocker>();
-        foreach (var staffId in request.StaffIds)
-        {
-            var staff = await _unitOfWork.AccountRepository.GetByIdAsync(staffId);
-            if (staff == null || !Equals(staff.Role, Role.Staff) || !Equals(staff.StoreId, store.Id))
-            {
-                throw new ApiException(ResponseCode.StaffErrorNotFound);
-            }
-
-            if (!staff.IsActive)
-            {
-                throw new ApiException(ResponseCode.StaffErrorInvalidStatus);
-            }
-            staffLockers.Add(new StaffLocker()
-            {
-                Locker = locker,
-                Staff = staff
-            });
-        }
-        
         await _unitOfWork.LockerRepository.AddAsync(locker);
-        await _unitOfWork.StaffLockerRepository.AddRange(staffLockers);
         
         // Save changes
         await _unitOfWork.SaveChangesAsync();
