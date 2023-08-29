@@ -6,6 +6,6 @@ public class TimeSettings : ISetting
 
     public TimeSettings()
     {
-        TimeZone = "Asia/Ho_Chi_Minh";
+        TimeZone = "Asia/Bangkok";
     }
 }

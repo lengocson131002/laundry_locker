@@ -5,10 +5,10 @@ public class AccountSettingsCommandValidator: AbstractValidator<AccountSettingsC
     public AccountSettingsCommandValidator()
     {
         RuleFor(model => model.MaxWrongLoginCount)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(3);
 
         RuleFor(model => model.WrongLoginBlockTimeInMinutes)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(1);
     }
 }
 

@@ -5,17 +5,17 @@ public class OrderSettingsCommandValidator : AbstractValidator<OrderSettingsComm
     public OrderSettingsCommandValidator()
     {
         RuleFor(model => model.InitTimeoutInMinutes)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(1);
         RuleFor(model => model.ReservationInitTimeoutInMinutes)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(1);
         RuleFor(model => model.StoragePrice)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(1);
         RuleFor(model => model.MaxTimeInHours)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(1);
         RuleFor(model => model.ExtraFee)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(1);
         RuleFor(model => model.MaxActiveOrderCount)
-            .GreaterThan(0);
+            .GreaterThanOrEqualTo(1);
     }
 }
 
