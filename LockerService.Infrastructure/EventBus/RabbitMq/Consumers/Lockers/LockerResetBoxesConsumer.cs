@@ -26,12 +26,12 @@ public class LockerResetBoxesConsumer : IConsumer<LockerResetBoxesEvent>
         }
         
         var boxes = await _unitOfWork.BoxRepository
-            .Get(box => box.LockerId == locker.Id)
+            .Get(box => box.LockerId == locker.Id && !box.Deleted)
             .ToListAsync();
 
         foreach (var box in boxes)
         {
-            box.IsActive = false;
+            box.DeletedAt = DateTimeOffset.UtcNow;
             await _unitOfWork.BoxRepository.UpdateAsync(box);
         }
         

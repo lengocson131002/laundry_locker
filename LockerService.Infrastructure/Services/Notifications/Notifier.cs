@@ -68,7 +68,34 @@ public class Notifier : INotifier
         
         _provider.Attach(NotificationType.OrderCompleted, new List<INotificationService>()
         {
-            mobileNotificationService    
+            mobileNotificationService,
+        });
+        
+        _provider.Attach(NotificationType.OrderOverTime, new List<INotificationService>()
+        {
+            mobileNotificationService,
+            smsNotificationService
+        });
+        
+        // Locker notification
+        _provider.Attach(NotificationType.LockerConnected, new List<INotificationService>()
+        {
+            webNotificationService
+        });
+        
+        _provider.Attach(NotificationType.LockerDisconnected, new List<INotificationService>()
+        {
+            webNotificationService,
+        });
+        
+        _provider.Attach(NotificationType.LockerBoxOverloaded, new List<INotificationService>()
+        {
+            mobileNotificationService
+        });
+        
+        _provider.Attach(NotificationType.LockerBoxWarning, new List<INotificationService>()
+        {
+            mobileNotificationService
         });
     }
     

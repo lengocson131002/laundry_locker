@@ -90,7 +90,7 @@ public class OrderService : IOrderService
         
         // Calculate extra fee
         var duration = GetOrderDuration(order);
-        var maxTime = orderSettings.MaxTimeInHours;
+        var maxTime = (float) orderSettings.MaxTimeInHours;
         if (duration > maxTime)
         {
             order.ExtraCount = duration - maxTime;

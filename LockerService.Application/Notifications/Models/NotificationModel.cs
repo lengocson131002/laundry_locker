@@ -1,6 +1,6 @@
 namespace LockerService.Application.Notifications.Models;
 
-public class NotificationModel
+public class NotificationModel : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
     
@@ -19,12 +19,4 @@ public class NotificationModel
     public DateTimeOffset? ReadAt { get; set; }
     
     public bool IsRead => ReadAt != null;
-
-    public DateTimeOffset CreatedAt { get; set; }
-    
-    public DateTimeOffset UpdatedAt { get; set; }
-    
-    public DateTimeOffset? DeletedAt { get; set; }
-    
-    public bool Deleted { get; set; }
 }

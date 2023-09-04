@@ -12,6 +12,6 @@ public class CustomerVerifyRequestValidator : AbstractValidator<CustomerVerifyRe
 
 public class CustomerVerifyRequest : IRequest<OtpResponse>
 {
-    [TrimString(true)]
+    [NormalizePhone]
     public string PhoneNumber { get; set; } = default!;
 }

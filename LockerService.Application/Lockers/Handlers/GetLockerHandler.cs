@@ -32,12 +32,14 @@ public class GetLockerHandler :
                 locker => locker.Store.Location.Ward 
             });
         
+
         var locker = query.FirstOrDefault();
         if (locker is null)
         {
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
+        Console.WriteLine(locker.Location.ToString());
         return _mapper.Map<LockerDetailResponse>(locker);
     }
 }

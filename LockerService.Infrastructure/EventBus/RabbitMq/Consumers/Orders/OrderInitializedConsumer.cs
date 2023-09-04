@@ -1,25 +1,27 @@
+using LockerService.Application.Common.Extensions;
 using LockerService.Application.Common.Services;
+using LockerService.Application.Common.Services.Notifications;
+using LockerService.Application.Common.Utils;
 using LockerService.Domain.Entities.Settings;
-using LockerService.Infrastructure.Common;
 using Microsoft.Extensions.Configuration;
-
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 
-public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
+public class OrderInitializedConsumer : IConsumer<OrderInitializedEvent>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMqttBus _mqttBus;
     private readonly IOrderService _orderService;
     private readonly IConfiguration _configuration;
-    private readonly ILogger<OrderCreatedConsumer> _logger;
+    private readonly ILogger<OrderInitializedConsumer> _logger;
     private readonly ISettingService _settingService;
+    private readonly INotifier _notifier;
 
-    public OrderCreatedConsumer(IUnitOfWork unitOfWork, 
+    public OrderInitializedConsumer(IUnitOfWork unitOfWork, 
         IMqttBus mqttBus, 
         IOrderService orderService, 
         IConfiguration configuration, 
-        ILogger<OrderCreatedConsumer> logger, 
-        ISettingService settingService)
+        ILogger<OrderInitializedConsumer> logger, 
+        ISettingService settingService, INotifier notifier)
     {
         _unitOfWork = unitOfWork;
         _mqttBus = mqttBus;
@@ -27,9 +29,10 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
         _configuration = configuration;
         _logger = logger;
         _settingService = settingService;
+        _notifier = notifier;
     }
 
-    public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
+    public async Task Consume(ConsumeContext<OrderInitializedEvent> context)
     {
         var message = context.Message;
         _logger.LogInformation("Received order created message: {0}", JsonSerializer.Serialize(message));
@@ -70,5 +73,6 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
             LockerCode = order.Locker.Code,
             BoxNumber = order.SendBox.Number
         });
+        
     }
 }

@@ -70,6 +70,7 @@ public class UpdateStoreHandler : IRequestHandler<UpdateStoreCommand, StoreRespo
 
         store.Name = request.Name ?? store.Name;
         store.Image = request.Image ?? store.Image;
+        store.Description = request.Description ?? store.Description;
         store.ContactPhone = request.ContactPhone ?? store.ContactPhone;
         await _unitOfWork.StoreRepository.UpdateAsync(store);
 

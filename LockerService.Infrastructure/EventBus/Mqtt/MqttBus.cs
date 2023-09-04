@@ -29,11 +29,9 @@ public class MqttBus : IMqttBus
             Converters = { new JsonStringEnumConverter() }
         };
 
-        var payload = JsonSerializer.Serialize(message, jsonOptions);
-        var messagePayload = _mqttClientService.IsEncrypted && _mqttClientService.MqttSecretKey != null
-            ? await _securityService.EncryptToBase64Async(payload, _mqttClientService.MqttSecretKey)
-            : payload;
-
+        var messagePayload = JsonSerializer.Serialize(message, jsonOptions);
+        var signature = Hmac256Service.HashMessage(messagePayload, _mqttClientService.MqttSecretKey);
+            
         var mqttClient = _mqttClientService.MqttClient;
         if (mqttClient.IsConnected)
         {
@@ -41,7 +39,9 @@ public class MqttBus : IMqttBus
                 .WithTopic(message.Topic)
                 .WithPayload(messagePayload)
                 .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce)
+                .WithUserProperty(MqttProperties.SignatureProperty, signature)
                 .Build();
+                
             await mqttClient.PublishAsync(applicationMessage);
             
             _logger.LogInformation("Push MQTT Message {message}", messagePayload);

@@ -13,7 +13,11 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Orde
 
     public async Task<OrderItemResponse> Handle(AddOrderDetailCommand request, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(request.OrderId);
+        var order = await _unitOfWork.OrderRepository
+            .Get(order => Equals(order.Id, request.OrderId))
+            .Include(order => order.Locker)
+            .FirstOrDefaultAsync(cancellationToken);
+        
         if (order == null) throw new ApiException(ResponseCode.OrderErrorNotFound);
 
         if (!order.IsProcessing)
@@ -22,7 +26,7 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Orde
         }
 
         // Get service
-        var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
+        var service = await _unitOfWork.ServiceRepository.GetStoreService(order.Locker.StoreId, request.ServiceId);
         if (service == null || !service.IsActive)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);

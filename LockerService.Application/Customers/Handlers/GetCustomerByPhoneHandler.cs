@@ -16,7 +16,7 @@ public class GetCustomerByPhoneHandler : IRequestHandler<GetCustomerByPhoneQuery
 
     public async Task<CustomerDetailResponse> Handle(GetCustomerByPhoneQuery request, CancellationToken cancellationToken)
     {
-        var customer = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(request.Phone);
+        var customer = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(request.Phone.NormalizePhoneNumber());
         if (customer == null)
         {
             throw new ApiException(ResponseCode.AuthErrorAccountNotFound);

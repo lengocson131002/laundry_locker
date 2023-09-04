@@ -1,6 +1,6 @@
 namespace LockerService.Application.Services.Models;
 
-public class ServiceResponse
+public class ServiceResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
 
@@ -16,12 +16,4 @@ public class ServiceResponse
     
     public ServiceStatus Status { get; set; }
     
-    public DateTimeOffset CreatedAt { get; set; }
-    
-    public long? CreatedBy { get; set; }
-    
-    public DateTimeOffset UpdatedAt { get; set; }
-    
-    public long? UpdatedBy { get; set; }
-
 }

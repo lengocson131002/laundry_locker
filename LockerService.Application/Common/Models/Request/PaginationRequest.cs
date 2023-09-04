@@ -25,9 +25,9 @@ public abstract class PaginationRequest<T> where T : class
             : PaginationConstants.DefaultPageSize;
     }
 
-    public string? SortColumn { get; set; }
+    public string? SortColumn { get; set; } = "UpdatedAt";
 
-    public SortDirection SortDir { get; set; } = SortDirection.Asc;
+    public SortDirection SortDir { get; set; } = SortDirection.Desc;
     
     protected Expression<Func<T, bool>> Expression = PredicateBuilder.New<T>(true);
 

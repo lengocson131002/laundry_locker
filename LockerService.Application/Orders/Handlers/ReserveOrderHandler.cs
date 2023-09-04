@@ -7,7 +7,7 @@ namespace LockerService.Application.Orders.Handlers;
 
 public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderResponse>
 {
-    private readonly ILogger<CreateOrderHandler> _logger;
+    private readonly ILogger<InitializeOrderHandler> _logger;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRabbitMqBus _rabbitMqBus;
@@ -15,7 +15,7 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
     private readonly ISettingService _settingService;
 
     public ReserveOrderHandler(
-        ILogger<CreateOrderHandler> logger,
+        ILogger<InitializeOrderHandler> logger,
         IMapper mapper,
         IUnitOfWork unitOfWork,
         IRabbitMqBus rabbitMqBus, 
@@ -66,7 +66,7 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
         {
             foreach (var serviceId in command.ServiceIds)
             {
-                var service = await _unitOfWork.ServiceRepository.GetByIdAsync(serviceId);
+                var service = await _unitOfWork.ServiceRepository.GetStoreService(storeId: locker.StoreId, serviceId: serviceId);
                 if (service == null || !service.IsActive)
                     throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
 
@@ -119,6 +119,46 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
             }
         }
 
+        // Check delivery address
+        var deliveryAddressCommand = command.DeliveryAddress;
+        Location? deliveryAddress = null;
+        if (Equals(command.Type, OrderType.Laundry) && deliveryAddressCommand != null)
+        {
+            var province = await _unitOfWork.AddressRepository
+                .Get(p => p.Code != null && p.Code.Equals(deliveryAddressCommand.ProvinceCode))
+                .FirstOrDefaultAsync(cancellationToken);
+            if (province == null)
+            {
+                throw new ApiException(ResponseCode.AddressErrorProvinceNotFound);
+            }
+
+            var district = await _unitOfWork.AddressRepository
+                .Get(d => d.Code != null && d.Code.Equals(deliveryAddressCommand.DistrictCode))
+                .FirstOrDefaultAsync(cancellationToken);
+            if (district == null || district.ParentCode != province.Code)
+            {
+                throw new ApiException(ResponseCode.AddressErrorDistrictNotFound);
+            }
+
+            var ward = await _unitOfWork.AddressRepository
+                .Get(w => w.Code != null && w.Code.Equals(deliveryAddressCommand.WardCode))
+                .FirstOrDefaultAsync(cancellationToken);
+            if (ward == null || ward.ParentCode != district.Code)
+            {
+                throw new ApiException(ResponseCode.AddressErrorWardNotFound);
+            }
+
+            deliveryAddress = new Location()
+            {
+                Address = deliveryAddressCommand.Address,
+                Province = province,
+                District = district,
+                Ward = ward,
+                Longitude = deliveryAddressCommand.Longitude,
+                Latitude = deliveryAddressCommand.Latitude
+            };
+        }
+        
         var pinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode();
         var order = new Order
         {
@@ -131,8 +171,10 @@ public class ReserveOrderHandler : IRequestHandler<ReserveOrderCommand, OrderRes
             SendBox = availableBox,
             ReceiveBox = availableBox,
             PinCode = pinCode,
-            PinCodeIssuedAt = DateTimeOffset.UtcNow
+            PinCodeIssuedAt = DateTimeOffset.UtcNow,
+            DeliveryAddress = deliveryAddress
         };
+        
         await _unitOfWork.OrderRepository.AddAsync(order);
         await _unitOfWork.SaveChangesAsync();
         _logger.LogInformation("Reserve new order: {0}", order.Id);

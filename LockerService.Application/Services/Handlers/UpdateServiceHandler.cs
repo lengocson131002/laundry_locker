@@ -14,29 +14,22 @@ public class UpdateServiceHandler : IRequestHandler<UpdateServiceCommand>
 
     public async Task Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
     {
-        var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
+        var service = await _unitOfWork.ServiceRepository
+            .GetStoreService(request.StoreId, request.ServiceId);
+        
         if (service is null)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);
         }
 
-        if (request.Name != null && !service.Name.Equals(request.Name, StringComparison.OrdinalIgnoreCase))
+        if (request.Name != null)
         {
-            var query = await _unitOfWork.ServiceRepository.GetAsync(
-                predicate: ser => ser.Name.Equals(request.Name)
-            );
-
-            if (query.Any())
-            {
-                throw new ApiException(ResponseCode.ServiceErrorExistedName);
-            }
-            
             service.Name = request.Name;
         }
 
         if (request.Price != null)
         {
-            service.Price = (decimal) request.Price;
+            service.Price = request.Price.Value;
         }
 
         if (request.Description != null)

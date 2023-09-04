@@ -17,10 +17,26 @@ public enum NotificationType
     [Description("Order is completed")]
     OrderCompleted,
     
+    [Description("Order is overtime")]
+    OrderOverTime,
+    
     // Account
     [Description("New staff account created")] 
     AccountStaffCreated,
     
     [Description("OTP created")] 
     AccountOtpCreated,
+
+    // Locker
+    [Description("Locker connected to the system")]
+    LockerConnected,
+    
+    [Description("Locker disconnected to the system")]
+    LockerDisconnected,
+    
+    [Description("Locker is going to be overloaded")]
+    LockerBoxWarning,
+    
+    [Description("Locker is overloaded")]
+    LockerBoxOverloaded
 }

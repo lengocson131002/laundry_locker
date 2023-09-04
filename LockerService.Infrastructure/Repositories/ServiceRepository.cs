@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Persistence.Repositories;
-using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Persistence;
 
 namespace LockerService.Infrastructure.Repositories;
@@ -12,5 +11,11 @@ public class ServiceRepository : BaseRepository<Service>, IServiceRepository
     {
         _dbContext = dbContext;
     }
-    
+
+    public Task<Service?> GetStoreService(long storeId, long serviceId)
+    {
+        return _dbContext.Services
+            .Where((service => Equals(service.Id, serviceId) && Equals(service.StoreId, storeId)))
+            .FirstOrDefaultAsync();
+    }
 }

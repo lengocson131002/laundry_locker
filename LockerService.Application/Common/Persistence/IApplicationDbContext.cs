@@ -35,4 +35,6 @@ public interface IApplicationDbContext
     DbSet<StaffLocker> StaffLockers { get; }
 
     DbSet<Token> Tokens { get; }
+    
+    DbSet<LaundryItem> LaundryItems { get; }
 }

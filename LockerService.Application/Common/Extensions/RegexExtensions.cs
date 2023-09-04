@@ -50,6 +50,13 @@ public static class RegexExtensions
         }
     }
 
+    public static bool IsValidUrl(this string url)
+    {
+        Uri uriResult;
+        return Uri.TryCreate(url, UriKind.Absolute, out uriResult) 
+                      && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+    }
+
     public static bool IsValidMacAddress(this string macAddress)
     {
         return !string.IsNullOrWhiteSpace(macAddress) && Regex.IsMatch(macAddress, MacRegex);

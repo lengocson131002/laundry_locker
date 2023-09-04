@@ -1,7 +1,8 @@
+using LockerService.Application.Common.Extensions;
+using LockerService.Application.Common.Services.Notifications;
+using LockerService.Application.Common.Utils;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 
@@ -12,28 +13,38 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
     private readonly IMqttBus _mqttBus;
     private readonly ApiKeySettings _apiKeySettings;
     private readonly ServerSettings _serverSettings;
-
+    private readonly INotifier _notifier;
     public LockerConnectedConsumer(
         ILogger<LockerConnectedConsumer> logger, 
         IUnitOfWork unitOfWork, 
         IMqttBus mqttBus, 
         ApiKeySettings apiKeySettings, 
-        ServerSettings serverSettings)
+        ServerSettings serverSettings, INotifier notifier)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _mqttBus = mqttBus;
         _apiKeySettings = apiKeySettings;
         _serverSettings = serverSettings;
+        _notifier = notifier;
     }
 
     public async Task Consume(ConsumeContext<LockerConnectedEvent> context)
     {
         var message = context.Message;
         _logger.LogInformation("Received locker connected message: {0}", JsonSerializer.Serialize(message));
-
+        
         var locker = await _unitOfWork.LockerRepository
-            .Get(locker => locker.Code == message.LockerCode)
+            .Get(
+                predicate: locker => locker.Code == message.LockerCode,
+                includes: new List<Expression<Func<Locker, object>>>()
+                {
+                    locker => locker.Location,
+                    locker => locker.Location.Province,
+                    locker => locker.Location.District,
+                    locker => locker.Location.Ward,
+                    locker => locker.Store,
+                })
             .FirstOrDefaultAsync();
         
         if (locker == null)
@@ -41,21 +52,24 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
             return;
         }
 
-        locker.Status = LockerStatus.Active;
-        locker.IpAddress = message.IpAddress;
-        locker.MacAddress = message.MacAddress;
-        
-        await _unitOfWork.LockerRepository.UpdateAsync(locker);
-        
+        // Add event
+        var lockerInfoData = JsonSerializer.Serialize(locker, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
         var @event = new LockerTimeline()
         {
             LockerId = locker.Id,
             Event = LockerEvent.Connect,
-            Data = JsonSerializer.Serialize(locker),
-            Status = locker.Status
+            Data = lockerInfoData,
+            Status = LockerStatus.Active,
+            PreviousStatus = locker.Status
         };
-        
         await _unitOfWork.LockerTimelineRepository.AddAsync(@event);
+        
+        // Update locker
+        locker.Status = LockerStatus.Active;
+        locker.IpAddress = message.IpAddress;
+        locker.MacAddress = message.MacAddress;
+        await _unitOfWork.LockerRepository.UpdateAsync(locker);
+
         await _unitOfWork.SaveChangesAsync();
         
         // Send info back to locker
@@ -68,5 +82,22 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
             ApiHost = _serverSettings.Host,
             ApiKey = _apiKeySettings.Key,
         });
+        
+        // Push notification to admins
+        var admins = await _unitOfWork.AccountRepository.GetAdmins().ToListAsync();
+        foreach (var admin in admins)
+        {
+            var notification = new Notification()
+            {
+                Account = admin,
+                Type = NotificationType.LockerConnected,
+                Content = NotificationType.LockerConnected.GetDescription(),
+                EntityType = EntityType.Locker,
+                Data = lockerInfoData,
+                ReferenceId = locker.Id.ToString()
+            };
+
+            await _notifier.NotifyAsync(notification);
+        }
     }
 }

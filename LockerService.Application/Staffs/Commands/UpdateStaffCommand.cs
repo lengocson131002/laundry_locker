@@ -7,6 +7,10 @@ public class UpdateStaffCommandValidator : AbstractValidator<UpdateStaffCommand>
         RuleFor(model => model.PhoneNumber)
             .Must(phoneNumber => phoneNumber == null || phoneNumber.IsValidPhoneNumber())
             .WithMessage("Invalid Phone Number");
+
+        RuleFor(model => model.Avatar)
+            .Must(image => image == null || image.IsValidUrl())
+            .WithMessage("Invalid image url");
     }
 }
 
@@ -18,13 +22,13 @@ public class UpdateStaffCommand : IRequest<StaffDetailResponse>
     [TrimString(true)] 
     public string? FullName { get; set; }
 
-    [TrimString(true)]
+    [NormalizePhone]
     public string? PhoneNumber { get; set; }
     
     [TrimString] 
     public string? Avatar { get; set; }
 
-    [TrimString(true)] 
+    [TrimString] 
     public string? Description { get; set; }
 
     public long? StoreId { get; set; }

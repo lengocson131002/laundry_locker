@@ -1,6 +1,6 @@
 namespace LockerService.Application.Accounts.Models;
 
-public class AccountResponse
+public class AccountResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
 
@@ -18,9 +18,4 @@ public class AccountResponse
     
     public string? Avatar { get; set; }
     
-    public DateTimeOffset? CreatedAt { get; set; }
-    
-    public DateTimeOffset? UpdatedAt { get; set; }
-    
-    public DateTimeOffset? DeletedAt { get; set; }
 }

@@ -27,7 +27,7 @@ public class OrderSettingsCommand
 
     public decimal StoragePrice { get; set; }
 
-    public float MaxTimeInHours { get; set; }
+    public int MaxTimeInHours { get; set; }
 
     public decimal ExtraFee { get; set; }
 

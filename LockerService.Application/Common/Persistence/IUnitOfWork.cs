@@ -36,4 +36,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     ISettingRepository SettingRepository { get; }
     
     INotificationRepository NotificationRepository { get; }
+    
+    ILaundryItemRepository LaundryItemRepository { get; }
 }

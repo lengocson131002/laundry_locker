@@ -19,12 +19,6 @@ public class StaffController : ApiControllerBase
     public async Task<ActionResult<PaginationResponse<Account, StaffResponse>>> GetAllStaffs(
         [FromQuery] GetAllStaffsQuery request)
     {
-        if (string.IsNullOrWhiteSpace(request.SortColumn))
-        {
-            request.SortColumn = "CreatedAt";
-            request.SortDir = SortDirection.Desc;
-        }
-
         return await Mediator.Send(request);
     }
 

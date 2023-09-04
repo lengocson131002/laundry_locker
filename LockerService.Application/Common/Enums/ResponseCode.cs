@@ -37,6 +37,8 @@ public enum ResponseCode
     [Description("The new password must be different from the current password")] AuthErrorNewPasswordMustBeDifferent = 26,
     
     [Description("The account is inactive")] AuthErrorAccountInactive = 27,
+    
+    [Description("Update password request")] AuthErrorUpdatePasswordRequest = 28,
   
     // Locker
     [Description("Locker not found")] LockerErrorNotFound = 101,
@@ -145,9 +147,17 @@ public enum ResponseCode
     [Description("Please update order's details")] OrderDetailErrorInfoRequired = 1202,
     
     [Description("Order item detail existed")] OrderDetailErrorExisted = 1203,
+    
+    [Description("Order details is required")] OrderDetailErrorRequired = 1204,
 
     // Notification 
     [Description("Notification not found")] NotificationErrorNotFound = 1301,
     
-    [Description("Notification's status is not allowed to do this function")] NotificationErrorInvalidStatus = 1302
+    [Description("Notification's status is not allowed to do this function")] NotificationErrorInvalidStatus = 1302,
+    
+    // Laundry Item
+    [Description("Laundry item not found")] LaundryItemErrorNotFound = 1401,
+    
+    // Token
+    [Description("Invalid or expired token")] TokenErrorInvalidOrExpiredToken = 1501,
 }

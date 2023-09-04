@@ -1,6 +1,6 @@
 namespace LockerService.Application.Lockers.Models;
 
-public class LockerResponse
+public class LockerResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
 
@@ -21,18 +21,6 @@ public class LockerResponse
     public string? MacAddress { get; set; }
     
     public string? IpAddress { get; set; }
-    
-    public DateTimeOffset CreatedAt { get; set; }
-    
-    public long? CreatedBy { get; set; }
-    
-    public DateTimeOffset UpdatedAt { get; set; }
-    
-    public long? UpdatedBy { get; set; }
-    
-    public DateTimeOffset? DeletedAt { get; set; }
-    
-    public long? DeletedBy { get; set; }
     
     public int BoxCount { get; set; } 
 }

@@ -19,7 +19,7 @@ public class BoxResponse
     public bool IsAvailable { get; set; }
 }
 
-public class BoxOrderResponse
+public class BoxOrderResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
     
@@ -46,8 +46,4 @@ public class BoxOrderResponse
     public decimal? Discount { get; set; }
     
     public string? Description { get; set; }
-    
-    public DateTimeOffset? CreatedAt { get; set; }
-    
-    public DateTimeOffset? UpdatedAt { get; set; }
 }

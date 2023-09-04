@@ -17,10 +17,19 @@ public class StaffCreatedConsumer : IConsumer<StaffCreatedEvent>
     public async Task Consume(ConsumeContext<StaffCreatedEvent> context)
     {
         var eventMessage = context.Message;
-
+        var staffAccount = new Account()
+        {
+            Id = eventMessage.AccountId,
+            PhoneNumber = eventMessage.PhoneNumber,
+            Username = eventMessage.PhoneNumber,
+            Password = eventMessage.Password,
+            Role = eventMessage.Role,
+            FullName = eventMessage.FullName,
+        };
+        
         var notification = new Notification()
         {
-            AccountId = eventMessage.AccountId,
+            Account = staffAccount,
             Type = NotificationType.AccountStaffCreated,
             EntityType = EntityType.Account,
             Content = NotificationType.AccountStaffCreated.GetDescription(),

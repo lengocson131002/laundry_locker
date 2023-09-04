@@ -1,6 +1,6 @@
 namespace LockerService.Application.Hardwares.Models;
 
-public class HardwareResponse
+public class HardwareResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
 

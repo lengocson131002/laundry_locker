@@ -5,7 +5,7 @@ public class AddLockerCommandValidator : AbstractValidator<AddLockerCommand>
     public AddLockerCommandValidator()
     {
         RuleFor(model => model.Name)
-            .MaximumLength(200)
+            .MaximumLength(100)
             .NotEmpty();
 
         RuleFor(model => model.Location)
@@ -17,6 +17,10 @@ public class AddLockerCommandValidator : AbstractValidator<AddLockerCommand>
 
         RuleFor(model => model.StoreId)
             .NotNull();
+
+        RuleFor(model => model.Image)
+            .Must(image => image == null || image.Trim().IsValidUrl())
+            .WithMessage("Invalid image url");
     }
     
     private bool UniqueStaffs(IList<long> staffIds)
@@ -44,7 +48,7 @@ public class AddLockerCommand : IRequest<LockerResponse>
     public string Name { get; set; } = default!;
 
     [TrimString(true)]
-    public string Image { get; set; } = default!;
+    public string? Image { get; set; } = default!;
     
     public LocationCommand Location { get; set; } = default!;
     

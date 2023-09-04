@@ -4,13 +4,25 @@ public class UpdateLockerCommandValidator : AbstractValidator<UpdateLockerComman
 {
     public UpdateLockerCommandValidator()
     {
+        RuleFor(model => model.Name)
+            .MaximumLength(100)
+            .When(model => model.Name != null);
+        
         RuleFor(model => model.StaffIds)
             .NotEmpty()
             .When(model => model.StaffIds != null);
         
+        RuleFor(model => model.Location)
+            .SetInheritanceValidator(v => { v.Add(new AddLocationCommandValidator()); })
+            .When(model => model.Location != null);
+        
         RuleFor(model => model.StaffIds)
             .Must(staffIds => staffIds == null || (staffIds.Any() && UniqueStaffs(staffIds)))
             .WithMessage("StaffIds must not be empty and must contains unique ids");
+        
+        RuleFor(model => model.Image)
+            .Must(image => image == null || image.Trim().IsValidUrl())
+            .WithMessage("Invalid image url");
     }
     
     private bool UniqueStaffs(IList<long> staffIds)

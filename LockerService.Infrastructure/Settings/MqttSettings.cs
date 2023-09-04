@@ -18,8 +18,6 @@ public class MqttSettings
     public string? Password { get; set; }
     
     [Required]
-    public bool IsEncrypted { get; set; }
-    
     public string SecretKey { get; set; } = default!;
     
 }

@@ -3,9 +3,9 @@ using LockerService.Application.Common.Utils;
 
 namespace LockerService.Application.Orders.Commands;
 
-public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
+public class InitializeOrderCommandValidation : AbstractValidator<InitializeOrderCommand>
 {
-    public CreateOrderValidation()
+    public InitializeOrderCommandValidation()
     {
         RuleFor(req => req.LockerId)
             .NotNull();
@@ -27,6 +27,10 @@ public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
             .Must(UniqueServices)
             .When(order => OrderType.Laundry.Equals(order.Type))
             .WithMessage("ServiceIds must contains unique ids");
+
+        RuleFor(model => model.DeliveryAddress)
+            .SetInheritanceValidator(v => v.Add(new AddLocationCommandValidator()))
+            .When(model => model.DeliveryAddress != null);
     }
 
     public bool UniqueServices(IList<long> serviceIds)
@@ -48,17 +52,19 @@ public class CreateOrderValidation : AbstractValidator<CreateOrderCommand>
     }
 }
 
-public class CreateOrderCommand : IRequest<OrderResponse>
+public class InitializeOrderCommand : IRequest<OrderResponse>
 {
     public long LockerId { get; set; }
     
     public OrderType Type { get; set; }
     
-    [TrimString(true)]
+    [NormalizePhone]
     public string SenderPhone { get; set;  } = default!;
 
-    [TrimString(true)]
+    [NormalizePhone(true)]
     public string? ReceiverPhone { get; set; }
 
     public IList<long> ServiceIds { get; set; } = new List<long>();
+    
+    public LocationCommand? DeliveryAddress { get; set; }
 }

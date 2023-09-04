@@ -1,10 +1,12 @@
 using System.Text;
+using LockerService.Application.Common.Security;
+using LockerService.Application.Common.Utils;
 using LockerService.Application.EventBus.RabbitMq;
-using LockerService.Infrastructure.Common.Constants;
 using LockerService.Infrastructure.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Formatter;
 
 namespace LockerService.Infrastructure.EventBus.Mqtt;
 
@@ -31,6 +33,7 @@ public class MqttClientService : IMqttClientService
             .WithClientId(Guid.NewGuid().ToString())
             .WithCredentials(_settings.Username, _settings.Password)
             .WithCleanSession()
+            .WithProtocolVersion(MqttProtocolVersion.V500)
             .Build();
         
         _logger = logger;
@@ -51,12 +54,22 @@ public class MqttClientService : IMqttClientService
             var topic = arg.ApplicationMessage.Topic;
             var payload = Encoding.UTF8.GetString(arg.ApplicationMessage.PayloadSegment);
             
-            _logger.LogInformation($"[MQTT] Receive message. Topic: {topic}, Payload: {payload}");
-            
-            var jsonOptions = new JsonSerializerOptions()
+            // validate signature
+            var userProperties = arg.ApplicationMessage.UserProperties;
+            var signature = userProperties
+                    .Where(property => property.Name.Equals(MqttProperties.SignatureProperty))
+                    .Select(property => property.Value)
+                    .FirstOrDefault();
+
+            if (signature == null || !Hmac256Service.Verify(payload, signature, _settings.SecretKey))
             {
-                PropertyNameCaseInsensitive = true
-            };
+                _logger.LogError("[MQTT] Validate signature failed. Invalid signature");
+                return;
+            }
+
+            _logger.LogInformation($"[MQTT] Receive message. Topic: {topic}, Payload: {payload}");
+
+            var jsonOptions = JsonSerializerUtils.GetGlobalJsonSerializerOptions();
             
             switch (topic)
             {
@@ -220,7 +233,6 @@ public class MqttClientService : IMqttClientService
 
     public IMqttClient MqttClient => _mqttClient;
 
-    public string? MqttSecretKey => _settings.SecretKey;
+    public string MqttSecretKey => _settings.SecretKey;
     
-    public bool IsEncrypted => _settings.IsEncrypted;
 }

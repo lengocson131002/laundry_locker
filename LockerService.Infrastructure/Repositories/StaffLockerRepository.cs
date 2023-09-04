@@ -20,4 +20,19 @@ public class StaffLockerRepository : BaseRepository<StaffLocker>, IStaffLockerRe
         return staffLocker != null;
     }
 
+    public async Task<IList<Account>> GetStaffs(long lockerId)
+    {
+        return await _dbContext.StaffLockers
+            .Where(item => Equals(item.LockerId, lockerId))
+            .Select(item => item.Staff)
+            .ToListAsync();
+    }
+
+    public async Task<IList<Locker>> GetLocker(long staffId)
+    {
+        return await _dbContext.StaffLockers
+            .Where(item => Equals(item.LockerId, staffId))
+            .Select(item => item.Locker)
+            .ToListAsync();
+    }
 }

@@ -1,5 +1,3 @@
-using LockerService.Application.Common.Utils;
-
 namespace LockerService.Application.Locations.Commands;
 
 public class AddLocationCommandValidator : AbstractValidator<LocationCommand>
@@ -7,7 +5,8 @@ public class AddLocationCommandValidator : AbstractValidator<LocationCommand>
     public AddLocationCommandValidator()
     {
         RuleFor(model => model.Address)
-            .NotEmpty();
+            .NotEmpty()
+            .MaximumLength(50);
         
         RuleFor(model => model.WardCode)
             .NotEmpty();

@@ -1,6 +1,8 @@
 using LockerService.Application.Common.Extensions;
+using LockerService.Application.Common.Services;
 using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.Common.Utils;
+using LockerService.Domain.Entities.Settings;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
@@ -10,14 +12,16 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
     private readonly ILogger<OrderConfirmedConsumer> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly INotifier _notifier;
+    private readonly ISettingService _settingService;
 
     public OrderConfirmedConsumer(
         ILogger<OrderConfirmedConsumer> logger, 
-        IUnitOfWork unitOfWork, INotifier notifier)
+        IUnitOfWork unitOfWork, INotifier notifier, ISettingService settingService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _notifier = notifier;
+        _settingService = settingService;
     }
 
     public async Task Consume(ConsumeContext<OrderConfirmedEvent> context)
@@ -36,6 +40,7 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
             .Include(order => order.Details)
             .ThenInclude(detail => detail.Service)
             .Include(order => order.Timelines)
+            .Include(order => order.Locker.Store)
             .Include(order => order.Locker.Location)
             .Include(order => order.Locker.Location.Ward)
             .Include(order => order.Locker.Location.District)
@@ -57,7 +62,7 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
         await _unitOfWork.SaveChangesAsync();
         
         // Push notification
-        var notiData = JsonSerializer.Serialize(order, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+        var orderInfoData = JsonSerializer.Serialize(order, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
         
         await _notifier.NotifyAsync(
             new Notification()
@@ -65,8 +70,8 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
                 Account = order.Sender,
                 Type = NotificationType.OrderCreated,
                 EntityType = EntityType.Order,
-                Content = string.Empty,
-                Data = notiData,
+                Content = NotificationType.OrderCreated.GetDescription(),
+                Data = orderInfoData,
                 ReferenceId = order.Id.ToString(),
             });
         
@@ -78,9 +83,53 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
                 Type = NotificationType.OrderCreated,
                 EntityType = EntityType.Order,
                 Content = NotificationType.OrderCreated.GetDescription(),
-                Data = notiData,
+                Data = orderInfoData,
                 ReferenceId = order.Id.ToString(),
             });
+        }
+
+        var staffs = await _unitOfWork.StaffLockerRepository.GetStaffs(order.LockerId);
+
+        // Notify for staff managing this locker when order type is laundry
+        if (Equals(order.Type, OrderType.Laundry))
+        {
+            foreach (var staff in staffs)
+            {
+                var notification = new Notification()
+                {
+                    Account = staff,
+                    Type = NotificationType.OrderCreated,
+                    Content = NotificationType.OrderCreated.GetDescription(),
+                    EntityType = EntityType.Order,
+                    ReferenceId = order.Id.ToString(),
+                    Data = orderInfoData,
+                };
+            
+                await _notifier.NotifyAsync(notification);
+            }     
+        }
+        
+        // Check locker box availability
+        var lockerSettings = await _settingService.GetSettings<LockerSettings>();
+        var availableBoxes = await _unitOfWork.BoxRepository.FindAvailableBoxes(order.LockerId);
+
+        if (availableBoxes.Count <= lockerSettings.AvailableBoxCountWarning)
+        {
+            var lockerInfoData = JsonSerializer.Serialize(order.Locker, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+            foreach (var staff in staffs)
+            {
+                var notification = new Notification()
+                {
+                    Account = staff,
+                    Type = NotificationType.LockerBoxWarning,
+                    Content = NotificationType.LockerBoxWarning.GetDescription(),
+                    EntityType = EntityType.Locker,
+                    ReferenceId = order.LockerId.ToString(),
+                    Data = lockerInfoData,
+                };
+            
+                await _notifier.NotifyAsync(notification);
+            }
         }
 
     }

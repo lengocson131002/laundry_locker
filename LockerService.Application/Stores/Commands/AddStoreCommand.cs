@@ -5,7 +5,7 @@ public class AddStoreCommandValidator : AbstractValidator<AddStoreCommand>
     public AddStoreCommandValidator()
     {
         RuleFor(model => model.Name)
-            .MaximumLength(200)
+            .MaximumLength(100)
             .NotEmpty();
 
         RuleFor(model => model.ContactPhone)
@@ -19,11 +19,14 @@ public class AddStoreCommandValidator : AbstractValidator<AddStoreCommand>
 
         RuleFor(model => model.ContactPhone)
             .MaximumLength(20)
-            .When(model => model is not null);
+            .Must(phone => phone == null || phone.IsValidPhoneNumber())
+            .WithMessage("Invalid contact phone number");
 
         RuleFor(model => model.Image)
             .MaximumLength(1000)
-            .When(model => model is not null);
+            .Must(image => image.IsValidUrl())
+            .When(model => model.Image is not null)
+            .WithMessage("Invalid image url");
     }
 }
 
@@ -32,11 +35,14 @@ public class AddStoreCommand : IRequest<StoreResponse>
     [TrimString(true)]
     public string Name { get; set; } = default!;
 
-    [TrimString(true)]
-    public string ContactPhone { get; set; } = default!;
+    [NormalizePhone(true)]
+    public string? ContactPhone { get; set; } = default!;
 
     public LocationCommand Location { get; set; } = default!;
 
     [TrimString(true)]
     public string? Image { get; set; }
+    
+    [TrimString]
+    public string? Description { get; set; }
 }

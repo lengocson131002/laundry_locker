@@ -38,13 +38,8 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
-        if (request.Name != null && !Equals(request.Name, locker.Name))
+        if (request.Name != null)
         {
-            if (await _unitOfWork.LockerRepository.FindByName(request.Name) != null)
-            {
-                throw new ApiException(ResponseCode.LockerErrorExistedName);
-            }
-
             locker.Name = request.Name;
         }
 
@@ -103,7 +98,7 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
             var provinceQuery =
                 await _unitOfWork.AddressRepository.GetAsync(
                     p => p.Code != null && p.Code.Equals(location.ProvinceCode));
-            var province = await provinceQuery.FirstOrDefaultAsync();
+            var province = await provinceQuery.FirstOrDefaultAsync(cancellationToken);
             if (province == null)
             {
                 throw new ApiException(ResponseCode.AddressErrorProvinceNotFound);
@@ -112,7 +107,7 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
             var districtQuery =
                 await _unitOfWork.AddressRepository.GetAsync(
                     d => d.Code != null && d.Code.Equals(location.DistrictCode));
-            var district = await districtQuery.FirstOrDefaultAsync();
+            var district = await districtQuery.FirstOrDefaultAsync(cancellationToken);
             if (district == null || district.ParentCode != province.Code)
             {
                 throw new ApiException(ResponseCode.AddressErrorDistrictNotFound);
@@ -120,7 +115,7 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
 
             var wardQuery =
                 await _unitOfWork.AddressRepository.GetAsync(w => w.Code != null && w.Code.Equals(location.WardCode));
-            var ward = await wardQuery.FirstOrDefaultAsync();
+            var ward = await wardQuery.FirstOrDefaultAsync(cancellationToken);
             if (ward == null || ward.ParentCode != district.Code)
             {
                 throw new ApiException(ResponseCode.AddressErrorWardNotFound);
@@ -144,7 +139,7 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
         {
             Id = locker.Id,
             Time = DateTimeOffset.UtcNow,
-            Data = JsonSerializer.Serialize(locker)
+            Data = JsonSerializer.Serialize(locker, JsonSerializerUtils.GetGlobalJsonSerializerOptions())
         }, cancellationToken);
     }
 }

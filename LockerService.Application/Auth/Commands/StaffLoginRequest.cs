@@ -6,7 +6,9 @@ public class StaffLoginRequestValidator : AbstractValidator<StaffLoginRequest>
     {
         RuleFor(model => model.PhoneNumber)
             .Must(x => x.IsValidPhoneNumber())
-            .NotEmpty();
+            .NotEmpty()
+            .WithMessage("Invalid phone number");
+        
         RuleFor(model => model.Password)
             .NotEmpty();
     }
@@ -14,7 +16,7 @@ public class StaffLoginRequestValidator : AbstractValidator<StaffLoginRequest>
 
 public class StaffLoginRequest : IRequest<TokenResponse>
 {
-    [TrimString(true)]
+    [NormalizePhone]
     public string PhoneNumber { get; set; } = default!;
 
     public string Password { get; set; } = default!;

@@ -17,6 +17,9 @@ public class AuthController : ApiControllerBase
         _jwtSettings = jwtSettings;
     }
 
+    /**
+     * ADMIN AUTH CONTROLLERS
+     */
     [HttpPost("admin/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginAdmin([FromBody] AdminLoginRequest request)
@@ -39,6 +42,9 @@ public class AuthController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
+    /**
+     * STAFF AUTH CONTROLLERS
+     */
     [HttpPost("staff/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
@@ -54,6 +60,9 @@ public class AuthController : ApiControllerBase
         return await Mediator.Send(new GetStaffProfileQuery());
     }
     
+    /**
+     * CUSTOMER AUTH CONTROLLERS
+     */
     [HttpPost("customer/login")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> LoginCustomer([FromBody] CustomerLoginRequest request)
@@ -90,6 +99,13 @@ public class AuthController : ApiControllerBase
     {
         return await Mediator.Send(request);
     }
+
+    [HttpPut("password/reset")]
+    public async Task<ActionResult<StatusResponse>> ResetPassword([FromBody] ResetPasswordCommand request)
+    {
+        return await Mediator.Send(request);
+    }
+
     
     [HttpPost("logout")]
     public ActionResult Logout()

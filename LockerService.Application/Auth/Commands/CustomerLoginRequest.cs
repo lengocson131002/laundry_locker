@@ -14,7 +14,7 @@ public class CustomerLoginRequestValidator : AbstractValidator<CustomerLoginRequ
 
 public class CustomerLoginRequest : IRequest<TokenResponse>
 {
-    [TrimString(true)]
+    [NormalizePhone]
     public string PhoneNumber { get; set; } = default!;
     
     [TrimString(true)]

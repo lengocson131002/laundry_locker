@@ -4,21 +4,15 @@ public abstract class MqttBaseMessage
 {
     public MqttBaseMessage()
     {
-        Id = Guid.NewGuid();
-        CreatedDate = DateTime.UtcNow;
+        Timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
 
-    public MqttBaseMessage(Guid id, DateTime createdDate)
+    public MqttBaseMessage(long timestamp)
     {
-        Id = id;
-        CreatedDate = createdDate;
+        Timestamp = timestamp;
     }
-    
+    public long Timestamp { get; set; }
+
     [JsonIgnore]
-    public Guid Id { get; private set; }
-    
-    [JsonIgnore]
-    public DateTime CreatedDate { get; private set; }
-    
-    public abstract string Topic { get; } 
+    public abstract string Topic { get; }
 }

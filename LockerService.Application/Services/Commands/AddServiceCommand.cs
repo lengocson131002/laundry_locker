@@ -11,7 +11,9 @@ public class AddServiceCommandValidator : AbstractValidator<AddServiceCommand>
             .NotEmpty();
 
         RuleFor(model => model.Image)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(image => image.IsValidUrl())
+            .WithMessage("Invalid image url");
 
         RuleFor(model => model.Price)
             .GreaterThan(0);
@@ -20,6 +22,9 @@ public class AddServiceCommandValidator : AbstractValidator<AddServiceCommand>
 
 public class AddServiceCommand : IRequest<ServiceResponse>
 {
+    [JsonIgnore]
+    public long StoreId { get; set; }
+    
     [TrimString(true)]
     public string Name { get; set; } = default!;
 

@@ -1,6 +1,6 @@
 namespace LockerService.Application.Bills.Models;
 
-public class BillResponse
+public class BillResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
     
@@ -13,9 +13,5 @@ public class BillResponse
     public string? Content { get; set; }
     
     public string? ReferenceTransactionId { get; set; }
-    
-    public DateTimeOffset? CreatedAt { get; set; }
-    
-    public DateTimeOffset? UpdatedAt { get; set; }
 
 }
