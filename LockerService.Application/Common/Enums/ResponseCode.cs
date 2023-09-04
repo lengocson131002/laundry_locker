@@ -91,7 +91,7 @@ public enum ResponseCode
     
     [Description("Inactive account is not allowed to create order")] OrderErrorInactiveAccount = 410,
     
-    [Description("Can't create order because your account has currently had over allowed active order count")] OrderErrorExceedAllowOrderCount = 410,
+    [Description("Can't create order because your account has currently had over allowed active order count")] OrderErrorExceedAllowOrderCount = 411,
 
     // Address
     [Description("Province not found")] AddressErrorProvinceNotFound = 501,
@@ -138,8 +138,6 @@ public enum ResponseCode
     
     [Description("Account's status is not allowed to do this function")] AccountErrorInvalidStatus = 1003,
 
-    // Bill
-    [Description("Bill not found")] BillErrorNotFound = 1101,
     
     // OrderDetail
     [Description("Order item detail not found")] OrderDetailErrorNotFound = 1201,
@@ -160,4 +158,7 @@ public enum ResponseCode
     
     // Token
     [Description("Invalid or expired token")] TokenErrorInvalidOrExpiredToken = 1501,
+
+    // Bill
+    [Description("Bill not found")] BillErrorNotFound = 1601,
 }
