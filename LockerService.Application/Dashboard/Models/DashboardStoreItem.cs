@@ -9,7 +9,6 @@ public class DashboardStoreItem
 
     public string? Image { get; set; }
     
-    public DateTimeOffset? CreatedAt { get; set; }
     
     public int StaffCount { get; set; }
     
@@ -18,4 +17,10 @@ public class DashboardStoreItem
     public int OrderCount { get; set; }
     
     public decimal Revenue { get; set; }
+    
+    public DateTimeOffset? CreatedAt { get; set; }
+    
+    
+    public DateTimeOffset? UpdatedAt { get; set; }
+
 }

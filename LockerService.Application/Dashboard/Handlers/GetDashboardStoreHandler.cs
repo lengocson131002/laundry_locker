@@ -37,7 +37,7 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
                 LockerId = l.Id,
                 StaffId = s.Id,
                 OrderId = o.Id
-            } by new { store.Id, store.Name, store.Image, store.Status, store.CreatedAt }
+            } by new { store.Id, store.Name, store.Image, store.Status, store.CreatedAt, store.UpdatedAt }
             into storeGroup
             select new DashboardStoreItem()
             {
@@ -46,6 +46,7 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
                 Image = storeGroup.Key.Image,
                 Status = storeGroup.Key.Status,
                 CreatedAt = storeGroup.Key.CreatedAt,
+                UpdatedAt = storeGroup.Key.UpdatedAt,
                 StaffCount = storeGroup.Select(g => g.StaffId).Distinct().Count(),
                 LockerCount = storeGroup.Select(g => g.LockerId).Distinct().Count(),
                 OrderCount = storeGroup.Select(g => g.OrderId).Distinct().Count(),
@@ -77,6 +78,7 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
                 Image = store.Image,
                 Status = store.Status,
                 CreatedAt = store.CreatedAt,
+                UpdatedAt = store.UpdatedAt,
                 StaffCount = store.StaffCount,
                 LockerCount = store.LockerCount,
                 OrderCount = store.OrderCount,
