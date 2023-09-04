@@ -2,7 +2,7 @@ using LockerService.Application.Customers.Models;
 
 namespace LockerService.Application.Orders.Models;
 
-public class OrderResponse
+public class OrderResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
     
@@ -40,8 +40,6 @@ public class OrderResponse
 
     public string? Description { get; set; }
     
-    public DateTimeOffset? CreatedAt { get; set; }
-    
-    public DateTimeOffset? UpdatedAt { get; set; }
-    
+    public bool DeliverySupported { get; set; }
+
 }

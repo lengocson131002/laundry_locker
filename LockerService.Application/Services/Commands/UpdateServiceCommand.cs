@@ -1,5 +1,3 @@
-using LockerService.Application.Common.Utils;
-
 namespace LockerService.Application.Services.Commands;
 
 public class UpdateServiceCommandValidator : AbstractValidator<UpdateServiceCommand>
@@ -13,11 +11,17 @@ public class UpdateServiceCommandValidator : AbstractValidator<UpdateServiceComm
         RuleFor(model => model.Price)
             .GreaterThan(0)
             .When(model => model.Price is not null);
+
+        RuleFor(model => model.Image)
+            .Must(image => image == null || image.IsValidUrl())
+            .WithMessage("Invalid image url");
     }
 }
 
 public class UpdateServiceCommand : IRequest
 {
+    [JsonIgnore]
+    public long StoreId { get; set; }
     
     [JsonIgnore] 
     public long ServiceId { get; set; }
@@ -30,9 +34,9 @@ public class UpdateServiceCommand : IRequest
 
     public decimal? Price { get; set; }
     
-    [TrimString(true)]
+    [TrimString]
     public string? Unit { get; set; }
     
-    [TrimString(true)]
+    [TrimString]
     public string? Description { get; set; }
 }

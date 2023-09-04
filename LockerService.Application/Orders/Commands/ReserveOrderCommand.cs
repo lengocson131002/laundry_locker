@@ -22,6 +22,10 @@ public class ReserveOrderCommandValidator : AbstractValidator<ReserveOrderComman
             .Must(UniqueServices)
             .When(order => OrderType.Laundry.Equals(order.Type))
             .WithMessage("ServiceIds must contains unique ids");
+        
+        RuleFor(model => model.DeliveryAddress)
+            .SetInheritanceValidator(v => v.Add(new AddLocationCommandValidator()))
+            .When(model => model.DeliveryAddress != null);
     }
 
     public bool UniqueServices(IList<long> serviceIds)
@@ -49,8 +53,10 @@ public class ReserveOrderCommand : IRequest<OrderResponse>
     
     public OrderType Type { get; set; }
     
-    [TrimString(true)]
+    [NormalizePhone(true)]
     public string? ReceiverPhone { get; set; }
 
     public IList<long> ServiceIds { get; set; } = new List<long>();
+    
+    public LocationCommand? DeliveryAddress { get; set; }
 }

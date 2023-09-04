@@ -62,18 +62,5 @@ public class OrderCanceledConsumer : IConsumer<OrderCanceledEvent>
             Data = notificationData,
             ReferenceId = order.Id.ToString()
         });
-
-        if (order.ReceiverId != null && order.Receiver != null)
-        {
-            await _notifier.NotifyAsync(new Notification()
-            {
-                Account = order.Receiver,
-                Type = NotificationType.OrderCanceled,
-                Content = NotificationType.OrderCanceled.GetDescription(),
-                EntityType = EntityType.Order,
-                Data = notificationData,
-                ReferenceId = order.Id.ToString()
-            });
-        }
     }
 }

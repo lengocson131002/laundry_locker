@@ -21,6 +21,17 @@ public class GetAllServicesHandler : IRequestHandler<GetAllServicesQuery, Pagina
     public async Task<PaginationResponse<Service, ServiceResponse>> Handle(GetAllServicesQuery request,
         CancellationToken cancellationToken)
     {
+        var lockerId = request.LockerId;
+        if (lockerId != null)
+        {
+            var locker = await _unitOfWork.LockerRepository.GetByIdAsync(lockerId);
+            if (locker == null)
+            {
+                throw new ApiException(ResponseCode.LockerErrorNotFound);
+            }
+            request.StoreId = locker.StoreId;
+        }
+        
         var service = await _unitOfWork.ServiceRepository.GetAsync(
             predicate: request.GetExpressions(),
             orderBy: request.GetOrder()

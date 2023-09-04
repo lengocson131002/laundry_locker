@@ -5,7 +5,7 @@ public class UpdateStoreCommandValidator : AbstractValidator<UpdateStoreCommand>
     public UpdateStoreCommandValidator()
     {
         RuleFor(model => model.Name)
-            .MaximumLength(200)
+            .MaximumLength(100)
             .When(model => model.Name is not null);
 
         RuleFor(model => model.Location)
@@ -18,7 +18,9 @@ public class UpdateStoreCommandValidator : AbstractValidator<UpdateStoreCommand>
 
         RuleFor(model => model.Image)
             .MaximumLength(1000)
-            .When(model => model is not null);
+            .Must(image => image.IsValidUrl())
+            .When(model => model.Image is not null)
+            .WithMessage("Invalid image URL");
     }
 }
 
@@ -30,11 +32,14 @@ public class UpdateStoreCommand : IRequest<StoreResponse>
     [TrimString(true)]
     public string? Name { get; set; }
     
-    [TrimString(true)]
+    [NormalizePhone(true)]
     public string? ContactPhone { get; set; }
 
     public LocationCommand? Location { get; set; }
 
     [TrimString(true)]
     public string? Image { get; set; }
+    
+    [TrimString]
+    public string? Description { get; set; }
 }

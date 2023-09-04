@@ -142,8 +142,7 @@ public class ZnsNotificationService : ISmsNotificationService
                         pin_code = createdOrder.PinCode,
                         sender_name = sender.FullName ?? sender.PhoneNumber,
                         locker_name = locker.Name,
-                        locker_address =
-                            $"{locker.Location.Address}, {locker.Location.Ward.Name}, {locker.Location.District.Name}, {locker.Location.Province.Name}",
+                        locker_address = locker.Location.ToString(),
                         order_status = createdOrder.Status.GetDescription(),
                         order_detail = orderDetailDescription
                     }
@@ -173,8 +172,7 @@ public class ZnsNotificationService : ISmsNotificationService
                         order_type = canceledOrder.Type.GetDescription(),
                         order_status = canceledOrder.Status.GetDescription(),
                         locker_name = canceledOrderLocker.Name,
-                        locker_address =
-                            $"{canceledOrderLocker.Location.Address}, {canceledOrderLocker.Location.Ward.Name}, {canceledOrderLocker.Location.District.Name}, {canceledOrderLocker.Location.Province.Name}",
+                        locker_address = canceledOrderLocker.Location.ToString(),
                         cancel_reason = canceledOrder.CancelReason != null 
                             ? canceledOrder.CancelReason.Value.GetDescription()
                             : "None"
@@ -224,10 +222,47 @@ public class ZnsNotificationService : ISmsNotificationService
                         extra_at = extraAt.ToString(timeSettings.TimeZone, DateTimeConstants.DateTimeFormat),
                         extra_fee = orderSettings.ExtraFee,
                         locker_name = returnedOrderLocker.Name,
-                        locker_address =
-                            $"{returnedOrderLocker.Location.Address}, {returnedOrderLocker.Location.Ward.Name}, {returnedOrderLocker.Location.District.Name}, {returnedOrderLocker.Location.Province.Name}",
+                        locker_address = returnedOrderLocker.Location.ToString()
                     }
                 };
+            
+            case NotificationType.OrderOverTime:
+                var overtimeOrder = JsonSerializer.Deserialize<Order>(
+                    notification.Data ?? string.Empty,
+                    JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+                
+                if (overtimeOrder == null)
+                {
+                    throw new Exception("[Zalo ZNS] Notification's data is required");
+                }
+
+                var overtimeOrderLocker = overtimeOrder.Locker 
+                                          ?? throw new Exception("[Zalo ZNS] Order locker is required");
+                
+                var overtimeOrderDetails = Equals(overtimeOrder.Type, OrderType.Laundry)
+                    ? string.Join(", ", overtimeOrder.Details.Select(item => item.Service.Name))
+                    : "None";
+                
+                await orderService.CalculateFree(overtimeOrder);
+                
+                return new BaseZaloZnsRequest()
+                {
+                    Phone = toPhoneNumber,
+                    TemplateId = _znsSettings.Templates.OrderOvertime,
+                    TemplatedData = new
+                    {
+                        customer_name = account.FullName ?? account.PhoneNumber,
+                        order_id = overtimeOrder.Id.ToString(),
+                        order_type = overtimeOrder.Type.GetDescription(),
+                        order_status = overtimeOrder.Status.GetDescription(),
+                        pin_code = overtimeOrder.PinCode,
+                        sender_name = overtimeOrder.Sender.FullName ?? overtimeOrder.Sender.PhoneNumber,
+                        order_detail = overtimeOrderDetails,
+                        locker_name = overtimeOrderLocker.Name,
+                        locker_address = overtimeOrderLocker.Location.ToString()
+                    } 
+                };
+                
         }
         
         throw new Exception("[Zalo ZNS] Invalid notification type");

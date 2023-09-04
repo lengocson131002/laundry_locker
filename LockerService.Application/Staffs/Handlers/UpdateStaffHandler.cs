@@ -35,12 +35,15 @@ public class UpdateStaffHandler : IRequestHandler<UpdateStaffCommand, StaffDetai
         // Check store
         if (request.StoreId is not null && !Equals(request.StoreId, staff.StoreId))
         {
-            var slQuery =
-                await _unitOfWork.StaffLockerRepository.GetAsync(sl =>
-                    Equals(sl.StaffId, staff.Id));
-            if (slQuery.Any())
+            
+            var staffLockers = await _unitOfWork.StaffLockerRepository
+                .Get(sl => Equals(sl.StaffId, staff.Id))
+                .ToListAsync(cancellationToken);
+            
+            // Remove previous assignments
+            if (staffLockers.Any())
             {
-                throw new ApiException(ResponseCode.StaffErrorInAssignment);
+                await _unitOfWork.StaffLockerRepository.DeleteRange(staffLockers);
             }
 
             var storeQuery =

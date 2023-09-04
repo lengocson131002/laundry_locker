@@ -31,8 +31,11 @@ public class OrderTimeoutJob : IJob
             return;
         }
         
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-        if (order == null || !order.IsInitialized)
+        var order = await _unitOfWork.OrderRepository
+            .Get(order => order.Id == orderId && (order.IsInitialized || order.IsReserved))
+            .FirstOrDefaultAsync();
+        
+        if (order == null)
         {
             return;
         }

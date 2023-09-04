@@ -11,6 +11,7 @@ using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 using LockerService.Infrastructure.Persistence;
 using LockerService.Infrastructure.Repositories;
+using LockerService.Infrastructure.Scheduler;
 using LockerService.Infrastructure.Services;
 using LockerService.Infrastructure.Services.Notifications;
 using LockerService.Infrastructure.Settings;
@@ -158,13 +159,14 @@ public static class ConfigureServices
         {
             // Define RabbitMQ consumer
             // Order events consumers
-            config.AddConsumer<OrderCreatedConsumer>();
+            config.AddConsumer<OrderInitializedConsumer>();
             config.AddConsumer<OrderProcessingConsumer>();
             config.AddConsumer<OrderConfirmedConsumer>();
             config.AddConsumer<OrderReturnedConsumer>();
             config.AddConsumer<OrderCompletedConsumer>();
             config.AddConsumer<OrderCanceledConsumer>();
             config.AddConsumer<OrderReservedConsumer>();
+            config.AddConsumer<OrderOvertimeConsumer>();
             
             // Locker events consumers
             config.AddConsumer<LockerConnectedConsumer>();
@@ -221,6 +223,16 @@ public static class ConfigureServices
                 
                 options.UseJsonSerializer();
             });
+            
+            // Cron jobs for order overtime jobs every hours 
+            var orderOvertimeJobKey = new JobKey(OrderOvertimeJob.OrderOvertimeJobKey);
+            q.AddJob<OrderOvertimeJob>(options => options.WithIdentity(orderOvertimeJobKey));
+
+            q.AddTrigger(options =>
+                options.ForJob(orderOvertimeJobKey)
+                    .WithIdentity($"{OrderOvertimeJob.OrderOvertimeJobKey}-trigger")
+                    .WithCronSchedule("0 0 * ? * * *", x => x.InTimeZone(TimeZoneInfo.Utc))
+            );
         });
 
         services.AddQuartzServer(options =>
@@ -290,6 +302,9 @@ public static class ConfigureServices
 
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<ServerSettings>>().Value);
 
+        // Token Service
+        services.AddScoped<ITokenService, TokenService>();
+        
         return services;
     }
 

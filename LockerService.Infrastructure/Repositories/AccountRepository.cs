@@ -64,4 +64,10 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
         return _dbContext.Accounts
             .Where(account => Equals(account.Role, Role.Customer));
     }
+
+    public IQueryable<Account> GetAdmins()
+    {
+        return _dbContext.Accounts
+            .Where(account => Equals(account.Role, Role.Admin));
+    }
 }

@@ -29,12 +29,10 @@ public class Box : BaseAuditableEntity
     
     [NotMapped]
     public Order? LastOrder { get; set; }
-    
-    [NotMapped]
+
     [Projectable]
-    public bool IsAvailable => IsActive && (LastOrder == null || (!OrderStatus.Initialized.Equals(LastOrder.Status)
-                                                                  && !OrderStatus.Waiting.Equals(LastOrder.Status)
-                                                                  && !OrderStatus.Returned.Equals(LastOrder.Status)));
+    public bool IsAvailable => IsActive && (LastOrder == null || !LastOrder.IsBusyOrder);
+
     public Box()
     {
         IsActive = true;

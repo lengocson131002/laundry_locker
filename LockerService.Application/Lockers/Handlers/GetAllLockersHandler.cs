@@ -49,7 +49,7 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
             (locker, boxGroup) => new
             {
                 Locker = locker,
-                BoxCount = boxGroup.Count(box => box.IsActive)
+                BoxCount = boxGroup.Count(box => !box.Deleted)
             });
 
         var count = await lockersQuery.CountAsync(cancellationToken);

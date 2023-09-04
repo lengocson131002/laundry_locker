@@ -1,6 +1,6 @@
 namespace LockerService.Application.Orders.Models;
 
-public class OrderItemResponse
+public class OrderItemResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
     
@@ -10,9 +10,4 @@ public class OrderItemResponse
     
     public decimal? Price { get; set; }
     
-    public DateTimeOffset CreatedAt { get; set; }
-    
-    public DateTimeOffset UpdatedAt { get; set; }
-    
-    public DateTimeOffset? DeletedAt { get; set; }
 }

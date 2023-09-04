@@ -3,6 +3,8 @@ using LockerService.Application.Common.Enums;
 using LockerService.Application.Lockers.Commands;
 using LockerService.Application.Lockers.Models;
 using LockerService.Application.Lockers.Queries;
+using LockerService.Application.Services.Models;
+using LockerService.Application.Services.Queries;
 
 namespace LockerService.API.Controllers;
 
@@ -37,6 +39,20 @@ public class LockerController : ApiControllerBase
         {
             LockerId = id
         };
+        return await Mediator.Send(query);
+    }
+    
+    [HttpGet("{id:long}/services")]
+    public async Task<ActionResult<PaginationResponse<Service, ServiceResponse>>> GetLockerServices([FromRoute] long id, [FromQuery] GetAllServicesQuery query)
+    {
+        query.LockerId = id;
+        
+        if (string.IsNullOrWhiteSpace(query.SortColumn))
+        {
+            query.SortColumn = "UpdatedAt";
+            query.SortDir = SortDirection.Desc;
+        }
+        
         return await Mediator.Send(query);
     }
 
@@ -129,4 +145,5 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    
 }

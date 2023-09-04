@@ -23,13 +23,15 @@ public class GetAllSettingsHandler : IRequestHandler<GetSettingsQuery,SettingsRe
         var orderSettingsTask = settingRepo.GetSettings<OrderSettings>();
         var zaloAuthSettingsTask = settingRepo.GetSettings<ZaloAuthSettings>();
         var timeSettingsTask = settingRepo.GetSettings<TimeSettings>();
-        
+        var lockerSettingsTask = settingRepo.GetSettings<LockerSettings>();
+
         await Task.WhenAll(
             infoSettingsTask, 
             accountSettingsTask, 
             orderSettingsTask, 
             zaloAuthSettingsTask,
-            timeSettingsTask);
+            timeSettingsTask,
+            lockerSettingsTask);
         
         return new SettingsResponse()
         {
@@ -37,7 +39,8 @@ public class GetAllSettingsHandler : IRequestHandler<GetSettingsQuery,SettingsRe
             AccountSettings = accountSettingsTask.Result,
             OrderSettings = orderSettingsTask.Result,
             ZaloAuthSettings = zaloAuthSettingsTask.Result,
-            TimeSettings = timeSettingsTask.Result
+            TimeSettings = timeSettingsTask.Result,
+            LockerSettings = lockerSettingsTask.Result
         };
     }
 }

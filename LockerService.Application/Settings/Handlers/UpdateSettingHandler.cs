@@ -55,6 +55,13 @@ public class UpdateSettingHandler : IRequestHandler<UpdateSettingsCommand, Setti
             settingsResponse.TimeSettings = timeSettings;
         }
 
+        if (request.LockerSettings != null)
+        {
+            var lockerSettings = _mapper.Map<LockerSettings>(request.LockerSettings);
+            await _settingService.UpdateSettings(lockerSettings, cancellationToken);
+            settingsResponse.LockerSettings = lockerSettings;
+        }
+
         return settingsResponse;
     }
 }

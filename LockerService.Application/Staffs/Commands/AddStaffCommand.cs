@@ -5,6 +5,7 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
     public AddStaffCommandValidator()
     {
         RuleFor(model => model.PhoneNumber)
+            .NotNull()
             .Must(phoneNumber => phoneNumber.IsValidPhoneNumber())
             .WithMessage("Invalid Phone Number");
 
@@ -12,10 +13,17 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
             .NotEmpty();
 
         RuleFor(model => model.Password)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(password => password.IsValidPassword())
+            .WithMessage("Invalid password");
 
         RuleFor(model => model.StoreId)
-            .NotNull();
+            .GreaterThan(0);
+        
+        RuleFor(model => model.Avatar)
+            .Must(image => image == null || image.IsValidUrl())
+            .WithMessage("Invalid image url");
+
     }
 }
 
@@ -24,12 +32,13 @@ public class AddStaffCommand : IRequest<StaffDetailResponse>
     [TrimString(true)]
     public string FullName { get; set; } = default!;
     
-    [TrimString(true)]
+    [NormalizePhone]
     public string PhoneNumber { get; set; } = default!;
    
     [TrimString(true)]
     public string? Avatar { get; set; }
 
+    [TrimString(true)]
     public string Password { get; set; } = default!;
 
     [TrimString(true)]

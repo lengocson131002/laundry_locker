@@ -1,6 +1,6 @@
 namespace LockerService.Application.Lockers.Models;
 
-public class LockerTimelineResponse
+public class LockerTimelineResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
     
@@ -16,7 +16,4 @@ public class LockerTimelineResponse
     
     public string? Error { get; set; }
     
-    public DateTimeOffset? CreatedAt { get; set; }
-    
-    public DateTimeOffset? UpdatedAt { get; set; }
 }

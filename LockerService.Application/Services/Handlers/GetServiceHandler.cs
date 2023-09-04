@@ -15,8 +15,10 @@ public class GetServiceHandler : IRequestHandler<GetServiceQuery, ServiceDetailR
 
     public async Task<ServiceDetailResponse> Handle(GetServiceQuery request, CancellationToken cancellationToken)
     {
-        var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
-        if (service == null)
+        var service = await _unitOfWork.ServiceRepository
+            .GetStoreService(request.StoreId, request.ServiceId);
+        
+        if (service is null)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);
         }

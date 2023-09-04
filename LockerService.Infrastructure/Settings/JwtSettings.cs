@@ -16,10 +16,10 @@ public class JwtSettings
     public string Audience { get; set; } = default!;
     
     [Required]
-    [Range(0, Int32.MaxValue)]
+    [Range(1, Int32.MaxValue)]
     public int TokenExpire { get; set; }
     
     [Required]
-    [Range(0, Int32.MaxValue)]
+    [Range(1, Int32.MaxValue)]
     public int RefreshTokenExpire { get; set; }
 }

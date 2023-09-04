@@ -23,16 +23,22 @@ public static class StringExtensions
         return !isRelative ? src.Contains(subString) : src.ToNormalize().Contains(subString.ToNormalize());
     }
 
+    /**
+     * Convert phone number to string starts with "+84"
+     */
     public static string ToVietnamesePhoneNumber(this string src)
     {
-        if (!src.IsValidPhoneNumber())
-        {
-            return string.Empty;
-        }
-
-        return Regex.Replace(src, "^(84|0)", "+84");
+        return Regex.Replace(src.Trim(), "^(84|0)", "+84");
     }
 
+    /**
+     * Convert phone number to string starts with "0"
+     */
+    public static string NormalizePhoneNumber(this string src)
+    {
+        return Regex.Replace(src.Trim(), "^(84|\\+84)", "0");
+    }
+    
     public static bool IsValidIpAddress(this string src)
     {
         if (src.Split(".").Length != 4)

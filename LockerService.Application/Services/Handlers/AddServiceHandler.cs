@@ -22,6 +22,13 @@ public class AddServiceHandler : IRequestHandler<AddServiceCommand, ServiceRespo
     {
         var service = _mapper.Map<Service>(request);
         
+        // Check store
+        var store = await _unitOfWork.StoreRepository.GetByIdAsync(request.StoreId);
+        if (store == null)
+        {
+            throw new ApiException(ResponseCode.StoreErrorNotFound);
+        }
+        
         // check exist name
         var query = await _unitOfWork.ServiceRepository.GetAsync(
             predicate: ser => ser.Name.Equals(service.Name)

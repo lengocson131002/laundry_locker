@@ -8,12 +8,12 @@ public class OrderSettings : ISetting
     
     public decimal StoragePrice { get; set; }
 
-    public float MaxTimeInHours { get; set; }
+    public int MaxTimeInHours { get; set; }
     
     public decimal ExtraFee { get; set; }
     
     public int MaxActiveOrderCount { get; set; }
-
+    
     public OrderSettings()
     {
         InitTimeoutInMinutes = 5;

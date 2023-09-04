@@ -15,4 +15,6 @@ public interface IAccountRepository : IBaseRepository<Account>
     public IQueryable<Account> GetStaffs();
 
     public IQueryable<Account> GetCustomers();
+
+    public IQueryable<Account> GetAdmins();
 }

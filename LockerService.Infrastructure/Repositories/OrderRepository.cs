@@ -1,15 +1,14 @@
 using LockerService.Application.Common.Persistence.Repositories;
+using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace LockerService.Infrastructure.Repositories;
 
 public class OrderRepository : BaseRepository<Order>, IOrderRepository
 {
-    private readonly ApplicationDbContext _dbContext;
-    
     private const string AllowedCharacters = "0123456789";
-    
+    private readonly ApplicationDbContext _dbContext;
+
     public OrderRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
         _dbContext = dbContext;
@@ -20,8 +19,8 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
         while (true)
         {
             var pinCode = GeneratePinCode(length);
-            var order =  await GetOrderByPinCode(pinCode).FirstOrDefaultAsync();
-            if (order  == null) return pinCode;
+            var order = await GetOrderByPinCode(pinCode).FirstOrDefaultAsync();
+            if (order == null) return pinCode;
         }
     }
 
@@ -42,22 +41,17 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
 
     public IQueryable<Order> GetOrders(DateTimeOffset? from, DateTimeOffset? to)
     {
-        return _dbContext.Orders.Where(order => (from == null || order.CreatedAt >= from) && (to == null || order.CreatedAt <= to));
+        return _dbContext.Orders.Where(order =>
+            (from == null || order.CreatedAt >= from) && (to == null || order.CreatedAt <= to));
     }
 
     public IQueryable<Order> GetOrders(long? storeId = null, long? lockerId = null, DateTimeOffset? from = null,
         DateTimeOffset? to = null)
     {
         var query = GetOrders(from, to);
-        if (storeId != null)
-        {
-            query = query.Where(order => order.Locker.StoreId == storeId);
-        }
+        if (storeId != null) query = query.Where(order => order.Locker.StoreId == storeId);
 
-        if (lockerId != null)
-        {
-            query = query.Where(order => order.LockerId == lockerId);
-        }
+        if (lockerId != null) query = query.Where(order => order.LockerId == lockerId);
 
         return query;
     }
@@ -65,8 +59,8 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
     public IQueryable<Order> GetOrder(long id)
     {
         return Get(
-            predicate: order => order.Id == id,
-            includes: new List<Expression<Func<Order, object>>>()
+            order => order.Id == id,
+            includes: new List<Expression<Func<Order, object>>>
             {
                 order => order.Locker,
                 order => order.Sender,
@@ -76,20 +70,32 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
                 order => order.Locker.Location,
                 order => order.Locker.Location.Ward,
                 order => order.Locker.Location.District,
-                order => order.Locker.Location.Province,
+                order => order.Locker.Location.Province
             });
+    }
+
+    public IQueryable<Order> GetOrderByPinCode(string pinCode, long lockerId)
+    {
+        return _dbContext.Orders
+            .Where(order => pinCode.Equals(order.PinCode) && Equals(order.LockerId, lockerId))
+            .Where(order => order.IsActive);
+    }
+
+    public IQueryable<Order> GetOvertimeOrders(int maxTimeInHours)
+    {
+        var now = DateTimeOffset.UtcNow;
+        return _dbContext.Orders
+            .Where(order => (Equals(order.Status, OrderStatus.Waiting) || Equals(order.Status, OrderStatus.Returned))
+                            && (now - order.CreatedAt).Hours >= maxTimeInHours);
     }
 
     private string GeneratePinCode(int length)
     {
         var rand = new Random();
-        
+
         var otp = string.Empty;
 
-        for (var i = 0; i < length; i++)
-        {
-            otp += AllowedCharacters[rand.Next(0, AllowedCharacters.Length)];
-        }
+        for (var i = 0; i < length; i++) otp += AllowedCharacters[rand.Next(0, AllowedCharacters.Length)];
 
         return otp;
     }

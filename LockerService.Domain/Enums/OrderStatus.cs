@@ -24,4 +24,7 @@ public enum OrderStatus
     
     [Description("Đã đặt chỗ")]
     Reserved,
+    
+    [Description("Overtime")]
+    Overtime
 }

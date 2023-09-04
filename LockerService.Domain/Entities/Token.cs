@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -22,7 +23,8 @@ public class Token : BaseAuditableEntity
     
     public DateTimeOffset? ExpiredAt { get; set; }
 
-    public bool IsExpired => ExpiredAt != null && ExpiredAt < DateTimeOffset.UtcNow;
+    [Projectable]
+    public bool IsExpired => Equals(Status, TokenStatus.Invalid) || (ExpiredAt != null && ExpiredAt < DateTimeOffset.UtcNow);
 
     public DeviceType? DeviceType { get; set; }
     

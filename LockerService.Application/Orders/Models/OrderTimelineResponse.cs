@@ -1,6 +1,6 @@
 namespace LockerService.Application.Orders.Models;
 
-public class OrderTimelineResponse
+public class OrderTimelineResponse: BaseAuditableEntityResponse
 {
     public long Id { get; set; }
     
@@ -9,11 +9,5 @@ public class OrderTimelineResponse
     public OrderStatus? PreviousStatus { get; set; }
     
     public string? Description { get; set; }
-    
-    public DateTimeOffset? CreatedAt { get; set; }
-    
-    public DateTimeOffset? UpdatedAt { get; set; }
-    
-    public DateTimeOffset? DeletedAt { get; set; }
     
 }

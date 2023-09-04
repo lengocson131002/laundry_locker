@@ -1,6 +1,6 @@
 namespace LockerService.Application.EventBus.RabbitMq.Events.Orders;
 
-public class OrderCreatedEvent : RabbitMqBaseEvent
+public class OrderInitializedEvent : RabbitMqBaseEvent
 {
     public long OrderId { get; set; }
     

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using LockerService.Application.Bills.Models;
 using LockerService.Application.Bills.Queries;
 using LockerService.Application.Common.Enums;
@@ -12,13 +13,13 @@ namespace LockerService.API.Controllers;
 public class OrderController : ApiControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<OrderResponse>> CreateOrder([FromBody] CreateOrderCommand command)
+    public async Task<ActionResult<OrderResponse>> CreateOrder([FromBody] InitializeOrderCommand command)
     {
         return await Mediator.Send(command);
     }
     
     [HttpPost("reservations")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public async Task<ActionResult<OrderResponse>> ReserveOrder([FromBody] ReserveOrderCommand command)
     {
         return await Mediator.Send(command);
@@ -104,9 +105,9 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpGet("pin-code/{pinCode}")]
-    public async Task<ActionResult<OrderDetailResponse>> GetOrder([FromRoute] string pinCode)
+    public async Task<ActionResult<OrderDetailResponse>> GetOrder([FromRoute] string pinCode, [FromHeader] [Required] long lockerId)
     {
-        var getOrderRequest = new GetOrderByPinCodeQuery(pinCode);
+        var getOrderRequest = new GetOrderByPinCodeQuery(pinCode, lockerId);
         return await Mediator.Send(getOrderRequest);
     }
     
@@ -156,6 +157,22 @@ public class OrderController : ApiControllerBase
     public async Task<ActionResult<OrderItemResponse>> AddOrderDetail([FromRoute] long id, [FromBody] AddOrderDetailCommand command)
     {
         command.OrderId = id;
+        return await Mediator.Send(command);
+    }
+
+    [HttpPost("{id:long}/items")]
+    [Authorize(Roles = "Staff")]
+    public async Task<ActionResult<LaundryItemResponse>> AddLaundryItem([FromRoute] long id, [FromBody] AddLaundryItemCommand command)
+    {
+        command.OrderId = id;
+        return await Mediator.Send(command);
+    }
+    
+    [HttpDelete("{id:long}/items/{itemId:long}")]
+    [Authorize(Roles = "Staff")]
+    public async Task<ActionResult<LaundryItemResponse>> RemoveLaundryItem([FromRoute] long id, [FromRoute] long itemId)
+    {
+        var command = new RemoveLaundryItemCommand(id, itemId);
         return await Mediator.Send(command);
     }
 }

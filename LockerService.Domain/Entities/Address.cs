@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace LockerService.Domain.Entities;
 
@@ -14,4 +15,15 @@ public class Address
     public string? Name { get; set; }
 
     public string? ParentCode { get; set; }
+
+    public override string ToString()
+    {
+        if (Name == null)
+        {
+            return string.Empty;
+        }
+
+        var regex = new Regex("^(Xã|Phường|Thị xã|Thị trấn|Huyện|Quận|Tỉnh|Thành phố)", RegexOptions.IgnoreCase);
+        return regex.Replace(Name, "");
+    }
 }

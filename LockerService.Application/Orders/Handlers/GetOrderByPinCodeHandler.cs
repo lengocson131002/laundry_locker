@@ -19,7 +19,7 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
 
     public async Task<OrderDetailResponse> Handle(GetOrderByPinCodeQuery request, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository.GetOrderByPinCode(request.PinCode)
+        var order = await _unitOfWork.OrderRepository.GetOrderByPinCode(request.PinCode, request.LockerId)
             .Include(order => order.Locker)
             .Include(order => order.SendBox)
             .Include(order => order.ReceiveBox)
@@ -34,6 +34,8 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
             .Include(order => order.Locker.Location.Ward)
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
+            .Include(order => order.DeliveryAddress)
+            .Include(order => order.Items)
             .FirstOrDefaultAsync(cancellationToken);
         
         if (order == null)

@@ -8,5 +8,9 @@ public class OrderDetailResponse : OrderResponse
 
     public IList<OrderItemResponse> Details { get; set; } = new List<OrderItemResponse>();
 
-    public BillResponse? Bill { get; set; } = default!;
+    public BillResponse? Bill { get; set; }
+    
+    public LocationResponse? DeliveryAddress { get; set; }
+
+    public IList<LaundryItemResponse> Items { get; set; } = new List<LaundryItemResponse>();
 }

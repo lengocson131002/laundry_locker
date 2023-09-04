@@ -13,7 +13,9 @@ public class ZaloAuthSettingCommandValidator : AbstractValidator<ZaloAuthSetting
 }
 public class ZaloAuthSettingsCommand
 {
+    [TrimString(true)]
     public string AccessToken { get; set; } = default!;
 
+    [TrimString(true)]
     public string RefreshToken { get; set; } = default!;
 }

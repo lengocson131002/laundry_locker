@@ -1,5 +1,3 @@
-using LockerService.Application.Orders.Queries;
-
 namespace LockerService.Application.Orders.Handlers;
 
 public class RemoveOrderDetailHandler : IRequestHandler<RemoveOrderDetailCommand, OrderItemResponse>
@@ -15,7 +13,11 @@ public class RemoveOrderDetailHandler : IRequestHandler<RemoveOrderDetailCommand
 
     public async Task<OrderItemResponse> Handle(RemoveOrderDetailCommand request, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(request.OrderId);
+        var order = await _unitOfWork.OrderRepository
+            .Get(order => order.Id == request.OrderId)
+            .Include(order => order.Details)
+            .FirstOrDefaultAsync(cancellationToken);
+        
         if (order == null)
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
@@ -37,6 +39,11 @@ public class RemoveOrderDetailHandler : IRequestHandler<RemoveOrderDetailCommand
         if (orderDetail == null)
         {
             throw new ApiException(ResponseCode.OrderDetailErrorNotFound);
+        }
+
+        if (order.Details.Count <= 1)
+        {
+            throw new ApiException(ResponseCode.OrderDetailErrorRequired);
         }
         
         await _unitOfWork.OrderDetailRepository.DeleteAsync(orderDetail);

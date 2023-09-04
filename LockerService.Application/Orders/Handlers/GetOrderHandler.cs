@@ -35,6 +35,8 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
             .Include(order => order.Locker.Location.Ward)
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
+            .Include(order => order.DeliveryAddress)
+            .Include(order => order.Items)
             .FirstOrDefaultAsync(cancellationToken);
         
         if (order == null)

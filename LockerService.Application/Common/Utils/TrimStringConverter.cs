@@ -12,7 +12,7 @@ public class TrimStringConverter : JsonConverter<string>
     {
         var value = reader.GetString();
         var trimmedValue = value?.Trim();
-        if (_nullIfEmpty && string.IsNullOrEmpty(trimmedValue))
+        if (_nullIfEmpty && string.IsNullOrWhiteSpace(trimmedValue))
         {
             return null;
         }

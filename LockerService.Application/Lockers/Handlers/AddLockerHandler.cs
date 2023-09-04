@@ -38,12 +38,6 @@ public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse
             throw new ApiException(ResponseCode.StoreErrorInvalidStatus);
         }
 
-        // Check name
-        if (await _unitOfWork.LockerRepository.FindByName(locker.Name) != null)
-        {
-            throw new ApiException(ResponseCode.LockerErrorExistedName);
-        }
-
         //location
         var location = request.Location;
         var provinceQuery =

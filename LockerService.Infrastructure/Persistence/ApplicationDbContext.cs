@@ -51,4 +51,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<StaffLocker> StaffLockers => Set<StaffLocker>();
 
     public DbSet<Token> Tokens => Set<Token>();
+
+    public DbSet<LaundryItem> LaundryItems => Set<LaundryItem>();
 }

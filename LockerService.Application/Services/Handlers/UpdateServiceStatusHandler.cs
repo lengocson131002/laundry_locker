@@ -13,7 +13,9 @@ public class UpdateServiceStatusHandler : IRequestHandler<UpdateServiceStatusCom
 
     public async Task Handle(UpdateServiceStatusCommand request, CancellationToken cancellationToken)
     {
-        var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
+        var service = await _unitOfWork.ServiceRepository
+            .GetStoreService(request.StoreId, request.ServiceId);
+        
         if (service is null)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);

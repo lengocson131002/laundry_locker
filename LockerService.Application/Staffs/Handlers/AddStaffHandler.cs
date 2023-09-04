@@ -60,6 +60,7 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
         await _rabbitMqBus.PublishAsync(new StaffCreatedEvent()
         {
             AccountId = staff.Id,
+            PhoneNumber = staff.PhoneNumber,
             Username = staff.Username,
             Password = staff.Password,
             FullName = staff.FullName,

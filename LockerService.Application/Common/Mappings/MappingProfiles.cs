@@ -37,7 +37,7 @@ public class MappingProfiles : Profile
         CreateMap<Location, LocationResponse>();
         
         // Order
-        CreateMap<CreateOrderCommand, Order>();
+        CreateMap<InitializeOrderCommand, Order>();
         CreateMap<Order, OrderResponse>();
         CreateMap<Order, BoxOrderResponse>();
         
@@ -50,6 +50,10 @@ public class MappingProfiles : Profile
         
         // Order timeline
         CreateMap<OrderTimeline, OrderTimelineResponse>();
+        
+        // Order laundry items 
+        CreateMap<LaundryItem, LaundryItemResponse>();
+        CreateMap<AddLaundryItemCommand, LaundryItem>();
         
         // Account
         CreateMap<Account, AccountResponse>();
@@ -71,6 +75,7 @@ public class MappingProfiles : Profile
         CreateMap<OrderSettingsCommand, OrderSettings>();
         CreateMap<ZaloAuthSettingsCommand, ZaloAuthSettings>();
         CreateMap<TimeSettingsCommand, TimeSettings>();
+        CreateMap<LockerSettingsCommand, LockerSettings>();
         
         // Notifications
         CreateMap<Notification, NotificationModel>();

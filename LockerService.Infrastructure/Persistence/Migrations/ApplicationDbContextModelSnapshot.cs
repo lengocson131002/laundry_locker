@@ -264,6 +264,52 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.ToTable("Hardware");
                 });
 
+            modelBuilder.Entity("LockerService.Domain.Entities.LaundryItem", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("LandryItem");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Location", b =>
                 {
                     b.Property<long>("Id")
@@ -524,6 +570,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<long?>("DeletedBy")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("DeliveryAddressId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -581,6 +630,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BillId");
+
+                    b.HasIndex("DeliveryAddressId");
 
                     b.HasIndex("LockerId");
 
@@ -725,6 +776,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<long>("StoreId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Unit")
                         .HasColumnType("text");
 
@@ -735,6 +789,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Service");
                 });
@@ -841,6 +897,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.Property<long?>("DeletedBy")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<string>("Image")
                         .HasColumnType("text");
@@ -966,6 +1025,17 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Locker");
                 });
 
+            modelBuilder.Entity("LockerService.Domain.Entities.LaundryItem", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Order", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Location", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Address", "District")
@@ -1040,6 +1110,10 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("BillId");
 
+                    b.HasOne("LockerService.Domain.Entities.Location", "DeliveryAddress")
+                        .WithMany()
+                        .HasForeignKey("DeliveryAddressId");
+
                     b.HasOne("LockerService.Domain.Entities.Locker", "Locker")
                         .WithMany("Orders")
                         .HasForeignKey("LockerId")
@@ -1073,6 +1147,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasForeignKey("StaffId");
 
                     b.Navigation("Bill");
+
+                    b.Navigation("DeliveryAddress");
 
                     b.Navigation("Locker");
 
@@ -1115,6 +1191,17 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.Service", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Store", "Store")
+                        .WithMany("Services")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.StaffLocker", b =>
@@ -1191,12 +1278,16 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("Details");
 
+                    b.Navigation("Items");
+
                     b.Navigation("Timelines");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Store", b =>
                 {
                     b.Navigation("Lockers");
+
+                    b.Navigation("Services");
 
                     b.Navigation("Staffs");
                 });

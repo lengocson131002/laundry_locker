@@ -40,6 +40,8 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     private INotificationRepository? _notificationRepository;
     
+    private ILaundryItemRepository? _laundryItemRepository;
+    
     private readonly ApplicationDbContext _dbContext;
 
     private readonly IServiceScopeFactory _scopeFactory;
@@ -88,4 +90,6 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     public INotificationRepository NotificationRepository =>
         _notificationRepository ??= new NotificationRepository(_dbContext);
+
+    public ILaundryItemRepository LaundryItemRepository => _laundryItemRepository ??= new LaundryItemRepository(_dbContext);
 }

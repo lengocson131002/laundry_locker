@@ -38,4 +38,7 @@ public class ZaloZnsTemplates
 
     [Required]
     public string OrderCanceled { get; set; } = default!;
+
+    [Required]
+    public string OrderOvertime { get; set; } = default!;
 }

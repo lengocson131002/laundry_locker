@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using LockerService.Application.Common.Services;
+using LockerService.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using JwtClaims = LockerService.Application.Common.Constants.JwtClaims;
@@ -10,32 +11,17 @@ namespace LockerService.Infrastructure.Services;
 
 public class JwtService : IJwtService
 {
-    private readonly string _jwtKey;
 
-    private readonly int _tokenExpireInMinutes;            
+    private readonly JwtSettings _jwtSettings;
 
-    private readonly int _refreshTokenExpireInMinutes;
-
-    private readonly string? _issuer;
-
-    private readonly string? _audience;
-
-    public JwtService(IConfiguration configuration)
+    public JwtService(IConfiguration configuration, JwtSettings jwtSettings)
     {
-        _jwtKey = configuration["Jwt:Key"] ?? throw new ArgumentException("Jwt:Key is required");
-        _issuer = configuration["Jwt:Issuer"];
-        _audience = configuration["Jwt:Audience"];
-
-        var tokenExpireInMinutes = configuration["Jwt:TokenExpire"];
-        _tokenExpireInMinutes = tokenExpireInMinutes != null ? int.Parse(tokenExpireInMinutes) : 5;
-        
-        var refreshTokenExpireInMinutes = configuration["Jwt:RefreshTokenExpire"];
-        _refreshTokenExpireInMinutes = refreshTokenExpireInMinutes != null ? int.Parse(refreshTokenExpireInMinutes) : 30;
+        _jwtSettings = jwtSettings;
     }
 
     private string GenerateJwtToken(Account account, int expireInMinutes)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -46,8 +32,8 @@ public class JwtService : IJwtService
         };
 
         var token = new JwtSecurityToken(
-            _issuer,
-            _audience,
+            _jwtSettings.Issuer,
+            _jwtSettings.Audience,
             claims,
             expires: DateTime.UtcNow.AddMinutes(expireInMinutes),
             signingCredentials: credentials
@@ -58,12 +44,12 @@ public class JwtService : IJwtService
     
     public string GenerateJwtToken(Account account)
     {
-        return GenerateJwtToken(account, _tokenExpireInMinutes);
+        return GenerateJwtToken(account, _jwtSettings.TokenExpire);
     }
 
     public string GenerateJwtRefreshToken(Account account)
     {
-        return GenerateJwtToken(account, _refreshTokenExpireInMinutes);
+        return GenerateJwtToken(account, _jwtSettings.RefreshTokenExpire);
     }
 
     public string RevokeJwtRefreshToken(Account account)

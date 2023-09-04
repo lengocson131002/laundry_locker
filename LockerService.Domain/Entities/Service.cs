@@ -23,4 +23,8 @@ public class Service : BaseAuditableEntity
     public ServiceStatus Status { get; set; } = ServiceStatus.Active;
     
     public bool IsActive => ServiceStatus.Active.Equals(Status);
+    
+    public long StoreId { get; set; }
+
+    public Store Store { get; set; } = default!;
 }

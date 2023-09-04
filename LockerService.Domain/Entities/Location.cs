@@ -29,4 +29,9 @@ public class Location : BaseAuditableEntity
     public long WardId { get; set; }
 
     public Address Ward { get; set; } = default!;
+
+    public override string ToString()
+    {
+        return $"{Address}, {Ward}, {District}, {Province}";
+    }
 }
