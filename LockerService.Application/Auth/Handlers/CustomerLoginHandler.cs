@@ -44,6 +44,10 @@ public class CustomerLoginHandler : IRequestHandler<CustomerLoginRequest, TokenR
         otp.Status = TokenStatus.Invalid;
         await _unitOfWork.TokenRepository.UpdateAsync(otp);
 
+        // Update account status
+        account.Status = AccountStatus.Active;
+        await _unitOfWork.AccountRepository.UpdateAsync(account); 
+            
         await _unitOfWork.SaveChangesAsync();
 
         var token = _jwtService.GenerateJwtToken(account);
