@@ -19,4 +19,6 @@ public class NotificationModel : BaseAuditableEntityResponse
     public DateTimeOffset? ReadAt { get; set; }
     
     public bool IsRead => ReadAt != null;
+    
+    public NotificationLevel Level { get; set; }
 }

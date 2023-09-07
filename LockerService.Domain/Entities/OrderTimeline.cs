@@ -20,4 +20,5 @@ public class OrderTimeline : BaseAuditableEntity
     
     [Column(TypeName = "text")]
     public string? Description { get; set; }
+    
 }

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.Notifications.Commands;
 
@@ -24,14 +25,114 @@ public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
         var notification = new Notification()
         {
             Type = request.Type,
-            Content = "Test notification",
+            Content = request.Type.GetDescription(),
             EntityType = EntityType.Account,
             AccountId = account.Id,
             Account = account,
-            Data = request.Data,
+            Data = GetNotificationData(request.Type),
             Saved = false
         };
 
         await _notifier.NotifyAsync(notification);
+    }
+
+    private string? GetNotificationData(NotificationType notificationType)
+    {
+        var store = new Store()
+        {
+            Id = 1,
+            Image =
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Marks_%26_Spencer_original_penny_bazaar_%2824th_June_2013%29.jpg/800px-Marks_%26_Spencer_original_penny_bazaar_%2824th_June_2013%29.jpg",
+            Name = "Store 1",
+            Status = StoreStatus.Active,
+            ContactPhone = "0367537978",
+            Description = "Cửa hàng 1",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
+        };
+
+
+        var locker = new Locker()
+        {
+            Id = 1,
+            Image = "https://noithathoaphat123.com/data/Product/tu984-3k_1666769082.jpg",
+            Description = "Locker Chung cư Vinhome",
+            Name = "Locker Chung cư Vinhome",
+            Status = LockerStatus.Active,
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
+            Code = "LO1690875462",
+            IpAddress = "192.168.1.5",
+            MacAddress = "cc:2f:71:00:9c:9e",
+            Store = store
+        };
+
+        var box2 = new Box()
+        {
+            Id = 1,
+            Number = 2,
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
+            IsActive = true
+        };
+
+        var account1 = new Account()
+        {
+            Id = 1,
+            Status = AccountStatus.Active,
+            Role = Role.Customer,
+            Username = "0367537978",
+            FullName = "Lê Ngọc Sơn",
+            PhoneNumber = "0367537978",
+            Avatar = "https://noithathoaphat123.com/data/Product/tu984-3k_1666769082.jpg",
+        };
+        
+        var account2 = new Account()
+        {
+            Id = 1,
+            Status = AccountStatus.Active,
+            Role = Role.Customer,
+            Username = "0367537978",
+            FullName = "Lê Ngọc Sơn",
+            PhoneNumber = "0367537978",
+            Avatar = "https://noithathoaphat123.com/data/Product/tu984-3k_1666769082.jpg",
+        };
+
+        var order = new Order()
+        {
+            Id = 2,
+            SendBox = box2,
+            Sender = account1,
+            Receiver = account2,
+            Type = OrderType.Laundry,
+            Status = OrderStatus.Waiting,
+            Price = 10,
+            Discount = 0,
+            ExtraCount = 10,
+            ExtraFee = 4000,
+            CancelReason = OrderCancelReason.Timeout,
+            PinCode = "562486",
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow,
+            Locker = locker,
+        };
+        
+        switch (notificationType)
+        {
+            case NotificationType.LockerConnected:
+            case NotificationType.LockerDisconnected:
+            case NotificationType.LockerBoxOverloaded:
+            case NotificationType.LockerBoxWarning:
+                return JsonSerializer.Serialize(locker, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+            
+            case NotificationType.OrderCreated:
+            case NotificationType.OrderCanceled:
+            case NotificationType.OrderCompleted:
+            case NotificationType.OrderReturned:
+            case NotificationType.OrderOverTime:
+                return JsonSerializer.Serialize(order, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+        }
+
+        return string.Empty;
     }
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -23,10 +24,13 @@ public class Store : BaseAuditableEntity
     
     public bool IsActive => Equals(StoreStatus.Active, Status);
 
+    [JsonIgnore]
     public IList<Account> Staffs { get; set; }
     
+    [JsonIgnore]
     public IList<Locker> Lockers { get; set; }
     
+    [JsonIgnore]
     public IList<Service> Services { get; set; }
 
     public string? Description { get; set; }

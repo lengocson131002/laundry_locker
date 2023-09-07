@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -14,6 +15,7 @@ public class Account : BaseAuditableEntity
     
     public string PhoneNumber { get; set; } = default!;
 
+    [JsonIgnore]
     public string? Password { get; set; }
 
     public Role Role { get; set; }
@@ -31,14 +33,18 @@ public class Account : BaseAuditableEntity
     
     public Store? Store { get; set; }
     
+    [JsonIgnore]
     public IList<StaffLocker> StaffLockers { get; private set; } = new List<StaffLocker>();
 
+    [JsonIgnore]
     [InverseProperty(nameof(Order.Sender))]
     public IList<Order> SendOrders { get; set; } = new List<Order>();
     
+    [JsonIgnore]
     [InverseProperty(nameof(Order.Receiver))]
     public IList<Order> ReceiveOrders { get; set; } = new List<Order>();
 
+    [JsonIgnore]
     public IList<Locker> Lockers { get; set; } = new List<Locker>();
 
     public bool IsActive => Equals(AccountStatus.Active, Status);

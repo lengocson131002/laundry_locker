@@ -52,4 +52,11 @@ public class NotificationController : ApiControllerBase
         var command = new RemoveNotificationCommand(id);
         return await Mediator.Send(command);
     }
+
+    [HttpGet("unread-count")]
+    [Authorize]
+    public async Task<ActionResult<UnreadNotificationCountResponse>> CountUnread([FromQuery] GetUnreadNotificationCountQuery query)
+    {
+        return await Mediator.Send(query);
+    }
 }

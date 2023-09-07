@@ -9,7 +9,7 @@ public class AddStoreCommandValidator : AbstractValidator<AddStoreCommand>
             .NotEmpty();
 
         RuleFor(model => model.ContactPhone)
-            .Must(contactPhone => contactPhone.IsValidPhoneNumber())
+            .Must(contactPhone => contactPhone == null || contactPhone.IsValidPhoneNumber())
             .WithMessage("Invalid Contact Phone")
             .NotEmpty();
 

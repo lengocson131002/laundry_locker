@@ -38,32 +38,36 @@ public class Notifier : INotifier
         // Account notifications
         _provider.Attach(NotificationType.AccountOtpCreated, new List<INotificationService>()
         {
-            smsNotificationService
+            
+            webNotificationService,
+            // smsNotificationService,
         });
         
         _provider.Attach(NotificationType.AccountStaffCreated, new List<INotificationService>()
         {
-            smsNotificationService
+            webNotificationService,
+            // smsNotificationService
         });
         
         
         // Order notifications
         _provider.Attach(NotificationType.OrderCreated, new List<INotificationService>()
         {
+            webNotificationService,
             mobileNotificationService,
-            smsNotificationService
+            // smsNotificationService
         });
         
         _provider.Attach(NotificationType.OrderReturned, new List<INotificationService>()
         {
             mobileNotificationService,
-            smsNotificationService
+            // smsNotificationService
         });
         
         _provider.Attach(NotificationType.OrderCanceled, new List<INotificationService>()
         {
             mobileNotificationService,
-            smsNotificationService
+            // smsNotificationService
         });
         
         _provider.Attach(NotificationType.OrderCompleted, new List<INotificationService>()
@@ -74,7 +78,7 @@ public class Notifier : INotifier
         _provider.Attach(NotificationType.OrderOverTime, new List<INotificationService>()
         {
             mobileNotificationService,
-            smsNotificationService
+            // smsNotificationService
         });
         
         // Locker notification
@@ -90,11 +94,13 @@ public class Notifier : INotifier
         
         _provider.Attach(NotificationType.LockerBoxOverloaded, new List<INotificationService>()
         {
+            webNotificationService,
             mobileNotificationService
         });
         
         _provider.Attach(NotificationType.LockerBoxWarning, new List<INotificationService>()
         {
+            webNotificationService,
             mobileNotificationService
         });
     }
