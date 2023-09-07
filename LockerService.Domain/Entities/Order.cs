@@ -66,13 +66,10 @@ public class Order : BaseAuditableEntity
 
     public Bill? Bill { get; set; }
 
-    [JsonIgnore]
     public IList<OrderTimeline> Timelines { get; set; } = new List<OrderTimeline>();
 
-    [JsonIgnore]
     public IList<OrderDetail> Details { get; set; } = new List<OrderDetail>();
 
-    [JsonIgnore]
     public IList<LaundryItem> Items { get; set; } = new List<LaundryItem>();
 
     [Projectable]
