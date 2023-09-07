@@ -26,12 +26,6 @@ public class Locker : BaseAuditableEntity
     [Column(TypeName = "text")]
     public string? Description { get; set; }
     
-    public IList<Hardware> Hardwares { get; private set; } = new List<Hardware>();
-
-    public IList<LockerTimeline> Timelines { get; private set; } = new List<LockerTimeline>();
-  
-    public IList<StaffLocker> StaffLockers { get; private set; } = new List<StaffLocker>();
-
     public Store Store { get; set; } = default!;
     
     public long StoreId { get; set; }
@@ -39,11 +33,24 @@ public class Locker : BaseAuditableEntity
     public string? MacAddress { get; set; }
     
     public string? IpAddress { get; set; }
+    
+    [JsonIgnore]
+    public IList<Hardware> Hardwares { get; private set; } = new List<Hardware>();
+    
+    [JsonIgnore]
+    public IList<LockerTimeline> Timelines { get; private set; } = new List<LockerTimeline>();
+    
+    [JsonIgnore]
+    public IList<StaffLocker> StaffLockers { get; private set; } = new List<StaffLocker>();
 
+
+    [JsonIgnore]
     public IList<Account> Staffs { get; set; } = new List<Account>();
 
+    [JsonIgnore]
     public IList<Box> Boxes { get; set; } = new List<Box>();
 
+    [JsonIgnore]
     public IList<Order> Orders { get; set; } = new List<Order>();
 
     public bool CanUpdateStatus => !Equals(LockerStatus.Initialized, Status) 

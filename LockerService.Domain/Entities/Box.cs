@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
@@ -21,9 +22,11 @@ public class Box : BaseAuditableEntity
 
     public Locker Locker { get; set; } = default!;
 
+    [JsonIgnore]
     [InverseProperty(nameof(Order.SendBox))]
     public IList<Order> SendOrders { get; set; } = new List<Order>();
-    
+
+    [JsonIgnore]
     [InverseProperty(nameof(Order.ReceiveBox))]
     public IList<Order> ReceiveOrders { get; set; } = new List<Order>();
     

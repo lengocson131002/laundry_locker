@@ -27,7 +27,9 @@ public class GetAllNotificationsHandler : IRequestHandler<GetAllNotificationsQue
         }
 
         request.AccountId = currentAccountId;
-
+        request.SortDir = SortDirection.Desc;
+        request.SortColumn = "CreatedAt";
+        
         var notificationQuery = await _unitOfWork.NotificationRepository.GetAsync(
             predicate: request.GetExpressions(),
             orderBy: request.GetOrder());
