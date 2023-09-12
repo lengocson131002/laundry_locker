@@ -21,7 +21,7 @@ public class GetDashboardOrderHandler : IRequestHandler<DashboardOrderQuery, Das
 
         var revenue = await orderQuery
             .Where(order => order.IsCompleted)
-            .SumAsync(order => order.TotalPrice ?? 0, cancellationToken);
+            .SumAsync(order => order.TotalPrice, cancellationToken);
         
         var completedTypes = await orderQuery
             .Where(order => order.IsCompleted)
@@ -30,7 +30,7 @@ public class GetDashboardOrderHandler : IRequestHandler<DashboardOrderQuery, Das
             {
                 Type = groupItem.Key,
                 Count = groupItem.Count(),
-                Revenue = groupItem.Sum(order => order.TotalPrice ?? 0)
+                Revenue = groupItem.Sum(order => order.TotalPrice)
             }).ToListAsync(cancellationToken);
         
         foreach (var type in Enum.GetValues(typeof(OrderType)).Cast<OrderType>())
@@ -74,8 +74,9 @@ public class GetDashboardOrderHandler : IRequestHandler<DashboardOrderQuery, Das
             Count = groupItem.Count(),
             Revenue = groupItem
                 .Where(order => order.IsCompleted)
-                .Sum(order => order.TotalPrice ?? 0)
+                .Sum(order => order.TotalPrice)
         }).ToListAsync(cancellationToken);
+        
         foreach (var type in Enum.GetValues(typeof(OrderType)).Cast<OrderType>())
         {
             if (!orderTypes.Any(item => Equals(item.Type, type)))

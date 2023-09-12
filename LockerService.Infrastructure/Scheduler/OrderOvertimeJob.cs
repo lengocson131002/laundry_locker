@@ -14,14 +14,12 @@ public class OrderOvertimeJob : IJob
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<OrderTimeoutJob> _logger;
     private readonly IRabbitMqBus _rabbitMqBus;
-    private readonly ISettingService _settingService;
-
-    public OrderOvertimeJob(IUnitOfWork unitOfWork, ILogger<OrderTimeoutJob> logger, IRabbitMqBus rabbitMqBus, ISettingService settingService)
+    private readonly int _numberOfOrder = 100;
+    public OrderOvertimeJob(IUnitOfWork unitOfWork, ILogger<OrderTimeoutJob> logger, IRabbitMqBus rabbitMqBus)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _rabbitMqBus = rabbitMqBus;
-        _settingService = settingService;
     }
 
     public async Task Execute(IJobExecutionContext context)
@@ -29,10 +27,10 @@ public class OrderOvertimeJob : IJob
         _logger.LogInformation("Scan overtime orders");
         
         // Get all overtime orders
-        var orderSettings = await _settingService.GetSettings<OrderSettings>();
         var overtimeOrders = await _unitOfWork
             .OrderRepository
-            .GetOvertimeOrders(orderSettings.MaxTimeInHours)
+            .GetOvertimeOrders()
+            .Take(_numberOfOrder)
             .Include(order => order.SendBox)
             .Include(order => order.ReceiveBox)
             .Include(order => order.Sender)
@@ -54,9 +52,9 @@ public class OrderOvertimeJob : IJob
             await _unitOfWork.OrderRepository.UpdateAsync(order);
             await _unitOfWork.SaveChangesAsync();
 
-            await _rabbitMqBus.PublishAsync(new OrderOvertimeEvent()
+            await _rabbitMqBus.PublishAsync(new OrderUpdatedStatusEvent()
             {
-                Id = order.Id,
+                OrderId = order.Id,
                 Status = order.Status,
                 PreviousStatus = currentStatus
             });

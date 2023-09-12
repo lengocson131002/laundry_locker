@@ -4,17 +4,11 @@ public interface IAccountRepository : IBaseRepository<Account>
 {
     public Task<Account?> GetStaffById(long id);
 
-    public Task<Account?> GetStaffByPhoneNumber(string phoneNumber);
-
-    public Task<Account?> GetCustomerByUsername(string username);
-    
     public Task<Account?> GetCustomerByPhoneNumber(string phoneNumber);
 
-    public Task<Account?> GetCustomerById(long id);
+    public IQueryable<Account> GetStaffs(long? storeId = null, Role? role = null, bool? isActive = null);
 
-    public IQueryable<Account> GetStaffs();
+    public IQueryable<Account> GetCustomers(bool? isActive = null);
 
-    public IQueryable<Account> GetCustomers();
-
-    public IQueryable<Account> GetAdmins();
+    public IQueryable<Account> GetByUsername(string username);
 }

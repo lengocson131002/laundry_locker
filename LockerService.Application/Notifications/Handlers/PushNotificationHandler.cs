@@ -46,7 +46,7 @@ public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
             Name = "Store 1",
             Status = StoreStatus.Active,
             ContactPhone = "0367537978",
-            Description = "Cửa hàng 1",
+            Description = "Cửa hàng 1", 
             CreatedAt = DateTimeOffset.UtcNow,
             UpdatedAt = DateTimeOffset.UtcNow,
         };
@@ -106,9 +106,8 @@ public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
             Receiver = account2,
             Type = OrderType.Laundry,
             Status = OrderStatus.Waiting,
-            Price = 10,
+            StoragePrice = 10000,
             Discount = 0,
-            ExtraCount = 10,
             ExtraFee = 4000,
             CancelReason = OrderCancelReason.Timeout,
             PinCode = "562486",
@@ -119,17 +118,17 @@ public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
         
         switch (notificationType)
         {
-            case NotificationType.LockerConnected:
-            case NotificationType.LockerDisconnected:
-            case NotificationType.LockerBoxOverloaded:
-            case NotificationType.LockerBoxWarning:
+            case NotificationType.SystemLockerConnected:
+            case NotificationType.SystemLockerDisconnected:
+            case NotificationType.SystemLockerBoxOverloaded:
+            case NotificationType.SystemLockerBoxWarning:
                 return JsonSerializer.Serialize(locker, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
             
-            case NotificationType.OrderCreated:
-            case NotificationType.OrderCanceled:
-            case NotificationType.OrderCompleted:
-            case NotificationType.OrderReturned:
-            case NotificationType.OrderOverTime:
+            case NotificationType.CustomerOrderCreated:
+            case NotificationType.CustomerOrderCanceled:
+            case NotificationType.CustomerOrderCompleted:
+            case NotificationType.CustomerOrderReturned:
+            case NotificationType.CustomerOrderOverTime:
                 return JsonSerializer.Serialize(order, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
         }
 

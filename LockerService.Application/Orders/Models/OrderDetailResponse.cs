@@ -12,5 +12,4 @@ public class OrderDetailResponse : OrderResponse
     
     public LocationResponse? DeliveryAddress { get; set; }
 
-    public IList<LaundryItemResponse> Items { get; set; } = new List<LaundryItemResponse>();
 }

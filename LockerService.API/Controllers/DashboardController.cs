@@ -1,3 +1,4 @@
+using LockerService.API.Attributes;
 using LockerService.Application.Dashboard.Models;
 using LockerService.Application.Dashboard.Queries;
 
@@ -6,6 +7,7 @@ namespace LockerService.API.Controllers;
 [ApiController]
 [Route("/api/v1/dashboard")]
 [Authorize(Roles = "Admin")]
+[ApiKey]
 public class DashboardController : ApiControllerBase
 {
     [HttpGet("overview")]

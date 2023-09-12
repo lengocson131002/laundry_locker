@@ -30,9 +30,9 @@ public class StaffCreatedConsumer : IConsumer<StaffCreatedEvent>
         var notification = new Notification()
         {
             Account = staffAccount,
-            Type = NotificationType.AccountStaffCreated,
+            Type = NotificationType.SystemStaffCreated,
             EntityType = EntityType.Account,
-            Content = NotificationType.AccountStaffCreated.GetDescription(),
+            Content = NotificationType.SystemStaffCreated.GetDescription(),
             Data = string.Empty,
             Saved = false,
             ReferenceId = eventMessage.AccountId.ToString()

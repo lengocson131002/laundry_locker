@@ -8,7 +8,9 @@ public class AddLaundryItemCommandValidator : AbstractValidator<AddLaundryItemCo
             .NotNull();
 
         RuleFor(model => model.Image)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(image => image.IsValidUrl())
+            .WithMessage("Invalid image url");
 
         RuleFor(model => model.Description)
             .MaximumLength(250)
@@ -20,6 +22,10 @@ public class AddLaundryItemCommand : IRequest<LaundryItemResponse>
     [JsonIgnore]
     [BindNever]
     public long OrderId { get; set; }
+    
+    [JsonIgnore]
+    [BindNever]
+    public long OrderDetailId { get; set; }
     
     public ClothType? Type { get; set; }
 

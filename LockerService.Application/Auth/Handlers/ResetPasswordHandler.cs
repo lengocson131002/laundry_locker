@@ -1,3 +1,5 @@
+using LockerService.Application.Common.Security;
+
 namespace LockerService.Application.Auth.Handlers;
 
 public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, StatusResponse>
@@ -27,7 +29,7 @@ public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, Status
         // update password
         var account = token.Account;
         account.Status = AccountStatus.Active;
-        account.Password = request.Password;
+        account.Password = BCryptUtils.Hash(request.Password);
         await _unitOfWork.AccountRepository.UpdateAsync(account);
         
         // Invalidate token

@@ -20,7 +20,7 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Orde
         
         if (order == null) throw new ApiException(ResponseCode.OrderErrorNotFound);
 
-        if (!order.IsProcessing)
+        if (!order.IsCollected && !order.IsProcessing)
         {
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
@@ -48,6 +48,11 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Orde
             Price = service.Price
         };
         await _unitOfWork.OrderDetailRepository.AddAsync(orderDetail);
+        
+        // Update order status to processing
+        order.Status = OrderStatus.Processing;
+        await _unitOfWork.OrderRepository.UpdateAsync(order);
+        
         await _unitOfWork.SaveChangesAsync();
 
         return _mapper.Map<OrderItemResponse>(orderDetail);

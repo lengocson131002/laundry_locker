@@ -17,7 +17,7 @@ public class BoxRepository : BaseRepository<Box>, IBoxRepository
     public async Task<Box?> FindBox(long lockerId, int number)
     {
         return await _dbContext.Boxes
-            .FirstOrDefaultAsync(box => box.LockerId == lockerId && box.Number == number && !box.Deleted);
+            .FirstOrDefaultAsync(box => box.LockerId == lockerId && box.Number == number);
     }
 
     public async Task<Box?> FindAvailableBox(long lockerId)
@@ -42,7 +42,7 @@ public class BoxRepository : BaseRepository<Box>, IBoxRepository
     private IQueryable<Box> GetAllBoxesQueryable(long lockerId)
     {
         return _dbContext.Boxes
-            .Where(box => box.LockerId == lockerId && !box.Deleted)
+            .Where(box => box.LockerId == lockerId)
             .OrderBy(box => box.Number)
             .GroupJoin(
                 _dbContext.Orders
@@ -54,7 +54,6 @@ public class BoxRepository : BaseRepository<Box>, IBoxRepository
                 {
                     Id = box.Id,
                     Number = box.Number,
-                    PinNo = box.PinNo,
                     IsActive = box.IsActive,
                     CreatedAt = box.CreatedAt,
                     UpdatedAt = box.UpdatedAt,

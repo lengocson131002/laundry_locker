@@ -61,6 +61,6 @@ public class FirebaseNotificationService : IMobileNotificationService
             _logger.LogError($"[MOBILE NOTIFICATION] Error when push notification: {exception.Message}");
         }
             
-        _logger.LogInformation("[[MOBILE NOTIFICATION]] Handle firebase notification: {0}", JsonSerializer.Serialize(firebaseNotificationData));
+        _logger.LogInformation("[[MOBILE NOTIFICATION]] Handle firebase notification: {0}", notification.Id);
     }
 }

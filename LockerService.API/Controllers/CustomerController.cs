@@ -1,3 +1,4 @@
+using LockerService.API.Attributes;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Customers.Commands;
 using LockerService.Application.Customers.Models;
@@ -7,6 +8,7 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/customers")]
+[ApiKey]
 public class CustomerController : ApiControllerBase
 {
     [HttpGet]

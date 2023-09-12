@@ -71,7 +71,6 @@ public class ZnsNotificationService : ISmsNotificationService
         using var scope = _serviceScopeFactory.CreateScope();
         var serviceProvider = scope.ServiceProvider;
         var settingService = serviceProvider.GetRequiredService<ISettingService>();
-        var orderService = serviceProvider.GetRequiredService<IOrderService>();
             
         var account = notification.Account;
         if (account == null)
@@ -93,7 +92,7 @@ public class ZnsNotificationService : ISmsNotificationService
                     }
                 };
             
-            case NotificationType.AccountStaffCreated:
+            case NotificationType.SystemStaffCreated:
                 return new BaseZaloZnsRequest()
                 {
                     Phone = toPhoneNumber,
@@ -103,11 +102,11 @@ public class ZnsNotificationService : ISmsNotificationService
                         staff_name = account.FullName,
                         username = account.Username,
                         password = account.Password,
-                        role = account.Role.ToString(),
+                        role = account.Role.GetDescription(),
                     }
                 };
             
-            case NotificationType.OrderCreated:
+            case NotificationType.CustomerOrderCreated:
                 var createdOrder = JsonSerializer.Deserialize<Order>(
                     notification.Data ?? string.Empty, 
                     JsonSerializerUtils.GetGlobalJsonSerializerOptions());
@@ -148,7 +147,7 @@ public class ZnsNotificationService : ISmsNotificationService
                     }
                 };
             
-            case  NotificationType.OrderCanceled:
+            case  NotificationType.CustomerOrderCanceled:
                 var canceledOrder = JsonSerializer.Deserialize<Order>(
                     notification.Data ?? string.Empty, 
                     JsonSerializerUtils.GetGlobalJsonSerializerOptions());
@@ -179,7 +178,7 @@ public class ZnsNotificationService : ISmsNotificationService
                     }
                 };
             
-            case  NotificationType.OrderReturned:
+            case  NotificationType.CustomerOrderReturned:
                 var returnedOrder = JsonSerializer.Deserialize<Order>(
                     notification.Data ?? string.Empty,
                     JsonSerializerUtils.GetGlobalJsonSerializerOptions());
@@ -201,10 +200,7 @@ public class ZnsNotificationService : ISmsNotificationService
                 
                 var orderSettings = await settingService.GetSettings<OrderSettings>();
                 var timeSettings = await settingService.GetSettings<TimeSettings>();
-                var extraAt = returnedOrder.CreatedAt.AddHours(orderSettings.MaxTimeInHours);
-
-                await orderService.CalculateFree(returnedOrder);
-                
+    
                 return new BaseZaloZnsRequest()
                 {
                     Phone = toPhoneNumber,
@@ -216,17 +212,16 @@ public class ZnsNotificationService : ISmsNotificationService
                         order_type = returnedOrder.Type.GetDescription(),
                         order_status = returnedOrder.Status.GetDescription(),
                         pin_code = returnedOrder.PinCode,
-                        order_price = returnedOrder.Price 
-                                      ?? throw new Exception("[Zalo ZNS] Order price is required "),
+                        order_price = returnedOrder.Price,
                         order_detail = returnOrderDetailDescription,
-                        extra_at = extraAt.ToString(timeSettings.TimeZone, DateTimeConstants.DateTimeFormat),
+                        extra_at = returnedOrder.IntendedOvertime.Value.ToString(timeSettings.TimeZone, DateTimeConstants.DateTimeFormat),
                         extra_fee = orderSettings.ExtraFee,
                         locker_name = returnedOrderLocker.Name,
                         locker_address = returnedOrderLocker.Location.ToString()
                     }
                 };
             
-            case NotificationType.OrderOverTime:
+            case NotificationType.CustomerOrderOverTime:
                 var overtimeOrder = JsonSerializer.Deserialize<Order>(
                     notification.Data ?? string.Empty,
                     JsonSerializerUtils.GetGlobalJsonSerializerOptions());
@@ -242,8 +237,6 @@ public class ZnsNotificationService : ISmsNotificationService
                 var overtimeOrderDetails = Equals(overtimeOrder.Type, OrderType.Laundry)
                     ? string.Join(", ", overtimeOrder.Details.Select(item => item.Service.Name))
                     : "None";
-                
-                await orderService.CalculateFree(overtimeOrder);
                 
                 return new BaseZaloZnsRequest()
                 {
@@ -358,6 +351,5 @@ public class BaseZaloZnsRequest
 
     [JsonPropertyName("template_data")]
     public object TemplatedData { get; set; } = default!;
-
 
 }

@@ -1,12 +1,13 @@
+using LockerService.API.Attributes;
 using LockerService.Application.Settings.Commands;
 using LockerService.Application.Settings.Models;
 using LockerService.Application.Settings.Queries;
-using Twilio.Rest.Insights.V1;
 
 namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/settings")]
+[ApiKey]
 public class SettingController : ApiControllerBase
 {
     [HttpGet]

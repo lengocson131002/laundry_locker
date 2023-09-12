@@ -20,7 +20,7 @@ public class GetDashboardRevenueHandler : IRequestHandler<DashboardRevenueQuery,
             {
                 Month = item.Key,
                 OrderCount = item.Count(),
-                Revenue = item.Sum(order => order.TotalPrice ?? 0)
+                Revenue = item.Sum(order => order.TotalPrice)
             }).ToListAsync(cancellationToken);
 
         foreach (var month in Enumerable.Range(1, 12))

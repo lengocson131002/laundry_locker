@@ -38,8 +38,6 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, BillRe
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
 
-        await _orderService.CalculateFree(order);
-        
         var bill = Bill.CreateBill(order, command.Method);
         
         /*

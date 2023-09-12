@@ -8,7 +8,9 @@ public class UpdatePasswordCommandValidator : AbstractValidator<UpdatePasswordCo
             .NotEmpty();
 
         RuleFor(model => model.NewPassword)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(pass => pass.IsValidPassword())
+            .WithMessage("Invalid password format");
 
         RuleFor(model => model.ConfirmPassword)
             .Equal(model => model.NewPassword)

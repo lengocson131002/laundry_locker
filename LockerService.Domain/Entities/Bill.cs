@@ -15,23 +15,28 @@ public class Bill : BaseAuditableEntity
     
     public decimal Amount { get; set; }
 
+    public decimal Prepaid { get; set; }
+    
     public PaymentMethod Method { get; set; }
     
     public string? Content { get; set; }
     
     public string? ReferenceTransactionId { get; set; }
+    
+    public string? Qr { get; set; }
+    
+    public string? CheckoutUrl { get; set; }
+
 
     public static Bill CreateBill(Order order, PaymentMethod method)
     {
-        if (order.TotalPrice == null)
-        {
-            throw new Exception("Order was not completed");
-        }
-        
         return new Bill()
         {
             ReferenceOrderId = order.Id,
-            Amount = order.TotalPrice.Value,
+            Prepaid = order.ReservationFee,
+            Amount = order.Price
+                     + (decimal)order.ExtraCount * order.ExtraFee
+                     - order.Discount,
             Method = method,
             Content = Equals(order.Type, OrderType.Storage) 
                 ? BillConstants.BillContentStorageOrder 

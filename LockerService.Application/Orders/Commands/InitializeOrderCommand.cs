@@ -1,6 +1,3 @@
-using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Utils;
-
 namespace LockerService.Application.Orders.Commands;
 
 public class InitializeOrderCommandValidation : AbstractValidator<InitializeOrderCommand>
@@ -31,6 +28,10 @@ public class InitializeOrderCommandValidation : AbstractValidator<InitializeOrde
         RuleFor(model => model.DeliveryAddress)
             .SetInheritanceValidator(v => v.Add(new AddLocationCommandValidator()))
             .When(model => model.DeliveryAddress != null);
+
+        RuleFor(model => model.IntendedReceiveAt)
+            .NotNull()
+            .GreaterThan(DateTimeOffset.Now);
     }
 
     public bool UniqueServices(IList<long> serviceIds)
@@ -58,7 +59,7 @@ public class InitializeOrderCommand : IRequest<OrderResponse>
     
     public OrderType Type { get; set; }
     
-    [NormalizePhone]
+    [NormalizePhone(true)]
     public string SenderPhone { get; set;  } = default!;
 
     [NormalizePhone(true)]
@@ -67,4 +68,8 @@ public class InitializeOrderCommand : IRequest<OrderResponse>
     public IList<long> ServiceIds { get; set; } = new List<long>();
     
     public LocationCommand? DeliveryAddress { get; set; }
+    
+    public DateTimeOffset IntendedReceiveAt { get; set; }
+
+    public bool IsReserving { get; set; } = false;
 }

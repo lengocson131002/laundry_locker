@@ -1,4 +1,7 @@
+using LockerService.API.Attributes;
+using LockerService.API.Common;
 using LockerService.Application.Auth.Queries;
+using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Common.Constants;
 using LockerService.Infrastructure.Settings;
 
@@ -6,40 +9,14 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/auth")]
+[ApiKey]
 public class AuthController : ApiControllerBase
 {
-    private readonly IConfiguration _configuration;
     private readonly JwtSettings _jwtSettings;
 
-    public AuthController(IConfiguration configuration, JwtSettings jwtSettings)
+    public AuthController(JwtSettings jwtSettings)
     {
-        _configuration = configuration;
         _jwtSettings = jwtSettings;
-    }
-
-    /**
-     * ADMIN AUTH CONTROLLERS
-     */
-    [HttpPost("admin/login")]
-    [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> LoginAdmin([FromBody] AdminLoginRequest request)
-    {
-        var response = await Mediator.Send(request);
-        return response;
-    }
-
-    [HttpGet("admin/profile")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<AccountResponse>> GetAdminProfile()
-    {
-        return await Mediator.Send(new GetAdminProfileQuery());
-    }
-
-    [HttpPut("admin/profile")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<AccountResponse>> UpdateAdminProfile([FromBody] UpdateAdminProfileCommand command)
-    {
-        return await Mediator.Send(command);
     }
 
     /**
@@ -54,10 +31,17 @@ public class AuthController : ApiControllerBase
     }
 
     [HttpGet("staff/profile")]
-    [Authorize(Roles = "Staff")]
+    [AuthorizeRoles(Role.Admin, Role.Shipper, Role.Manager, Role.LaundryAttendant)]
     public async Task<ActionResult<AccountResponse>> GetStaffProfile()
     {
         return await Mediator.Send(new GetStaffProfileQuery());
+    }
+    
+    [HttpPut("staff/profile")]
+    [AuthorizeRoles(Role.Admin, Role.Shipper, Role.Manager, Role.LaundryAttendant)]
+    public async Task<ActionResult<AccountResponse>> UpdateProfile([FromBody] UpdateStaffProfileCommand command)
+    {
+        return await Mediator.Send(command);
     }
     
     /**
@@ -79,12 +63,19 @@ public class AuthController : ApiControllerBase
     }
 
     [HttpGet("customer/profile")]
-    [Authorize(Roles = "Customer")]
+    [AuthorizeRoles(Role.Customer)]
     public async Task<ActionResult<AccountResponse>> GetCustomerProfile()
     {
         return await Mediator.Send(new GetCustomerProfileQuery());
     }
     
+    [HttpPut("customer/profile")]
+    [AuthorizeRoles(Role.Customer)]
+    public async Task<ActionResult<AccountResponse>> UpdateCustomerProfile([FromBody] UpdateCustomerProfileCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
     [HttpPost("refresh")]
     [AllowAnonymous]
     public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)

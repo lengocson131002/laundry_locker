@@ -20,7 +20,7 @@ public class CustomerVerifyHandler : IRequestHandler<CustomerVerifyRequest, OtpR
 
     public async Task<OtpResponse> Handle(CustomerVerifyRequest request, CancellationToken cancellationToken)
     {
-        var account = await _unitOfWork.AccountRepository.GetCustomerByUsername(request.PhoneNumber);
+        var account = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(request.PhoneNumber);
         if (account is not null && !Equals(account.Status, AccountStatus.Active))
         {
             throw new ApiException(ResponseCode.AuthErrorAccountInactive);

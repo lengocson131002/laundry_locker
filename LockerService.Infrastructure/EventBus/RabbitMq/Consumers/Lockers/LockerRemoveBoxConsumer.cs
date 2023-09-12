@@ -31,7 +31,7 @@ public class LockerRemoveBoxConsumer : IConsumer<LockerRemoveBoxEvent>
             return;
         }
 
-        box.DeletedAt = DateTimeOffset.UtcNow;
+        box.IsActive = false;
         await _unitOfWork.BoxRepository.UpdateAsync(box);
         await _unitOfWork.SaveChangesAsync();
     }

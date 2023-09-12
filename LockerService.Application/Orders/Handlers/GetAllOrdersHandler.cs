@@ -20,14 +20,14 @@ public class GetAllOrdersHandler : IRequestHandler<GetAllOrdersQuery, Pagination
         var currentLoggedInUser = await _currentAccountService.GetCurrentAccount();
         if (currentLoggedInUser != null)
         {
-            if (Equals(currentLoggedInUser.Role, Role.Staff))
+            if (currentLoggedInUser.IsStoreStaff)
             {
                 /*
-                 * Get orders in staff' store
+                 * Get orders in staffs' store
                  */
                 request.StoreId = currentLoggedInUser.StoreId;
 
-            } else if (Equals(currentLoggedInUser.Role, Role.Customer))
+            } else if (currentLoggedInUser.IsCustomer)
             {
                 /*
                  * Get only customer's orders

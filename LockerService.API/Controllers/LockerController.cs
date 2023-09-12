@@ -10,6 +10,7 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/lockers")]
+[ApiKey]
 public class LockerController : ApiControllerBase
 {
     [HttpPost]
@@ -20,6 +21,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<PaginationResponse<Locker, LockerResponse>>> GetAllLockers(
         [FromQuery] GetAllLockersQuery query)
     {
@@ -33,6 +35,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpGet("{id:long}")]
+    [Authorize]
     public async Task<ActionResult<LockerDetailResponse>> GetLocker([FromRoute] long id)
     {
         var query = new GetLockerQuery

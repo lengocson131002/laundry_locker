@@ -1,15 +1,19 @@
 using System.ComponentModel.DataAnnotations;
+using LockerService.API.Attributes;
+using LockerService.API.Common;
 using LockerService.Application.Bills.Models;
 using LockerService.Application.Bills.Queries;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Orders.Commands;
 using LockerService.Application.Orders.Models;
 using LockerService.Application.Orders.Queries;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/orders")]
+[ApiKey]
 public class OrderController : ApiControllerBase
 {
     [HttpPost]
@@ -18,15 +22,8 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(command);
     }
     
-    [HttpPost("reservations")]
-    [Authorize(Roles = "Customer")]
-    public async Task<ActionResult<OrderResponse>> ReserveOrder([FromBody] ReserveOrderCommand command)
-    {
-        return await Mediator.Send(command);
-    }
-
     [HttpPut("{id:long}")]
-    [Authorize(Roles = "Staff")]
+    [AuthorizeRoles(Role.LaundryAttendant)]
     public async Task<ActionResult<OrderResponse>> UpdateOrder([FromRoute] long id, [FromBody] UpdateOrderCommand request)
     {
         request.Id = id;
@@ -46,27 +43,48 @@ public class OrderController : ApiControllerBase
     [HttpPut("{id:long}/confirm")]
     public async Task<ActionResult<OrderResponse>> ConfirmOrder([FromRoute] long id)
     {
-        var confirmOrderRequest = new ConfirmOrderCommand
+        var command = new UpdateOrderStatusCommand()
         {
-            Id = id
+            OrderId = id,
+            OrderStatus = OrderStatus.Waiting
         };
 
-        return await Mediator.Send(confirmOrderRequest);
+        return await Mediator.Send(command);
+    }
+    
+    [HttpPut("{id:long}/collect")]
+    [AuthorizeRoles(Role.Shipper)]
+    public async Task<ActionResult<OrderResponse>> CollectOrder([FromRoute] long id)
+    {
+        var command = new UpdateOrderStatusCommand()
+        {
+            OrderId = id,
+            OrderStatus = OrderStatus.Collected
+        };
+        return await Mediator.Send(command);
     }
 
     [HttpPut("{id:long}/process")]
-    [Authorize(Roles = "Staff")]
+    [AuthorizeRoles(Role.LaundryAttendant)]
     public async Task<ActionResult<OrderResponse>> ProcessOrder([FromRoute] long  id)
     {
-        var command = new ProcessOrderCommand(id);
+        var command = new UpdateOrderStatusCommand()
+        {
+            OrderId = id,
+            OrderStatus = OrderStatus.Processed
+        };
         return await Mediator.Send(command);
     }
 
     [HttpPut("{id:long}/return")]
-    [Authorize(Roles = "Staff")]
+    [AuthorizeRoles(Role.Shipper)]
     public async Task<ActionResult<OrderResponse>> ReturnOrder([FromRoute] long id)
     {
-        var command = new ReturnOrderCommand(id);
+        var command = new UpdateOrderStatusCommand()
+        {
+            OrderId = id,
+            OrderStatus = OrderStatus.Returned
+        };
         return await Mediator.Send(command);
     }
     
@@ -133,7 +151,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpDelete("{id:long}/details/{detailId:long}")]
-    [Authorize(Roles = "Staff")]
+    [AuthorizeRoles(Role.LaundryAttendant)]
     public async Task<ActionResult<OrderItemResponse>> RemoveOrderDetail([FromRoute] long id, [FromRoute] long detailId)
     {
         var request = new RemoveOrderDetailCommand(id, detailId);
@@ -141,7 +159,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpPut("{id:long}/details/{detailId:long}")]
-    [Authorize(Roles = "Staff")]
+    [AuthorizeRoles(Role.LaundryAttendant)]
     public async Task<ActionResult<OrderItemResponse>> UpdateOrderDetail(
         [FromRoute] long id, 
         [FromRoute] long detailId,
@@ -153,26 +171,33 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpPost("{id:long}/details")]
-    [Authorize(Roles = "Staff")]
+    [AuthorizeRoles(Role.LaundryAttendant)]
     public async Task<ActionResult<OrderItemResponse>> AddOrderDetail([FromRoute] long id, [FromBody] AddOrderDetailCommand command)
     {
         command.OrderId = id;
         return await Mediator.Send(command);
     }
 
-    [HttpPost("{id:long}/items")]
-    [Authorize(Roles = "Staff")]
-    public async Task<ActionResult<LaundryItemResponse>> AddLaundryItem([FromRoute] long id, [FromBody] AddLaundryItemCommand command)
+    [HttpPost("{id:long}/details/{detailId:long}/items")]
+    [AuthorizeRoles(Role.LaundryAttendant)]
+    public async Task<ActionResult<LaundryItemResponse>> AddLaundryItem(
+        [FromRoute] long id, 
+        [FromRoute] long detailId,
+        [FromBody] AddLaundryItemCommand command)
     {
         command.OrderId = id;
+        command.OrderDetailId = detailId;
         return await Mediator.Send(command);
     }
     
-    [HttpDelete("{id:long}/items/{itemId:long}")]
-    [Authorize(Roles = "Staff")]
-    public async Task<ActionResult<LaundryItemResponse>> RemoveLaundryItem([FromRoute] long id, [FromRoute] long itemId)
+    [HttpDelete("{id:long}/details/{detailId:long}/items/{itemId:long}")]
+    [AuthorizeRoles(Role.LaundryAttendant)]
+    public async Task<ActionResult<LaundryItemResponse>> RemoveLaundryItem(
+        [FromRoute] long id, 
+        [FromRoute] long detailId, 
+        [FromRoute] long itemId)
     {
-        var command = new RemoveLaundryItemCommand(id, itemId);
+        var command = new RemoveLaundryItemCommand(id, detailId, itemId);
         return await Mediator.Send(command);
     }
 }

@@ -17,23 +17,7 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
     {
         var accountQuery = await GetAsync(account =>
             Equals(account.Id, id)
-            && Equals(account.Role, Role.Staff));
-        return accountQuery.FirstOrDefault();
-    }
-
-    public async Task<Account?> GetStaffByPhoneNumber(string phoneNumber)
-    {
-        var accountQuery = await GetAsync(account =>
-            Equals(account.PhoneNumber, phoneNumber)
-            && Equals(account.Role, Role.Staff));
-        return accountQuery.FirstOrDefault();
-    }
-
-    public async Task<Account?> GetCustomerByUsername(string username)
-    {
-        var accountQuery = await GetAsync(account =>
-            Equals(account.Username, username)
-            && Equals(account.Role, Role.Customer));
+            && Equals(account.Role, Role.LaundryAttendant));
         return accountQuery.FirstOrDefault();
     }
 
@@ -45,29 +29,28 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
         return accountQuery.FirstOrDefault();
     }
 
-    public async Task<Account?> GetCustomerById(long id)
+    public IQueryable<Account> GetStaffs(long? storeId, Role? role = null, bool? isActive = null)
     {
-        var accountQuery = await GetAsync(account =>
-            Equals(account.Id, id)
-            && Equals(account.Role, Role.Customer));
-        return accountQuery.FirstOrDefault();
+        var staffQuery = _dbContext.Accounts
+            .Where(account => (storeId == null || account.StoreId == storeId) && (isActive == null || account.IsActive == isActive));
+
+        if (role != null)
+        {
+            return staffQuery.Where(acc => acc.Role == role);
+        }
+
+        return staffQuery;
     }
 
-    public IQueryable<Account> GetStaffs()
+    public IQueryable<Account> GetCustomers(bool? isActive = null)
     {
         return _dbContext.Accounts
-            .Where(account => Equals(account.Role, Role.Staff));
+            .Where(account => Equals(account.Role, Role.Customer) && (isActive == null || account.IsActive == isActive));
     }
 
-    public IQueryable<Account> GetCustomers()
+    public IQueryable<Account> GetByUsername(string username)
     {
         return _dbContext.Accounts
-            .Where(account => Equals(account.Role, Role.Customer));
-    }
-
-    public IQueryable<Account> GetAdmins()
-    {
-        return _dbContext.Accounts
-            .Where(account => Equals(account.Role, Role.Admin));
+            .Where(account => Equals(account.Username, username));
     }
 }

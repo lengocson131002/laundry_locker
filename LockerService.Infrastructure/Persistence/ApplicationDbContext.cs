@@ -1,21 +1,39 @@
+using LockerService.Infrastructure.Common.Extensions;
+using Microsoft.EntityFrameworkCore.Metadata;
+
 namespace LockerService.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     
     private readonly AuditableEntitySaveChangesInterceptor _saveChangesInterceptor;
+    private readonly SoftDeleteInterceptor _softDeleteInterceptor;
     
     public ApplicationDbContext(
-        DbContextOptions<ApplicationDbContext> options, AuditableEntitySaveChangesInterceptor saveChangesInterceptor) : base(options)
+        DbContextOptions<ApplicationDbContext> options, AuditableEntitySaveChangesInterceptor saveChangesInterceptor, SoftDeleteInterceptor softDeleteInterceptor) : base(options)
     {
         _saveChangesInterceptor = saveChangesInterceptor;
+        _softDeleteInterceptor = softDeleteInterceptor;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.AddInterceptors(_saveChangesInterceptor);
+        // .AddInterceptors(_softDeleteInterceptor);
     }
 
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        // {
+        //     if (typeof(BaseAuditableEntity).IsAssignableFrom(entityType.ClrType))
+        //     {
+        //         entityType.AddSoftDeleteQueryFilter();
+        //     }
+        // }
+    }
+    
     public DbSet<Account> Accounts => Set<Account>();
     
     public DbSet<Address> Addresses => Set<Address>();

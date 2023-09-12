@@ -15,12 +15,7 @@ public class CustomerLoginHandler : IRequestHandler<CustomerLoginRequest, TokenR
 
     public async Task<TokenResponse> Handle(CustomerLoginRequest request, CancellationToken cancellationToken)
     {
-        var accountQuery = await _unitOfWork.AccountRepository.GetAsync(
-            predicate: account => Equals(account.Username, request.PhoneNumber)
-                                  && Equals(account.Role, Role.Customer)
-        );
-
-        var account = accountQuery.FirstOrDefault();
+        var account = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(request.PhoneNumber);
         if (account is null)
         {
             throw new ApiException(ResponseCode.AuthErrorInvalidUsernameOrOtp);

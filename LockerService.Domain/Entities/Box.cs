@@ -14,8 +14,6 @@ public class Box : BaseAuditableEntity
     
     public int Number { get; set; }
     
-    public int? PinNo { get; set; }
-
     public bool IsActive { get; set; }
     
     public long LockerId { get; set; }

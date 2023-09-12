@@ -21,7 +21,7 @@ public class ApiKeyAttribute : Attribute, IAsyncActionFilter
         if (!apiKeyVal.Equals(apiSettings.Key))
         {
             context.HttpContext.Response.StatusCode = 401;
-            await context.HttpContext.Response.WriteAsync("Unauthorized client");
+            await context.HttpContext.Response.WriteAsync("Invalid API key");
             return;
         }
 

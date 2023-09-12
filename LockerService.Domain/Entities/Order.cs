@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
@@ -35,6 +34,13 @@ public class Order : BaseAuditableEntity
 
     public Account? Receiver { get; set; }
 
+    // Thời gian nhận dự kiến
+    public DateTimeOffset IntendedReceiveAt { get; set; }
+
+    // Thời gian quá hạn dự kiến
+    public DateTimeOffset? IntendedOvertime { get; set; }
+
+    // Thời gian nhận thật sự
     public DateTimeOffset? ReceiveAt { get; set; }
 
     public OrderStatus Status { get; set; } = OrderStatus.Initialized;
@@ -49,36 +55,80 @@ public class Order : BaseAuditableEntity
 
     public Account? Staff { get; set; }
 
-    public decimal? Price { get; set; }
+    // Phí quá giờ / 1 giờ đối với dịch vụ giặt sấy
+    public decimal ExtraFee { get; set; }
 
-    public float? ExtraCount { get; set; }
+    // Phí nếu là dịch vụ gửi đồ
+    public decimal StoragePrice { get; set; }
 
-    public decimal? ExtraFee { get; set; }
+    // Giảm giá
+    public decimal Discount { get; set; } // Giảm giá
 
-    public decimal? Discount { get; set; }
+    // Phí đặt cọc trước
+    public decimal ReservationFee { get; set; }
+
+    // Thời gian quá giờ đối với dịch vụ giặt sấy
+    public float ExtraCount
+    {
+        get
+        {
+            var now = DateTimeOffset.Now;
+
+            if (IsStorage || now < IntendedOvertime || IntendedOvertime == null)
+            {
+                return 0;
+            }
+
+            var extraTimespan = now - IntendedOvertime.Value;
+            var extraInHours = (float)extraTimespan.TotalMinutes / 60;
+            return (float)Math.Round(extraInHours, 2, MidpointRounding.AwayFromZero);
+        }
+    }
+
+    // Tổng chi phí dịch vụ
+    public decimal Price
+    {
+        get
+        {
+            if (IsStorage)
+            {
+                var now = DateTimeOffset.Now;
+                var orderDuration = now - CreatedAt;
+                var durationInHours = (float)Math.Round(orderDuration.TotalMinutes / 60.0, 2, MidpointRounding.AwayFromZero);;
+                return (decimal) Math.Max(1, durationInHours) * StoragePrice;
+            }
+
+            if (!UpdatedInfo)
+            {
+                return 0;
+            }
+
+            return Details.Sum(item => item.Quantity != null 
+                ? item.Price * (decimal) item.Quantity.Value 
+                : 0);
+        }
+    }
+
+    public decimal TotalPrice { get; set; }
 
     public string? Description { get; set; }
 
-    public long? BillId { get; set; }
-
     public long? DeliveryAddressId { get; set; }
+
+    // Địa chỉ giao trả đồ nếu có
     public Location? DeliveryAddress { get; set; }
+
+    public long? BillId { get; set; }
 
     public Bill? Bill { get; set; }
 
     public IList<OrderTimeline> Timelines { get; set; } = new List<OrderTimeline>();
 
     public IList<OrderDetail> Details { get; set; } = new List<OrderDetail>();
-
-    public IList<LaundryItem> Items { get; set; } = new List<LaundryItem>();
-
-    [Projectable]
-    public decimal? TotalPrice => Price != null
-        ? Price.Value + (decimal)(ExtraCount ?? 0) * (ExtraFee ?? 0) - (Discount ?? 0)
-        : null;
+    
 
     [Projectable] 
-    public bool IsFinished => OrderStatus.Canceled.Equals(Status) || OrderStatus.Completed.Equals(Status);
+    public bool IsFinished => IsCanceled || IsCompleted;
 
     [Projectable] 
     public bool IsCompleted => OrderStatus.Completed.Equals(Status);
@@ -88,25 +138,34 @@ public class Order : BaseAuditableEntity
 
     [Projectable] 
     public bool IsReserved => OrderStatus.Reserved.Equals(Status);
-    
+
     [Projectable] 
     public bool IsWaiting => OrderStatus.Waiting.Equals(Status);
 
     [Projectable] 
-    public bool IsProcessing => OrderStatus.Processing.Equals(Status);
+    public bool IsCollected => OrderStatus.Collected.Equals(Status);
 
+    [Projectable] 
+    public bool IsProcessing => OrderStatus.Processing.Equals(Status);
+    
     [Projectable] 
     public bool IsReturned => OrderStatus.Returned.Equals(Status);
 
     [Projectable] 
     public bool IsOvertime => OrderStatus.Overtime.Equals(Status);
 
+    [Projectable]
+    public bool IsCanceled => OrderStatus.Canceled.Equals(Status);
+
+    [Projectable]
+    public bool IsProcessed => OrderStatus.Processed.Equals(Status);
+    
     /**
      * Order status, at which staff can process laundry order 
      * WAITING || RETURNED
      */
-    [Projectable] 
-    public bool CanProcess => OrderType.Laundry.Equals(Type) && (IsWaiting || IsReturned);
+    [Projectable]
+    public bool CanProcess => OrderType.Laundry.Equals(Type) && IsWaiting;
 
     /**
      * Order status, at which customer can checkout 
@@ -119,24 +178,61 @@ public class Order : BaseAuditableEntity
                                || (OrderType.Laundry.Equals(Type) && IsReturned)
                                || IsOvertime;
 
-    public bool UpdatedInfo => OrderType.Storage.Equals(Type) || Details.Any() && Details.All(item => item.Quantity != null);
-
-    public bool UpdatedItems => OrderType.Storage.Equals(Type) || Items.Any();
+    public bool UpdatedInfo => OrderType.Storage.Equals(Type) || (Details.Any() && Details.All(detail => detail.Quantity != null));
 
     /**
      * Order status, which is current active
-     * INITIALIZED || WAITING || RESERVED || PROCESSING || RETURNED || OVERTIME
      */
     [Projectable]
     public bool IsActive => !IsFinished;
 
     /**
-     * Order status, which takes box in the locker
-     * INITIALIZED || WAITING || RESERVED || RETURNED || OVERTIME
+     * Order status, which takes a box in the locker
      */
     [Projectable]
-    public bool IsBusyOrder => !IsFinished && !IsProcessing;
-
-    [Projectable]
+    public bool IsBusyOrder => IsInitialized || IsWaiting || IsReturned || IsOvertime;
+    
+    [Projectable] 
     public bool DeliverySupported => DeliveryAddressId != null;
+
+    [NotMapped] 
+    [Projectable]
+    public bool IsLaundry => Equals(OrderType.Laundry, Type);
+
+    [NotMapped] 
+    [Projectable]
+    public bool IsStorage => Equals(OrderType.Storage, Type);
+
+    public bool CanUpdateStatus(OrderStatus status)
+    {
+        if (Equals(status, OrderStatus.Initialized) || Equals(status, OrderStatus.Reserved))
+        {
+            return false;
+        }
+        
+        switch (status)
+        {
+            case OrderStatus.Waiting:
+                return IsInitialized;
+        
+            case OrderStatus.Collected:
+                return IsLaundry && IsWaiting;
+        
+            case OrderStatus.Processing:
+                return IsLaundry && IsCollected;
+            
+            case OrderStatus.Processed:
+                return IsLaundry && IsProcessing && UpdatedInfo;
+        
+            case OrderStatus.Returned:
+                return IsLaundry && IsProcessed;
+        
+            case OrderStatus.Completed:
+                return (OrderType.Storage.Equals(Type) && IsWaiting)
+                       || (OrderType.Laundry.Equals(Type) && IsReturned)
+                       || IsOvertime;
+            default:
+                return true;
+        }
+    }
 }

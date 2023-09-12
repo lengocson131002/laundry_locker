@@ -22,21 +22,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AccountLocker", b =>
-                {
-                    b.Property<long>("LockersId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("StaffsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("LockersId", "StaffsId");
-
-                    b.HasIndex("StaffsId");
-
-                    b.ToTable("AccountLocker");
-                });
-
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
                     b.Property<long>("Id")
@@ -66,7 +51,11 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("text");
 
+                    b.Property<long?>("LockerId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
@@ -93,6 +82,10 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("LockerId");
 
                     b.HasIndex("StoreId");
 
@@ -132,6 +125,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("CheckoutUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
@@ -150,6 +146,12 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Method")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("Prepaid")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Qr")
+                        .HasColumnType("text");
+
                     b.Property<long>("ReferenceOrderId")
                         .HasColumnType("bigint");
 
@@ -163,6 +165,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.ToTable("Bill");
                 });
@@ -196,9 +200,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("PinNo")
-                        .HasColumnType("integer");
-
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -206,6 +207,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("LockerId");
 
@@ -259,6 +262,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("LockerId");
 
                     b.ToTable("Hardware");
@@ -291,7 +296,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("OrderId")
+                    b.Property<long>("OrderDetailId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Type")
@@ -305,7 +310,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("OrderDetailId");
 
                     b.ToTable("LandryItem");
                 });
@@ -358,6 +365,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("DistrictId");
 
@@ -425,6 +434,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("LocationId");
 
                     b.HasIndex("StoreId");
@@ -484,6 +495,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("LockerId");
 
                     b.ToTable("LockerTimeline");
@@ -541,6 +554,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("AccountId");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Notification");
                 });
 
@@ -576,14 +591,17 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<decimal?>("Discount")
+                    b.Property<decimal>("Discount")
                         .HasColumnType("numeric");
 
-                    b.Property<float?>("ExtraCount")
-                        .HasColumnType("real");
-
-                    b.Property<decimal?>("ExtraFee")
+                    b.Property<decimal>("ExtraFee")
                         .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset?>("IntendedOvertime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("IntendedReceiveAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long>("LockerId")
                         .HasColumnType("bigint");
@@ -594,9 +612,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("PinCodeIssuedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal?>("Price")
-                        .HasColumnType("numeric");
-
                     b.Property<DateTimeOffset?>("ReceiveAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -605,6 +620,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.Property<long?>("ReceiverId")
                         .HasColumnType("bigint");
+
+                    b.Property<decimal>("ReservationFee")
+                        .HasColumnType("numeric");
 
                     b.Property<long>("SendBoxId")
                         .HasColumnType("bigint");
@@ -618,6 +636,12 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("StoragePrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -630,6 +654,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BillId");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("DeliveryAddressId");
 
@@ -668,6 +694,9 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<long?>("DeletedBy")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
@@ -687,6 +716,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("OrderId");
 
@@ -718,11 +749,17 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
                     b.Property<int?>("PreviousStatus")
                         .HasColumnType("integer");
+
+                    b.Property<long?>("StaffId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -735,7 +772,11 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("StaffId");
 
                     b.ToTable("OrderTimeline");
                 });
@@ -790,6 +831,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("StoreId");
 
                     b.ToTable("Service");
@@ -831,6 +874,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Setting");
                 });
 
@@ -867,6 +912,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeletedAt");
 
                     b.HasIndex("LockerId");
 
@@ -922,6 +969,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeletedAt");
+
                     b.HasIndex("LocationId");
 
                     b.ToTable("Store");
@@ -976,26 +1025,17 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("AccountId");
 
+                    b.HasIndex("DeletedAt");
+
                     b.ToTable("Token");
-                });
-
-            modelBuilder.Entity("AccountLocker", b =>
-                {
-                    b.HasOne("LockerService.Domain.Entities.Locker", null)
-                        .WithMany()
-                        .HasForeignKey("LockersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LockerService.Domain.Entities.Account", null)
-                        .WithMany()
-                        .HasForeignKey("StaffsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
+                    b.HasOne("LockerService.Domain.Entities.Locker", null)
+                        .WithMany("Staffs")
+                        .HasForeignKey("LockerId");
+
                     b.HasOne("LockerService.Domain.Entities.Store", "Store")
                         .WithMany("Staffs")
                         .HasForeignKey("StoreId");
@@ -1027,13 +1067,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.LaundryItem", b =>
                 {
-                    b.HasOne("LockerService.Domain.Entities.Order", "Order")
+                    b.HasOne("LockerService.Domain.Entities.OrderDetail", "OrderDetail")
                         .WithMany("Items")
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("OrderDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("OrderDetail");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Location", b =>
@@ -1127,7 +1167,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LockerService.Domain.Entities.Account", "Receiver")
-                        .WithMany("ReceiveOrders")
+                        .WithMany()
                         .HasForeignKey("ReceiverId");
 
                     b.HasOne("LockerService.Domain.Entities.Box", "SendBox")
@@ -1137,7 +1177,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LockerService.Domain.Entities.Account", "Sender")
-                        .WithMany("SendOrders")
+                        .WithMany()
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1190,7 +1230,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LockerService.Domain.Entities.Account", "Staff")
+                        .WithMany()
+                        .HasForeignKey("StaffId");
+
                     b.Navigation("Order");
+
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Service", b =>
@@ -1213,7 +1259,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LockerService.Domain.Entities.Account", "Staff")
-                        .WithMany("StaffLockers")
+                        .WithMany()
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1245,15 +1291,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
-                {
-                    b.Navigation("ReceiveOrders");
-
-                    b.Navigation("SendOrders");
-
-                    b.Navigation("StaffLockers");
-                });
-
             modelBuilder.Entity("LockerService.Domain.Entities.Box", b =>
                 {
                     b.Navigation("ReceiveOrders");
@@ -1271,6 +1308,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.Navigation("StaffLockers");
 
+                    b.Navigation("Staffs");
+
                     b.Navigation("Timelines");
                 });
 
@@ -1278,9 +1317,12 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("Details");
 
-                    b.Navigation("Items");
-
                     b.Navigation("Timelines");
+                });
+
+            modelBuilder.Entity("LockerService.Domain.Entities.OrderDetail", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Store", b =>

@@ -9,5 +9,6 @@ public class OrderItemResponse : BaseAuditableEntityResponse
     public float? Quantity { get; set; }
     
     public decimal? Price { get; set; }
-    
+
+    public IList<LaundryItemResponse> Items { get; set; } = new List<LaundryItemResponse>();
 }

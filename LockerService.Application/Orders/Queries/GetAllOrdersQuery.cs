@@ -15,8 +15,6 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 
     public DateTimeOffset? To { get; set; }
 
-    public long? StaffId { get; set; }
-    
     public long? CustomerId { get; set; }
 
     public IList<long>? ExcludedIds { get; set; }
@@ -24,6 +22,8 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
     public long? StoreId { get; set; }
     
     public long? ServiceId { get; set; }
+    
+    public long? StaffId { get; set; }
         
     public override Expression<Func<Order, bool>> GetExpressions()
     {
@@ -37,10 +37,8 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
 
         Expression = Expression.And(order => To == null || order.CreatedAt.UtcDateTime <= To);
 
-        Expression = Expression.And(order => StaffId == null || StaffId == order.StaffId.Value);
-
         Expression = Expression.And(order => CustomerId == null 
-                                             || CustomerId == order.ReceiverId.Value 
+                                             || (order.ReceiverId != null && CustomerId == order.ReceiverId) 
                                              || CustomerId == order.SenderId);
 
         Expression = Expression.And(order => StoreId == null || StoreId == order.Locker.StoreId);
@@ -55,10 +53,6 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
             Search = Search.Trim().ToLower();
             Expression<Func<Order, bool>> queryExpression = PredicateBuilder.New<Order>();
             queryExpression = queryExpression.Or(order => order.Locker.Name.ToLower().Contains(Search));
-            queryExpression = queryExpression.Or(order => order.Staff != null &&
-                                                          (order.Staff.PhoneNumber.ToLower().Contains(Search)
-                                                           || order.Staff.FullName.ToLower().Contains(Search)));
-
             queryExpression = queryExpression.Or(order => order.Sender.PhoneNumber.ToLower().Contains(Search)
                                                           || (order.Receiver != null && order.Receiver.PhoneNumber
                                                               .ToLower().Contains(Search)));
@@ -71,6 +65,11 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
             Expression = Expression.And(order => ExcludedIds.All(id => order.Id != id));
         }
 
+        if (StaffId != null)
+        {
+            Expression = Expression.And(order => order.Timelines.Any(timeline => timeline.StaffId == StaffId));
+        }
+        
         return Expression;
     }
 }

@@ -16,5 +16,5 @@ public interface IOrderRepository : IBaseRepository<Order>
     
     IQueryable<Order> GetOrderByPinCode(string pinCode, long lockerId);
 
-    IQueryable<Order> GetOvertimeOrders(int maxTimeInHours);
+    IQueryable<Order> GetOvertimeOrders();
 }

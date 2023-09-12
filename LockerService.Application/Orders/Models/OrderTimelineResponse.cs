@@ -9,5 +9,8 @@ public class OrderTimelineResponse: BaseAuditableEntityResponse
     public OrderStatus? PreviousStatus { get; set; }
     
     public string? Description { get; set; }
+ 
+    public StaffResponse? Staff { get; set; }
     
+    public string? Image { get; set; }
 }

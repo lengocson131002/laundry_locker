@@ -16,6 +16,8 @@ public class OrderSettingsCommandValidator : AbstractValidator<OrderSettingsComm
             .GreaterThanOrEqualTo(1);
         RuleFor(model => model.MaxActiveOrderCount)
             .GreaterThanOrEqualTo(1);
+        RuleFor(model => model.ReservationFee)
+            .GreaterThanOrEqualTo(1);
     }
 }
 
@@ -32,4 +34,6 @@ public class OrderSettingsCommand
     public decimal ExtraFee { get; set; }
 
     public int MaxActiveOrderCount { get; set; }
+    
+    public decimal ReservationFee { get; set; }
 }

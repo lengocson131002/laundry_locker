@@ -57,7 +57,7 @@ public class TakeReservationHandler : IRequestHandler<TakeReservationCommand, Or
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
 
-        await _rabbitMqBus.PublishAsync(new OrderInitializedEvent()
+        await _rabbitMqBus.PublishAsync(new OrderUpdatedStatusEvent()
         {
             OrderId = order.Id,
             Status = order.Status,

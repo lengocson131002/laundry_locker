@@ -21,4 +21,10 @@ public class OrderTimeline : BaseAuditableEntity
     [Column(TypeName = "text")]
     public string? Description { get; set; }
     
+    public long? StaffId { get; set; }
+    
+    public Account? Staff { get; set; }
+    
+    public string? Image { get; set; }
+    
 }

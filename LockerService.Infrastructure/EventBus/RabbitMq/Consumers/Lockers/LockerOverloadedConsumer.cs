@@ -63,8 +63,8 @@ public class LockerOverloadedConsumer : IConsumer<LockerOverloadedEvent>
             var notification = new Notification()
             {
                 Account = staff,
-                Type = NotificationType.LockerBoxOverloaded,
-                Content = NotificationType.LockerBoxOverloaded.GetDescription(),
+                Type = NotificationType.SystemLockerBoxOverloaded,
+                Content = NotificationType.SystemLockerBoxOverloaded.GetDescription(),
                 EntityType = EntityType.Locker,
                 ReferenceId = locker.Id.ToString(),
                 Data = lockerInfoData,

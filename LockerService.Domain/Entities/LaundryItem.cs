@@ -16,8 +16,8 @@ public class LaundryItem : BaseAuditableEntity
     
     public string? Description { get; set; }
     
-    public long OrderId { get; set; }
+    public long OrderDetailId { get; set; }
 
-    public Order Order { get; set; } = default!;
+    public OrderDetail OrderDetail { get; set; } = default!;
 
 }

@@ -24,7 +24,7 @@ public class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, OrderRespo
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        if (!order.IsProcessing)
+        if (!order.IsCollected)
         {
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }

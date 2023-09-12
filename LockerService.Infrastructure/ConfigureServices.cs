@@ -70,6 +70,7 @@ public static class ConfigureServices
         services.AddScoped<ICurrentPrincipalService, CurrentPrincipalService>();
         services.AddScoped<ICurrentAccountService, CurrentAccountService>();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
+        services.AddScoped<SoftDeleteInterceptor>();
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
@@ -159,14 +160,7 @@ public static class ConfigureServices
         {
             // Define RabbitMQ consumer
             // Order events consumers
-            config.AddConsumer<OrderInitializedConsumer>();
-            config.AddConsumer<OrderProcessingConsumer>();
-            config.AddConsumer<OrderConfirmedConsumer>();
-            config.AddConsumer<OrderReturnedConsumer>();
-            config.AddConsumer<OrderCompletedConsumer>();
-            config.AddConsumer<OrderCanceledConsumer>();
-            config.AddConsumer<OrderReservedConsumer>();
-            config.AddConsumer<OrderOvertimeConsumer>();
+            config.AddConsumer<OrderUpdatedStatusConsumer>();
             
             // Locker events consumers
             config.AddConsumer<LockerConnectedConsumer>();
@@ -231,7 +225,7 @@ public static class ConfigureServices
             q.AddTrigger(options =>
                 options.ForJob(orderOvertimeJobKey)
                     .WithIdentity($"{OrderOvertimeJob.OrderOvertimeJobKey}-trigger")
-                    .WithCronSchedule("0 0 * ? * * *", x => x.InTimeZone(TimeZoneInfo.Utc))
+                    .WithCronSchedule("0 0/5 * ? * * *", x => x.InTimeZone(TimeZoneInfo.Utc))
             );
         });
 

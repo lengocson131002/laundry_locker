@@ -101,7 +101,6 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             sender = new Account
             {
                 Role = Role.Customer,
-                Username = senderPhone,
                 PhoneNumber = senderPhone
             };
             await _unitOfWork.AccountRepository.AddAsync(sender);
@@ -117,7 +116,6 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
                 receiver = new Account
                 {
                     Role = Role.Customer,
-                    Username = receiverPhone,
                     PhoneNumber = receiverPhone
                 };
                 await _unitOfWork.AccountRepository.AddAsync(receiver);
@@ -169,12 +167,13 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             LockerId = command.LockerId,
             Type = command.Type,
             Details = details,
-            Status = OrderStatus.Initialized,
+            Status = !command.IsReserving ? OrderStatus.Initialized : OrderStatus.Reserved,
             Sender = sender,
             Receiver = receiver,
             SendBox = availableBox,
             ReceiveBox = availableBox,
-            DeliveryAddress = deliveryAddress
+            DeliveryAddress = deliveryAddress,
+            IntendedReceiveAt = command.IntendedReceiveAt.ToUniversalTime()
         };
         await _unitOfWork.OrderRepository.AddAsync(order);
         await _unitOfWork.SaveChangesAsync();
@@ -182,7 +181,7 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         _logger.LogInformation("Create new order: {0}", order.Id);
 
         // push event
-        await _rabbitMqBus.PublishAsync(new OrderInitializedEvent()
+        await _rabbitMqBus.PublishAsync(new OrderUpdatedStatusEvent()
         {
             OrderId = order.Id,
             Time = DateTimeOffset.UtcNow,

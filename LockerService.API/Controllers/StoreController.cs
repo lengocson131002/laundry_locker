@@ -1,3 +1,4 @@
+using LockerService.API.Attributes;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Services.Commands;
 using LockerService.Application.Services.Models;
@@ -7,18 +8,13 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/stores")]
+[ApiKey]
 public class StoreController : ApiControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PaginationResponse<Store, StoreResponse>>> GetAllStores(
         [FromQuery] GetAllStoresQuery request)
     {
-        if (string.IsNullOrWhiteSpace(request.SortColumn))
-        {
-            request.SortColumn = "CreatedAt";
-            request.SortDir = SortDirection.Desc;
-        }
-
         return await Mediator.Send(request);
     }
 

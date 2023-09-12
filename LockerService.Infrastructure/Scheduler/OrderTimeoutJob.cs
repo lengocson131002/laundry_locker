@@ -41,6 +41,10 @@ public class OrderTimeoutJob : IJob
         }
         
         var currentStatus = order.Status;
+        if (order.IsReserved)
+        {
+            order.TotalPrice = order.ReservationFee;
+        }
         
         order.Status = OrderStatus.Canceled;
         order.CancelReason = OrderCancelReason.Timeout;
@@ -48,11 +52,12 @@ public class OrderTimeoutJob : IJob
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
         
-        await _rabbitMqBus.Publish(new OrderCanceledEvent()
+        await _rabbitMqBus.Publish(new OrderUpdatedStatusEvent()
         {
-            Id = orderId,
+            OrderId = orderId,
             PreviousStatus = currentStatus,
-            Status = order.Status
+            Status = order.Status,
+            Time = DateTimeOffset.Now
         });
         
         _logger.LogInformation("Clear expired order {orderId} at {time}", orderId, DateTimeOffset.UtcNow);

@@ -21,11 +21,7 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
 
     public DateTimeOffset? CreatedTo { get; set; }
     
-    public long? LockerId { get; set; }
-
     public IList<long>? ExcludedIds { get; set; }
-    
-    public long? ForLockerId { get; set; }
 
     public override Expression<Func<Account, bool>> GetExpressions()
     {
@@ -77,22 +73,12 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
             Expression = Expression.And(account => CreatedTo >= account.CreatedAt);
         }
 
-        if (LockerId != null)
-        {
-            Expression = Expression.And(account => account.StaffLockers.FirstOrDefault(lo => lo.LockerId == LockerId) != null);
-        }
-
         if (ExcludedIds != null)
         {
             Expression = Expression.And(account => ExcludedIds.All(id => account.Id != id));
         }
 
-        if (ForLockerId != null)
-        {
-            Expression = Expression.And(account => account.StaffLockers.All(item => item.LockerId != ForLockerId));
-        }
-        
-        Expression = Expression.And(account => Equals(Role.Staff, account.Role));
+        Expression = Expression.And(account => account.IsStaff);
 
         return Expression;
     }
