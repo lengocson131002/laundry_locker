@@ -59,7 +59,7 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
             group new
             {
                 OrderId = o.Id,
-                Revenue = o.TotalPrice ?? 0
+                Revenue = o.TotalPrice
             } by new { store.Id, store.Name }
             into storeGroup
             select new

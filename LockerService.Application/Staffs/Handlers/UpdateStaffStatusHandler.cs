@@ -18,8 +18,8 @@ public class UpdateStaffStatusHandler : IRequestHandler<UpdateStaffStatusCommand
 
     public async Task<StaffDetailResponse> Handle(UpdateStaffStatusCommand request, CancellationToken cancellationToken)
     {
-        var staff = await _unitOfWork.AccountRepository.GetStaffById(request.Id);
-        if (staff is null)
+        var staff = await _unitOfWork.AccountRepository.GetByIdAsync(request.Id);
+        if (staff is null || !staff.IsStaff)
         {
             throw new ApiException(ResponseCode.StaffErrorNotFound);
         }

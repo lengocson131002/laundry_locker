@@ -39,25 +39,19 @@ public class Notification : BaseAuditableEntity
         {
             switch (Type)
             {
-                case NotificationType.LockerDisconnected:
-                case NotificationType.LockerBoxOverloaded:
-                case NotificationType.OrderCanceled:
+                case NotificationType.SystemLockerDisconnected:
+                case NotificationType.SystemLockerBoxOverloaded:
+                case NotificationType.CustomerOrderCanceled:
+                case NotificationType.SystemOrderOverTime:
+                case NotificationType.CustomerOrderOverTime:
                     return NotificationLevel.Critical;
                 
-                case NotificationType.LockerBoxWarning:
-                case NotificationType.OrderOverTime:
+                case NotificationType.SystemLockerBoxWarning:
                     return NotificationLevel.Warning;
                 
-                case NotificationType.LockerConnected:
-                case NotificationType.OrderCreated:
-                case NotificationType.OrderReturned:
-                case NotificationType.OrderCompleted:
-                case NotificationType.AccountStaffCreated:
-                case NotificationType.AccountOtpCreated:
+                default:
                     return NotificationLevel.Information;
             }
-
-            return NotificationLevel.Information;
         }
     }
 }

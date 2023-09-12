@@ -10,13 +10,19 @@ public enum OrderStatus
     [Description("Đang chờ")] 
     Waiting,
     
+    [Description("Đã đưa về cửa hàng")]
+    Collected,
+
     [Description("Đang xử lý")]
     Processing,
     
     [Description("Đã xử lý")]
+    Processed,
+    
+    [Description("Đã giao")]
     Returned,
     
-    [Description("Đã hoàn thành")]
+    [Description("Đã thanh toán")]
     Completed,
     
     [Description("Đã hủy")]
@@ -24,7 +30,7 @@ public enum OrderStatus
     
     [Description("Đã đặt chỗ")]
     Reserved,
-    
+
     [Description("Overtime")]
     Overtime
 }

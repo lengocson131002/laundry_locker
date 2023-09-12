@@ -18,7 +18,7 @@ public class OtpCreatedConsumer : IConsumer<OtpCreatedEvent>
     public async Task Consume(ConsumeContext<OtpCreatedEvent> context)
     {
         var eventMessage = context.Message;
-        var account = await _unitOfWork.AccountRepository.GetCustomerById(eventMessage.AccountId);
+        var account = await _unitOfWork.AccountRepository.GetByIdAsync(eventMessage.AccountId);
         if (account == null)
         {
             return;

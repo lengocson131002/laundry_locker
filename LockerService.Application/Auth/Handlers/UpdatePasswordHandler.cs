@@ -1,3 +1,5 @@
+using LockerService.Application.Common.Security;
+
 namespace LockerService.Application.Auth.Handlers;
 
 public class UpdatePasswordHandler : IRequestHandler<UpdatePasswordCommand, StatusResponse>
@@ -34,7 +36,7 @@ public class UpdatePasswordHandler : IRequestHandler<UpdatePasswordCommand, Stat
             throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
         }
 
-        if (!Equals(request.CurrentPassword, account.Password))
+        if (!BCryptUtils.Verify(request.CurrentPassword, account.Password))
         {
             throw new ApiException(ResponseCode.AuthErrorCurrentPasswordIncorrect);
         }
@@ -44,7 +46,7 @@ public class UpdatePasswordHandler : IRequestHandler<UpdatePasswordCommand, Stat
             throw new ApiException(ResponseCode.AuthErrorNewPasswordMustBeDifferent);
         }
 
-        account.Password = request.NewPassword;
+        account.Password = BCryptUtils.Hash(request.NewPassword);
 
         await _unitOfWork.AccountRepository.UpdateAsync(account);
 

@@ -40,6 +40,6 @@ public class WebNotificationService : IWebNotificationService
             }
         }
         
-        _logger.LogInformation($"[WEB NOTIFICATION] Send notification: {JsonSerializer.Serialize(notificationModel)}");
+        _logger.LogInformation($"[WEB NOTIFICATION] Send notification: {0}", notification.Id);
     }
 }

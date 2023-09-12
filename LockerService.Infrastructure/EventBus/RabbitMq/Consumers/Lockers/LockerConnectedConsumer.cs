@@ -83,15 +83,21 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
             ApiKey = _apiKeySettings.Key,
         });
         
-        // Push notification to admins
-        var admins = await _unitOfWork.AccountRepository.GetAdmins().ToListAsync();
-        foreach (var admin in admins)
+        // Push notification and store manager
+        var managers = await _unitOfWork.AccountRepository
+            .GetStaffs(
+                storeId: locker.StoreId, 
+                role: Role.Manager, 
+                isActive: true)
+            .ToListAsync();
+        
+        foreach (var manager in managers)
         {
             var notification = new Notification()
             {
-                Account = admin,
-                Type = NotificationType.LockerConnected,
-                Content = NotificationType.LockerConnected.GetDescription(),
+                Account = manager,
+                Type = NotificationType.SystemLockerConnected,
+                Content = NotificationType.SystemLockerConnected.GetDescription(),
                 EntityType = EntityType.Locker,
                 Data = lockerInfoData,
                 ReferenceId = locker.Id.ToString()

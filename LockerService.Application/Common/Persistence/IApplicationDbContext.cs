@@ -32,8 +32,6 @@ public interface IApplicationDbContext
     
     DbSet<Setting> Settings { get; }
 
-    DbSet<StaffLocker> StaffLockers { get; }
-
     DbSet<Token> Tokens { get; }
     
     DbSet<LaundryItem> LaundryItems { get; }

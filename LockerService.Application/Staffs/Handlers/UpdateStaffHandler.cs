@@ -3,17 +3,12 @@ namespace LockerService.Application.Staffs.Handlers;
 public class UpdateStaffHandler : IRequestHandler<UpdateStaffCommand, StaffDetailResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IJwtService _jwtService;
-    private readonly ILogger<UpdateStaffHandler> _logger;
     private readonly IMapper _mapper;
 
-    public UpdateStaffHandler(IMapper mapper, IUnitOfWork unitOfWork, ILogger<UpdateStaffHandler> logger,
-        IJwtService jwtService)
+    public UpdateStaffHandler(IMapper mapper, IUnitOfWork unitOfWork)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _logger = logger;
-        _jwtService = jwtService;
     }
 
     public async Task<StaffDetailResponse> Handle(UpdateStaffCommand request, CancellationToken cancellationToken)
@@ -58,24 +53,26 @@ public class UpdateStaffHandler : IRequestHandler<UpdateStaffCommand, StaffDetai
             staff.Store = store;
         }
 
-        // Check phone number
-        if (request.PhoneNumber is not null && !Equals(request.PhoneNumber, staff.PhoneNumber))
+        // Check username
+        if (request.Username != null && !Equals(request.Username, staff.Username))
         {
-            var checkStaff = await _unitOfWork.AccountRepository.GetStaffByPhoneNumber(request.PhoneNumber);
+            var checkStaff = await _unitOfWork.AccountRepository
+                .GetByUsername(request.Username)
+                .FirstOrDefaultAsync(cancellationToken);
 
-            if (checkStaff is not null)
+            if (checkStaff != null)
             {
-                throw new ApiException(ResponseCode.StaffErrorExisted);
+                throw new ApiException(ResponseCode.AccountErrorUsernameExisted);
             }
-
-            staff.PhoneNumber = request.PhoneNumber;
-            staff.Username = request.PhoneNumber;
+            
+            staff.Username = request.Username;
         }
-
+        
         staff.Avatar = request.Avatar ?? staff.Avatar;
         staff.FullName = request.FullName ?? staff.FullName;
         staff.Description = request.Description ?? staff.Description;
-
+        staff.PhoneNumber = request.PhoneNumber ?? staff.PhoneNumber;
+        
         await _unitOfWork.AccountRepository.UpdateAsync(staff);
 
         // Save changes

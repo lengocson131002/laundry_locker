@@ -29,7 +29,7 @@ public class PaymentService : IPaymentService
                 .Build();
             
             var trigger = TriggerBuilder.Create()
-                .StartAt(DateTimeOffset.UtcNow.AddSeconds(30))
+                .StartAt(DateTimeOffset.UtcNow.AddSeconds(10))
                 .Build();
 
             await scheduler.ScheduleJob(job, trigger);

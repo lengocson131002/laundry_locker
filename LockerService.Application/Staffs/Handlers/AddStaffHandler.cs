@@ -1,3 +1,4 @@
+using LockerService.Application.Common.Security;
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Accounts;
 
@@ -24,30 +25,33 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
     public async Task<StaffDetailResponse> Handle(AddStaffCommand request, CancellationToken cancellationToken)
     {
         var storeQuery =
-            await _unitOfWork.StoreRepository.GetAsync(s =>
-                Equals(s.Id, request.StoreId));
+            await _unitOfWork.StoreRepository.GetAsync(s => Equals(s.Id, request.StoreId));
+        
         var store = storeQuery.FirstOrDefault();
         if (store == null)
         {
             throw new ApiException(ResponseCode.StoreErrorNotFound);
         }
 
-        var staff = await _unitOfWork.AccountRepository.GetStaffByPhoneNumber(request.PhoneNumber);
+        var staff = await _unitOfWork.AccountRepository
+            .GetByUsername(request.Username)
+            .FirstOrDefaultAsync(cancellationToken);
+        
         if (staff != null)
         {
-            throw new ApiException(ResponseCode.StaffErrorExisted);
+            throw new ApiException(ResponseCode.AccountErrorUsernameExisted);
         }
         
         staff = new Account()
         {
-            Username = request.PhoneNumber,
+            Username = request.Username,
             PhoneNumber = request.PhoneNumber,
             FullName = request.FullName,
             Avatar = request.Avatar,
-            Password = request.Password,
+            Password = BCryptUtils.Hash(request.Password),
             Description = request.Description,
             Status = AccountStatus.Verifying,
-            Role = Role.Staff,
+            Role = request.Role,
             Store = store,
         };
 
@@ -62,7 +66,7 @@ public class AddStaffHandler : IRequestHandler<AddStaffCommand, StaffDetailRespo
             AccountId = staff.Id,
             PhoneNumber = staff.PhoneNumber,
             Username = staff.Username,
-            Password = staff.Password,
+            Password = request.Password,
             FullName = staff.FullName,
             Role = staff.Role
         }, cancellationToken);

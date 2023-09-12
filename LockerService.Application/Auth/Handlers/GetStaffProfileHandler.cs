@@ -7,25 +7,40 @@ public class GetStaffProfileHandler : IRequestHandler<GetStaffProfileQuery, Staf
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly ILogger<GetStaffProfileHandler> _logger;
-    private readonly ICurrentAccountService _currentAccountService;
+    private readonly ICurrentPrincipalService _currentPrincipalService;
     private readonly IMapper _mapper;
 
-    public GetStaffProfileHandler(IUnitOfWork unitOfWork, ILogger<GetStaffProfileHandler> logger,
-        IJwtService jwtService, ICurrentAccountService currentAccountService, IMapper mapper)
+    public GetStaffProfileHandler(
+        IUnitOfWork unitOfWork, 
+        ILogger<GetStaffProfileHandler> logger,
+        IJwtService jwtService, 
+        IMapper mapper, 
+        ICurrentPrincipalService currentPrincipalService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _currentAccountService = currentAccountService;
         _jwtService = jwtService;
         _mapper = mapper;
+        _currentPrincipalService = currentPrincipalService;
     }
 
     public async Task<StaffResponse> Handle(GetStaffProfileQuery request, CancellationToken cancellationToken)
     {
-        var account = await _currentAccountService.GetCurrentAccount();
-        if (account is null)
+        var accountId = _currentPrincipalService.CurrentSubjectId;
+        if (accountId == null)
         {
-            throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
+            throw new ApiException(ResponseCode.Unauthorized);
+        }
+
+        var account = await _unitOfWork.AccountRepository
+            .Get(acc => acc.Id == accountId)
+            .Include(acc => acc.Store)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (account == null)
+        {
+            throw new ApiException(ResponseCode.Unauthorized);
+
         }
 
         return  _mapper.Map<StaffResponse>(account);

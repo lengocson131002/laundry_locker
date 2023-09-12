@@ -45,21 +45,22 @@ public class CheckoutOrderJob : IJob
         }
 
         var currStatus = order.Status;
-        
-        await _orderService.CalculateFree(order);
-        
+
         var bill = Bill.CreateBill(order, method);
         order.Bill = bill;
         order.Status = OrderStatus.Completed;
         order.ReceiveAt = DateTimeOffset.UtcNow;
+        order.TotalPrice = order.Price
+                           + (decimal)order.ExtraCount * order.ExtraFee
+                           - order.Discount;
 
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
         
         // Push event
-        await _rabbitMqBus.Publish(new OrderCompletedEvent()
+        await _rabbitMqBus.Publish(new OrderUpdatedStatusEvent()
         {
-            Id = order.Id,
+            OrderId = order.Id,
             PreviousStatus = currStatus,
             Status = order.Status
         });

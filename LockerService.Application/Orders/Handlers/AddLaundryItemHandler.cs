@@ -14,21 +14,26 @@ public class AddLaundryItemHandler : IRequestHandler<AddLaundryItemCommand, Laun
 
     public async Task<LaundryItemResponse> Handle(AddLaundryItemCommand request, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository
-            .Get(order => order.Id == request.OrderId && Equals(order.Type, OrderType.Laundry))
+
+        var orderDetail = await _unitOfWork.OrderDetailRepository
+            .Get(detail => detail.Id == request.OrderDetailId 
+                           && detail.OrderId == request.OrderId 
+                           && detail.Order.IsLaundry)
+            .Include(detail => detail.Order)
             .FirstOrDefaultAsync(cancellationToken);
-
-        if (order == null)
+        
+        if (orderDetail == null)
         {
-            throw new ApiException(ResponseCode.OrderErrorNotFound);
+            throw new ApiException(ResponseCode.OrderDetailErrorNotFound);
         }
-
-        if (!order.IsProcessing)
+        
+        if (!orderDetail.Order.IsCollected && !orderDetail.Order.IsProcessing)
         {
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
-
+        
         var laundryItem = _mapper.Map<LaundryItem>(request);
+        
         await _unitOfWork.LaundryItemRepository.AddAsync(laundryItem);
         await _unitOfWork.SaveChangesAsync();
 

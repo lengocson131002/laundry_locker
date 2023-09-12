@@ -1,4 +1,5 @@
 using LockerService.Application.Common.Constants;
+using LockerService.Application.Common.Security;
 
 namespace LockerService.Application.Auth.Handlers;
 
@@ -6,32 +7,25 @@ public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenRespons
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
-    private readonly ILogger<StaffLoginHandler> _logger;
     private readonly ITokenService _tokenService;
 
     public StaffLoginHandler(IUnitOfWork unitOfWork, 
-        ILogger<StaffLoginHandler> logger, 
         IJwtService jwtService, 
         ITokenService tokenService)
     {
         _unitOfWork = unitOfWork;
-        _logger = logger;
         _jwtService = jwtService;
         _tokenService = tokenService;
     }
 
     public async Task<TokenResponse> Handle(StaffLoginRequest request, CancellationToken cancellationToken)
     {
-        var staffQuery = await _unitOfWork.AccountRepository.GetAsync(
-            predicate: account => Equals(account.PhoneNumber, request.PhoneNumber)
-                                  && account.Password != null
-                                  && account.Password.Equals(request.Password)
-                                  && Equals(account.Role, Role.Staff)
-                                  && !Equals(account.Status, AccountStatus.Inactive)
-        );
-
-        var staff = staffQuery.FirstOrDefault();
-        if (staff is null)
+        var staff = await _unitOfWork.AccountRepository
+            .Get(acc => Equals(acc.Username, request.Username))
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        
+        if (staff == null || !BCryptUtils.Verify(request.Password, staff.Password))
         {
             throw new ApiException(ResponseCode.AuthErrorInvalidUsernameOrPassword);
         }
@@ -53,6 +47,11 @@ public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenRespons
             await _tokenService.SetInvalidateTokenJob(updatePasswordToken);
             
             throw new ApiException(ResponseCode.AuthErrorUpdatePasswordRequest, updatePasswordToken.Value);
+        }
+        
+        if (!staff.IsActive)
+        {
+            throw new ApiException(ResponseCode.AuthErrorAccountInactive);
         }
 
         var token = _jwtService.GenerateJwtToken(staff);

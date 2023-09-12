@@ -23,10 +23,9 @@ public class GetDashboardOverviewHandler : IRequestHandler<DashboardOverviewQuer
                            && (request.To == null || locker.CreatedAt <= request.To))
             .CountAsync(cancellationToken);
 
-        var staffCount = await _unitOfWork.AccountRepository.GetStaffs()
-            .Where(staff => (request.StoreId == null || staff.StoreId == request.StoreId)
-                            && (request.From == null || staff.CreatedAt >= request.From)
-                            && (request.To == null || staff.CreatedAt <= request.To))
+        var staffCount = await _unitOfWork.AccountRepository.GetStaffs(storeId: request.StoreId)
+            .Where(staff => (request.From == null || staff.CreatedAt >= request.From)
+                                && (request.To == null || staff.CreatedAt <= request.To))
             .CountAsync(cancellationToken);
 
         var customerCount = await _unitOfWork.AccountRepository.GetCustomers()

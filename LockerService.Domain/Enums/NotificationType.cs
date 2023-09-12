@@ -4,39 +4,63 @@ namespace LockerService.Domain.Enums;
 
 public enum NotificationType
 {
-    // Order
-    [Description("New order created")] 
-    OrderCreated,
-    
-    [Description("Order is returned to the locker")] 
-    OrderReturned,
-    
-    [Description("Order is canceled")] 
-    OrderCanceled,
-
-    [Description("Order is completed")]
-    OrderCompleted,
-    
-    [Description("Order is overtime")]
-    OrderOverTime,
-    
-    // Account
-    [Description("New staff account created")] 
-    AccountStaffCreated,
-    
+    /**
+     * COMMON NOTIFICATION TYPES
+     */
     [Description("OTP created")] 
     AccountOtpCreated,
 
+    /**
+     * SYSTEM NOTIFICATION TYPES
+     */
+    // Account
+    [Description("[System] New staff account created")] 
+    SystemStaffCreated,
+    
     // Locker
-    [Description("Locker connected to the system")]
-    LockerConnected,
+    [Description("[System] Locker connected to the system")]
+    SystemLockerConnected,
     
-    [Description("Locker disconnected to the system")]
-    LockerDisconnected,
+    [Description("[System] Locker disconnected to the system")]
+    SystemLockerDisconnected,
     
-    [Description("Locker is going to be overloaded")]
-    LockerBoxWarning,
+    [Description("[System] Locker is going to be overloaded")]
+    SystemLockerBoxWarning,
     
-    [Description("Locker is overloaded")]
-    LockerBoxOverloaded
+    [Description("[System] Locker is overloaded")]
+    SystemLockerBoxOverloaded,
+    
+    // Order
+    [Description("[System] New order created")] 
+    SystemOrderCreated,
+    
+    [Description("[System] Order collected to the store")]
+    SystemOrderCollected,
+    
+    [Description("[System] Order is processed")]
+    SystemOrderProcessed,
+
+    [Description("[System] Order is overtime")]
+    SystemOrderOverTime,
+    
+    /**
+     * CUSTOMER NOTIFICATION TYPES
+     */
+    
+    // Order
+    [Description("[Customer] You has a new order created")] 
+    CustomerOrderCreated,
+    
+    [Description("[Customer] Your order is returned to the locker")] 
+    CustomerOrderReturned,
+    
+    [Description("[Customer] Your order is canceled")] 
+    CustomerOrderCanceled,
+
+    [Description("[Customer] Your order is completed")]
+    CustomerOrderCompleted,
+    
+    [Description("[Customer] Your Order is overtime")]
+    CustomerOrderOverTime,
+    
 }

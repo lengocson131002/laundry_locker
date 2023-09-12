@@ -20,88 +20,96 @@ public class Notifier : INotifier
         _provider = provider;
         _serviceScopeFactory = serviceScopeFactory;
 
-        /*
-         * Subscribe notification type and corresponding handle service
-         *
-         * _provider.Attach(NotificationType.TypeA, webNotificationService);
-         * _provider.Attach(NotificationType.TypeA, mobileNotificationService);
-         *
-         * _provider.Attach(NotificationType.TypeB, webNotificationService);
-         * _provider.Attach(NotificationType.TypeB, smsNotificationService);
-         *
-         * _provider.Attach(NotificationType.TypeC, webNotificationService);
-         * _provider.Attach(NotificationType.TypeC, mobileNotificationService);
-         * _provider.Attach(NotificationType.TypeC, smsNotificationService);
-         *
-         */
-        
-        // Account notifications
-        _provider.Attach(NotificationType.AccountOtpCreated, new List<INotificationService>()
+        // COMMON NOTIFICATION TYPE
+        _provider.Attach(NotificationType.AccountOtpCreated, new List<INotificationService> ()
         {
-            
-            webNotificationService,
-            // smsNotificationService,
+            smsNotificationService
+        }) ;
+        
+        
+        // SYSTEM NOTIFICATION TYPE
+        _provider.Attach(NotificationType.SystemStaffCreated, new List<INotificationService>()
+        {
+            smsNotificationService,
+            mobileNotificationService,
         });
         
-        _provider.Attach(NotificationType.AccountStaffCreated, new List<INotificationService>()
-        {
-            webNotificationService,
-            // smsNotificationService
-        });
-        
-        
-        // Order notifications
-        _provider.Attach(NotificationType.OrderCreated, new List<INotificationService>()
+        _provider.Attach(NotificationType.SystemLockerConnected, new List<INotificationService>()
         {
             webNotificationService,
             mobileNotificationService,
-            // smsNotificationService
         });
         
-        _provider.Attach(NotificationType.OrderReturned, new List<INotificationService>()
-        {
-            mobileNotificationService,
-            // smsNotificationService
-        });
-        
-        _provider.Attach(NotificationType.OrderCanceled, new List<INotificationService>()
-        {
-            mobileNotificationService,
-            // smsNotificationService
-        });
-        
-        _provider.Attach(NotificationType.OrderCompleted, new List<INotificationService>()
-        {
-            mobileNotificationService,
-        });
-        
-        _provider.Attach(NotificationType.OrderOverTime, new List<INotificationService>()
-        {
-            mobileNotificationService,
-            // smsNotificationService
-        });
-        
-        // Locker notification
-        _provider.Attach(NotificationType.LockerConnected, new List<INotificationService>()
-        {
-            webNotificationService
-        });
-        
-        _provider.Attach(NotificationType.LockerDisconnected, new List<INotificationService>()
+        _provider.Attach(NotificationType.SystemLockerDisconnected, new List<INotificationService>()
         {
             webNotificationService,
+            mobileNotificationService,
         });
         
-        _provider.Attach(NotificationType.LockerBoxOverloaded, new List<INotificationService>()
+        _provider.Attach(NotificationType.SystemLockerBoxOverloaded, new List<INotificationService>()
         {
             webNotificationService,
             mobileNotificationService
         });
         
-        _provider.Attach(NotificationType.LockerBoxWarning, new List<INotificationService>()
+        _provider.Attach(NotificationType.SystemLockerBoxWarning, new List<INotificationService>()
         {
             webNotificationService,
             mobileNotificationService
+        });
+        
+        _provider.Attach(NotificationType.SystemOrderCreated, new List<INotificationService>()
+        {
+            webNotificationService,
+            mobileNotificationService
+        });
+        
+        _provider.Attach(NotificationType.SystemOrderCollected, new List<INotificationService>()
+        {
+            webNotificationService,
+            mobileNotificationService
+        });
+        
+        _provider.Attach(NotificationType.SystemOrderProcessed, new List<INotificationService>()
+        {
+            webNotificationService,
+            mobileNotificationService
+        });
+        
+        _provider.Attach(NotificationType.SystemOrderOverTime, new List<INotificationService>()
+        {
+            webNotificationService,
+            mobileNotificationService
+        });
+        
+        
+        // CUSTOMER NOTIFICATION TYPE
+        _provider.Attach(NotificationType.CustomerOrderCreated, new List<INotificationService>()
+        {
+            mobileNotificationService,
+            smsNotificationService
+        });
+        
+        _provider.Attach(NotificationType.CustomerOrderReturned, new List<INotificationService>()
+        {
+            mobileNotificationService,
+            smsNotificationService
+        });
+        
+        _provider.Attach(NotificationType.CustomerOrderCanceled, new List<INotificationService>()
+        {
+            mobileNotificationService,
+        });
+        
+        _provider.Attach(NotificationType.CustomerOrderCompleted, new List<INotificationService>()
+        {
+            mobileNotificationService,
+        });
+        
+        _provider.Attach(NotificationType.CustomerOrderOverTime, new List<INotificationService>()
+        {
+            mobileNotificationService,
+            smsNotificationService
         });
     }
     

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EntityFrameworkCore.Projectables;
 using System.Text.Json.Serialization;
 using LockerService.Domain.Enums;
 
@@ -11,12 +12,12 @@ public class Account : BaseAuditableEntity
     [Key] 
     public long Id { get; set; }
     
-    public string Username { get; set; } = default!;
+    public string Username { get; set; } = string.Empty;
     
-    public string PhoneNumber { get; set; } = default!;
+    public string PhoneNumber { get; set; } = string.Empty;
 
-    [JsonIgnore]
-    public string? Password { get; set; }
+    [JsonIgnore] 
+    public string Password { get; set; } = string.Empty;
 
     public Role Role { get; set; }
     
@@ -33,19 +34,27 @@ public class Account : BaseAuditableEntity
     
     public Store? Store { get; set; }
     
-    [JsonIgnore]
-    public IList<StaffLocker> StaffLockers { get; private set; } = new List<StaffLocker>();
-
-    [JsonIgnore]
-    [InverseProperty(nameof(Order.Sender))]
-    public IList<Order> SendOrders { get; set; } = new List<Order>();
-    
-    [JsonIgnore]
-    [InverseProperty(nameof(Order.Receiver))]
-    public IList<Order> ReceiveOrders { get; set; } = new List<Order>();
-
-    [JsonIgnore]
-    public IList<Locker> Lockers { get; set; } = new List<Locker>();
-
+    [Projectable]
     public bool IsActive => Equals(AccountStatus.Active, Status);
+
+    [Projectable]
+    public bool IsAdmin => Equals(Role, Role.Admin);
+
+    [Projectable]
+    public bool IsManager => Equals(Role, Role.Manager);
+
+    [Projectable]
+    public bool IsLaundryAttendant => Equals(Role, Role.LaundryAttendant);
+
+    [Projectable]
+    public bool IsShipper => Equals(Role, Role.Shipper);
+
+    [Projectable]
+    public bool IsCustomer => Equals(Role, Role.Customer);
+
+    [Projectable] 
+    public bool IsStaff => IsShipper || IsManager || IsLaundryAttendant || IsAdmin;
+
+    [Projectable]
+    public bool IsStoreStaff => StoreId != null && (IsManager || IsShipper || IsLaundryAttendant);
 }

@@ -29,13 +29,15 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
             .Include(order => order.Bill)
             .Include(order => order.Details)
                 .ThenInclude(detail => detail.Service)
+            .Include(order => order.Details)
+                .ThenInclude(detail => detail.Items)
             .Include(order => order.Timelines)
+                .ThenInclude(detail => detail.Staff)
             .Include(order => order.Locker.Location)
             .Include(order => order.Locker.Location.Ward)
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
             .Include(order => order.DeliveryAddress)
-            .Include(order => order.Items)
             .FirstOrDefaultAsync(cancellationToken);
         
         if (order == null)
@@ -43,8 +45,6 @@ public class GetOrderByPinCodeHandler : IRequestHandler<GetOrderByPinCodeQuery, 
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        await _orderService.CalculateFree(order);
-        
         order.Timelines = order.Timelines.OrderBy(timeline => timeline.CreatedAt).ToList();
         return _mapper.Map<OrderDetailResponse>(order);
     }

@@ -6,7 +6,7 @@ namespace LockerService.Infrastructure.Repositories;
 
 public class OrderRepository : BaseRepository<Order>, IOrderRepository
 {
-    private const string AllowedCharacters = "0123456789";
+    private const string AllowedCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private readonly ApplicationDbContext _dbContext;
 
     public OrderRepository(ApplicationDbContext dbContext) : base(dbContext)
@@ -77,16 +77,14 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
     public IQueryable<Order> GetOrderByPinCode(string pinCode, long lockerId)
     {
         return _dbContext.Orders
-            .Where(order => pinCode.Equals(order.PinCode) && Equals(order.LockerId, lockerId))
-            .Where(order => order.IsActive);
+            .Where(order => pinCode.Equals(order.PinCode) && Equals(order.LockerId, lockerId));
     }
 
-    public IQueryable<Order> GetOvertimeOrders(int maxTimeInHours)
+    public IQueryable<Order> GetOvertimeOrders()
     {
         var now = DateTimeOffset.UtcNow;
         return _dbContext.Orders
-            .Where(order => (Equals(order.Status, OrderStatus.Waiting) || Equals(order.Status, OrderStatus.Returned))
-                            && (now - order.CreatedAt).Hours >= maxTimeInHours);
+            .Where(order => (order.IsWaiting || order.IsReturned) && now >= order.IntendedOvertime);
     }
 
     private string GeneratePinCode(int length)

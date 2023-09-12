@@ -1,3 +1,4 @@
+using LockerService.API.Attributes;
 using LockerService.Application.Files.Commands;
 using LockerService.Application.Files.Models;
 using LockerService.Application.Files.Queries;
@@ -6,6 +7,7 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/files")]
+[ApiKey]
 public class FileController : ApiControllerBase
 {
     [HttpPost]

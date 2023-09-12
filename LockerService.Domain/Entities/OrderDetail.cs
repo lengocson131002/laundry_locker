@@ -20,4 +20,8 @@ public class OrderDetail : BaseAuditableEntity
     public long OrderId { get; set; }
 
     public Order Order { get; set; } = default!;
+    
+    public string? Description { get; set; }
+    
+    public IList<LaundryItem> Items { get; set; } = new List<LaundryItem>();
 }

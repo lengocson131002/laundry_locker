@@ -57,15 +57,21 @@ public class LockerDisconnectedConsumer : IConsumer<LockerDisconnectedEvent>
 
         await _unitOfWork.SaveChangesAsync();
         
-        // Push notification to admins
-        var admins = await _unitOfWork.AccountRepository.GetAdmins().ToListAsync();
-        foreach (var admin in admins)
+        // Push notification store managers
+        var managers = await _unitOfWork.AccountRepository
+            .GetStaffs(
+                storeId: locker.StoreId, 
+                role: Role.Manager, 
+                isActive: true)
+            .ToListAsync();
+        
+        foreach (var manager in managers)
         {
             var notification = new Notification()
             {
-                Account = admin,
-                Type = NotificationType.LockerDisconnected,
-                Content = NotificationType.LockerDisconnected.GetDescription(),
+                Account = manager,
+                Type = NotificationType.SystemLockerDisconnected,
+                Content = NotificationType.SystemLockerDisconnected.GetDescription(),
                 EntityType = EntityType.Locker,
                 Data = lockerInfoData,
                 ReferenceId = locker.Id.ToString()
@@ -73,5 +79,6 @@ public class LockerDisconnectedConsumer : IConsumer<LockerDisconnectedEvent>
 
             await _notifier.NotifyAsync(notification);
         }
+
     }
 }

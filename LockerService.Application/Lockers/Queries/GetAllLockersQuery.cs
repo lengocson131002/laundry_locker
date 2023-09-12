@@ -6,8 +6,6 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
     
     public long? StoreId { get; set; }
     
-    public long? StaffId { get; set; }
-
     public LockerStatus? Status { get; set; }
     
     public string? ProvinceCode { get; set; }
@@ -52,12 +50,7 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
         {
             Expression = Expression.And(locker => StoreId == locker.StoreId);
         }
-
-        if (StaffId != null)
-        {
-            Expression = Expression.And(locker => locker.StaffLockers.Any(sl => StaffId == sl.StaffId));
-        }
-            
+        
         if (ExcludedIds != null)
         {
             Expression = Expression.And(locker => ExcludedIds.All(id => locker.Id != id));

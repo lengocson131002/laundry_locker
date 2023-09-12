@@ -1,3 +1,4 @@
+using LockerService.API.Attributes;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Notifications.Commands;
 using LockerService.Application.Notifications.Models;
@@ -7,6 +8,7 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/notifications")]
+[ApiKey]
 public class NotificationController : ApiControllerBase
 {
     [HttpPost("push")]

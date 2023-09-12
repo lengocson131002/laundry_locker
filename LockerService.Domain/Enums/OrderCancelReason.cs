@@ -11,5 +11,8 @@ public enum OrderCancelReason
     CustomerCancel,
     
     [Description("Nhân viên hủy")] 
-    StaffCancel
+    StaffCancel,
+    
+    [Description("Hủy cọc")] 
+    ReservationCancel
 }

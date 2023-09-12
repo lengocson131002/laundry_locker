@@ -4,6 +4,9 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
 {
     public AddStaffCommandValidator()
     {
+        RuleFor(model => model.Username)
+            .NotEmpty();
+        
         RuleFor(model => model.PhoneNumber)
             .NotNull()
             .Must(phoneNumber => phoneNumber.IsValidPhoneNumber())
@@ -15,7 +18,7 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
         RuleFor(model => model.Password)
             .NotEmpty()
             .Must(password => password.IsValidPassword())
-            .WithMessage("Invalid password");
+            .WithMessage("Invalid password format");
 
         RuleFor(model => model.StoreId)
             .GreaterThan(0);
@@ -24,11 +27,17 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
             .Must(image => image == null || image.IsValidUrl())
             .WithMessage("Invalid image url");
 
+        RuleFor(model => model.Role)
+            .NotNull()
+            .Must(role => Equals(Role.Manager, role) || Equals(Role.Shipper, role) || Equals(Role.LaundryAttendant, role));
     }
 }
 
 public class AddStaffCommand : IRequest<StaffDetailResponse>
 {
+    [TrimString(true)] 
+    public string Username { get; set; } = default!;
+    
     [TrimString(true)]
     public string FullName { get; set; } = default!;
     
@@ -44,5 +53,7 @@ public class AddStaffCommand : IRequest<StaffDetailResponse>
     [TrimString(true)]
     public string? Description { get; set; }
 
-    public long StoreId { get; set; } = default!;
+    public long StoreId { get; set; }
+    
+    public Role Role { get; set; }
 }

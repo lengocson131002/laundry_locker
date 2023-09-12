@@ -23,12 +23,12 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
                 
         /*
          * Check current logged in user
-         * if Staff, get only their managed lockers
+         * if Store Staff, get only their store's locker
          */
         var currentLoggedInAccount = await _currentAccountService.GetCurrentAccount();
-        if (currentLoggedInAccount != null && Equals(currentLoggedInAccount.Role, Role.Staff))
+        if (currentLoggedInAccount != null && currentLoggedInAccount.IsStoreStaff)
         {
-            request.StaffId = currentLoggedInAccount.Id;
+            request.StoreId = currentLoggedInAccount.StoreId;
         }
 
         var boxes = _unitOfWork.BoxRepository.Get();
