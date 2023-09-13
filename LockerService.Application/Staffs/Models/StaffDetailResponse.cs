@@ -1,6 +1,5 @@
 namespace LockerService.Application.Staffs.Models;
 
-public class StaffDetailResponse : AccountDetailResponse
+public class StaffDetailResponse : StaffResponse
 {
-    public StoreDetailResponse Store { get; set; } = default!;
 }
