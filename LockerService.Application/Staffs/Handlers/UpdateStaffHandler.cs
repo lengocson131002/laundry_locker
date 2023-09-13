@@ -72,6 +72,7 @@ public class UpdateStaffHandler : IRequestHandler<UpdateStaffCommand, StaffDetai
         staff.FullName = request.FullName ?? staff.FullName;
         staff.Description = request.Description ?? staff.Description;
         staff.PhoneNumber = request.PhoneNumber ?? staff.PhoneNumber;
+        staff.Role = request.Role ?? staff.Role;
         
         await _unitOfWork.AccountRepository.UpdateAsync(staff);
 

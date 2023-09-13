@@ -11,6 +11,9 @@ public class UpdateStaffCommandValidator : AbstractValidator<UpdateStaffCommand>
         RuleFor(model => model.Avatar)
             .Must(image => string.IsNullOrEmpty(image) || image.IsValidUrl())
             .WithMessage("Invalid image url");
+        
+        RuleFor(model => model.Role)
+            .Must(role => role == null || Equals(Role.Manager, role) || Equals(Role.Shipper, role) || Equals(Role.LaundryAttendant, role));
     }
 }
 
@@ -36,4 +39,5 @@ public class UpdateStaffCommand : IRequest<StaffDetailResponse>
 
     public long? StoreId { get; set; }
     
+    public Role? Role { get; set; }
 }
