@@ -22,6 +22,8 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
     public DateTimeOffset? CreatedTo { get; set; }
     
     public IList<long>? ExcludedIds { get; set; }
+    
+    public Role? Role { get; set; }
 
     public override Expression<Func<Account, bool>> GetExpressions()
     {
@@ -78,8 +80,13 @@ public class GetAllStaffsQuery : PaginationRequest<Account>, IRequest<Pagination
             Expression = Expression.And(account => ExcludedIds.All(id => account.Id != id));
         }
 
+        if (Role != null)
+        {
+            Expression = Expression.And(account => account.Role == Role);
+        }
+        
         Expression = Expression.And(account => account.IsStaff);
-
+        
         return Expression;
     }
 }
