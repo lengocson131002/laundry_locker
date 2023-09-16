@@ -25,6 +25,7 @@ public class GetUnreadNotificationCountHandler : IRequestHandler<GetUnreadNotifi
         
         var count = await _unitOfWork.NotificationRepository
             .Get(notification => !notification.IsRead
+                                 && notification.AccountId == loggedInAccountId
                                  && (request.Type == null || Equals(notification.Type, request.Type))
                                  && (request.EntityType == null || Equals(notification.EntityType, request.EntityType))
                                  && (request.From == null || Equals(notification.CreatedAt >= request.From))

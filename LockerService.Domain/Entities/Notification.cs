@@ -33,25 +33,15 @@ public class Notification : BaseAuditableEntity
 
     [NotMapped] 
     public bool Saved { get; set; } = true;
-    
-    public NotificationLevel Level {
-        get
-        {
-            switch (Type)
-            {
-                case NotificationType.SystemLockerDisconnected:
-                case NotificationType.SystemLockerBoxOverloaded:
-                case NotificationType.CustomerOrderCanceled:
-                case NotificationType.SystemOrderOverTime:
-                case NotificationType.CustomerOrderOverTime:
-                    return NotificationLevel.Critical;
-                
-                case NotificationType.SystemLockerBoxWarning:
-                    return NotificationLevel.Warning;
-                
-                default:
-                    return NotificationLevel.Information;
-            }
-        }
-    }
+
+    [Projectable]
+    public NotificationLevel Level => 
+        Equals(Type, NotificationType.SystemLockerDisconnected) ||
+        Equals(Type, NotificationType.CustomerOrderCanceled) ||
+        Equals(Type, NotificationType.SystemOrderOverTime) ||
+        Equals(Type, NotificationType.CustomerOrderOverTime) 
+            ? NotificationLevel.Critical 
+        : Equals(Type, NotificationType.SystemLockerBoxWarning)
+            ? NotificationLevel.Warning 
+            : NotificationLevel.Information;
 }

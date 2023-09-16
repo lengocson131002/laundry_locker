@@ -16,6 +16,8 @@ public class GetAllNotificationsQuery : PaginationRequest<Notification>, IReques
     
     public bool? IsRead { get; set; }
     
+    public NotificationLevel? Level { get; set; }
+    
     [BindNever]
     [JsonIgnore]
     public long? AccountId { get; set; }
@@ -40,7 +42,8 @@ public class GetAllNotificationsQuery : PaginationRequest<Notification>, IReques
         Expression = Expression.And(notification => IsRead == null || notification.IsRead == IsRead);
 
         Expression = Expression.And(notification => AccountId == null || notification.AccountId == AccountId);
-            
+
+        Expression = Expression.And(notification => Level == null || notification.Level == Level);
         return Expression;
     }
 }

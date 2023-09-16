@@ -35,6 +35,10 @@ public class GetStaffProfileHandler : IRequestHandler<GetStaffProfileQuery, Staf
         var account = await _unitOfWork.AccountRepository
             .Get(acc => acc.Id == accountId)
             .Include(acc => acc.Store)
+            .Include(acc => acc.Store.Location)
+            .Include(acc => acc.Store.Location.Province)
+            .Include(acc => acc.Store.Location.District)
+            .Include(acc => acc.Store.Location.Ward)
             .FirstOrDefaultAsync(cancellationToken);
         
         if (account == null)
