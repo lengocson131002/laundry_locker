@@ -25,7 +25,8 @@ public class GetAllStoresHandler : IRequestHandler<GetAllStoresQuery, Pagination
                 store => store.Location.Province,
                 store => store.Location.District,
                 store => store.Location.Ward,
-            }
+            },
+            disableTracking: true
         );
 
         return new PaginationResponse<Store, StoreResponse>(

@@ -19,7 +19,7 @@ public class UpdateStoreCommandValidator : AbstractValidator<UpdateStoreCommand>
         RuleFor(model => model.Image)
             .MaximumLength(1000)
             .Must(image => image.IsValidUrl())
-            .When(model => model.Image is not null)
+            .When(model => !string.IsNullOrWhiteSpace(model.Image))
             .WithMessage("Invalid image URL");
     }
 }
@@ -37,7 +37,7 @@ public class UpdateStoreCommand : IRequest<StoreResponse>
 
     public LocationCommand? Location { get; set; }
 
-    [TrimString(true)]
+    [TrimString]
     public string? Image { get; set; }
     
     [TrimString]

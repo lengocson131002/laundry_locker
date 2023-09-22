@@ -23,7 +23,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpPut("{id:long}")]
-    [AuthorizeRoles(Role.LaundryAttendant)]
+    [Authorize]
     public async Task<ActionResult<OrderResponse>> UpdateOrder([FromRoute] long id, [FromBody] UpdateOrderCommand request)
     {
         request.Id = id;
@@ -53,7 +53,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpPut("{id:long}/collect")]
-    [AuthorizeRoles(Role.Shipper)]
+    [Authorize]
     public async Task<ActionResult<OrderResponse>> CollectOrder([FromRoute] long id)
     {
         var command = new UpdateOrderStatusCommand()
@@ -65,7 +65,7 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/process")]
-    [AuthorizeRoles(Role.LaundryAttendant)]
+    [Authorize]
     public async Task<ActionResult<OrderResponse>> ProcessOrder([FromRoute] long  id)
     {
         var command = new UpdateOrderStatusCommand()
@@ -77,7 +77,7 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/return")]
-    [AuthorizeRoles(Role.Shipper)]
+    [Authorize]
     public async Task<ActionResult<OrderResponse>> ReturnOrder([FromRoute] long id)
     {
         var command = new UpdateOrderStatusCommand()
@@ -151,7 +151,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpDelete("{id:long}/details/{detailId:long}")]
-    [AuthorizeRoles(Role.LaundryAttendant)]
+    [Authorize]
     public async Task<ActionResult<OrderItemResponse>> RemoveOrderDetail([FromRoute] long id, [FromRoute] long detailId)
     {
         var request = new RemoveOrderDetailCommand(id, detailId);
@@ -159,7 +159,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpPut("{id:long}/details/{detailId:long}")]
-    [AuthorizeRoles(Role.LaundryAttendant)]
+    [Authorize]
     public async Task<ActionResult<OrderItemResponse>> UpdateOrderDetail(
         [FromRoute] long id, 
         [FromRoute] long detailId,
@@ -171,7 +171,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpPost("{id:long}/details")]
-    [AuthorizeRoles(Role.LaundryAttendant)]
+    [Authorize]
     public async Task<ActionResult<OrderItemResponse>> AddOrderDetail([FromRoute] long id, [FromBody] AddOrderDetailCommand command)
     {
         command.OrderId = id;
@@ -179,7 +179,7 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPost("{id:long}/details/{detailId:long}/items")]
-    [AuthorizeRoles(Role.LaundryAttendant)]
+    [Authorize]
     public async Task<ActionResult<LaundryItemResponse>> AddLaundryItem(
         [FromRoute] long id, 
         [FromRoute] long detailId,
@@ -191,7 +191,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpDelete("{id:long}/details/{detailId:long}/items/{itemId:long}")]
-    [AuthorizeRoles(Role.LaundryAttendant)]
+    [Authorize]
     public async Task<ActionResult<LaundryItemResponse>> RemoveLaundryItem(
         [FromRoute] long id, 
         [FromRoute] long detailId, 

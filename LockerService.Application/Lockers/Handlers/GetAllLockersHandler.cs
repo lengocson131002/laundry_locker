@@ -42,7 +42,8 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
                     locker => locker.Location.District,
                     locker => locker.Location.Ward,
                     locker => locker.Store
-                }
+                },
+                disableTracking: true
             ).GroupJoin(boxes, 
             locker => locker.Id, 
             box => box.LockerId, 
