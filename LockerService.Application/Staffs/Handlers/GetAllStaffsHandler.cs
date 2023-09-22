@@ -35,7 +35,8 @@ public class GetAllStaffsHandler : IRequestHandler<GetAllStaffsQuery, Pagination
             {
                 staff => staff.Store
             },
-            orderBy: request.GetOrder()
+            orderBy: request.GetOrder(),
+            disableTracking: true
         );
 
         return new PaginationResponse<Account, StaffResponse>(

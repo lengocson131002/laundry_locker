@@ -32,7 +32,8 @@ public class GetAllNotificationsHandler : IRequestHandler<GetAllNotificationsQue
         
         var notificationQuery = await _unitOfWork.NotificationRepository.GetAsync(
             predicate: request.GetExpressions(),
-            orderBy: request.GetOrder());
+            orderBy: request.GetOrder(),
+            disableTracking: true);
 
         return new PaginationResponse<Notification, NotificationModel>(
             notificationQuery,

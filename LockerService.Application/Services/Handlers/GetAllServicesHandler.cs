@@ -34,7 +34,8 @@ public class GetAllServicesHandler : IRequestHandler<GetAllServicesQuery, Pagina
         
         var service = await _unitOfWork.ServiceRepository.GetAsync(
             predicate: request.GetExpressions(),
-            orderBy: request.GetOrder()
+            orderBy: request.GetOrder(),
+            disableTracking: true
         );
 
         return new PaginationResponse<Service, ServiceResponse>(

@@ -15,8 +15,10 @@ public class GetAddressesHandler : IRequestHandler<GetAddressesQuery, ListRespon
 
     public async Task<ListResponse<AddressResponse>> Handle(GetAddressesQuery request, CancellationToken cancellationToken)
     {
-        var query = await _unitOfWork.AddressRepository
-            .GetAsync(address => address.ParentCode == request.ParentCode);
+        var query = await _unitOfWork.AddressRepository.GetAsync(
+                predicate:address => address.ParentCode == request.ParentCode, 
+                disableTracking: true
+        );
 
         var response = query
             .ToList()

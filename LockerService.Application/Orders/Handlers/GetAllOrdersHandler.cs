@@ -46,7 +46,9 @@ public class GetAllOrdersHandler : IRequestHandler<GetAllOrdersQuery, Pagination
                 order => order.ReceiveBox,
                 order => order.Sender,
                 order => order.Receiver
-            });
+            },
+            disableTracking: true
+        );
 
         return new PaginationResponse<Order, OrderResponse>(
             orderQuery, 
