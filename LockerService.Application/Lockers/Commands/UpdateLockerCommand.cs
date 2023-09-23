@@ -8,21 +8,18 @@ public class UpdateLockerCommandValidator : AbstractValidator<UpdateLockerComman
             .MaximumLength(100)
             .When(model => model.Name != null);
         
-        RuleFor(model => model.StaffIds)
-            .NotEmpty()
-            .When(model => model.StaffIds != null);
-        
         RuleFor(model => model.Location)
             .SetInheritanceValidator(v => { v.Add(new AddLocationCommandValidator()); })
             .When(model => model.Location != null);
         
-        RuleFor(model => model.StaffIds)
-            .Must(staffIds => staffIds == null || (staffIds.Any() && UniqueStaffs(staffIds)))
-            .WithMessage("StaffIds must not be empty and must contains unique ids");
-        
         RuleFor(model => model.Image)
             .Must(image => image == null || image.Trim().IsValidUrl())
             .WithMessage("Invalid image url");
+
+        RuleFor(model => model.OrderTypes)
+            .Must(orderTypes => orderTypes == null ||
+                                (orderTypes.Count > 0 && orderTypes.Distinct().Count() == orderTypes.Count()))
+            .WithMessage("OrderType must not empty and contains unique values");
     }
     
     private bool UniqueStaffs(IList<long> staffIds)
@@ -62,5 +59,5 @@ public class UpdateLockerCommand : IRequest
     
     public long? StoreId { get; set; }
     
-    public IList<long>? StaffIds { get; set; }
+    public IList<OrderType>? OrderTypes { get; set; }
 }

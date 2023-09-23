@@ -21,25 +21,12 @@ public class AddLockerCommandValidator : AbstractValidator<AddLockerCommand>
         RuleFor(model => model.Image)
             .Must(image => image == null || image.Trim().IsValidUrl())
             .WithMessage("Invalid image url");
+
+        RuleFor(model => model.OrderTypes)
+            .Must(orderTypes => orderTypes != null && orderTypes.Count > 0 && orderTypes.Distinct().Count() == orderTypes.Count())
+            .WithMessage("OrderType must not empty and contains unique values");
     }
     
-    private bool UniqueStaffs(IList<long> staffIds)
-    {
-        var encounteredIds = new HashSet<long>();
-
-        foreach (var element in staffIds)
-        {
-            if (!encounteredIds.Contains(element))
-            {
-                encounteredIds.Add(element);
-            }
-            else
-            {
-                return false;
-            }
-        }
-        return true;
-    }
 }
 
 public class AddLockerCommand : IRequest<LockerResponse>
@@ -56,5 +43,7 @@ public class AddLockerCommand : IRequest<LockerResponse>
     public string? Description { get; set; } = default!;
 
     public long StoreId { get; set; }
+
+    public IList<OrderType> OrderTypes { get; set; } = new List<OrderType>();
 
 }

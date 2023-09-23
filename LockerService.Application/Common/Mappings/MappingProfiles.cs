@@ -14,9 +14,18 @@ public class MappingProfiles : Profile
     public MappingProfiles()
     {
         // Locker
-        CreateMap<AddLockerCommand, Locker>();
-        CreateMap<Locker, LockerResponse>();
-        CreateMap<Locker, LockerDetailResponse>();
+        CreateMap<AddLockerCommand, Locker>()
+            .ForMember(dest => dest.OrderTypes, options 
+                => options.MapFrom(src => src.OrderTypes.Select(type => new LockerOrderType(type))));
+        
+        CreateMap<Locker, LockerResponse>()
+            .ForMember(dest => dest.OrderTypes,option 
+                    => option.MapFrom(src => src.OrderTypes.Select(item => item.OrderType)));
+        
+        CreateMap<Locker, LockerDetailResponse>()
+            .ForMember(dest => dest.OrderTypes,option 
+                => option.MapFrom(src => src.OrderTypes.Select(item => item.OrderType)));;
+        
         CreateMap<LockerTimeline, LockerTimelineResponse>();
         CreateMap<Box, BoxResponse>();
         CreateMap<Locker, DashboardLockerLocationItem>();

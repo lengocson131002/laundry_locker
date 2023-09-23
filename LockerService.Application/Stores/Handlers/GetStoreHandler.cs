@@ -17,14 +17,15 @@ public class GetStoreHandler : IRequestHandler<GetStoreQuery, StoreDetailRespons
         CancellationToken cancellationToken)
     {
         var storeQuery = await _unitOfWork.StoreRepository.GetAsync(
-            store => store.Id == request.StoreId,
+            predicate: store => store.Id == request.StoreId,
             includes: new List<Expression<Func<Store, object>>>
             {
                 store => store.Location,
                 store => store.Location.Province,
                 store => store.Location.District,
                 store => store.Location.Ward,
-            });
+            },
+            disableTracking: true);
 
         var store = storeQuery.FirstOrDefault();
         if (store is null)

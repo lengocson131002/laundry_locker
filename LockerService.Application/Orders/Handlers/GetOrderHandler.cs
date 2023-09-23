@@ -16,7 +16,9 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
 
     public async Task<OrderDetailResponse> Handle(GetOrderQuery request, CancellationToken cancellationToken)
     {
-        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(predicate: order => order.Id == request.Id);
+        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
+            predicate: order => order.Id == request.Id, 
+            disableTracking: true);
         var order = await orderQuery
             .Include(order => order.Locker)
             .Include(order => order.SendBox)
@@ -36,6 +38,9 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
             .Include(order => order.DeliveryAddress)
+            .Include(order => order.DeliveryAddress.Ward)
+            .Include(order => order.DeliveryAddress.District)
+            .Include(order => order.DeliveryAddress.Province)
             .FirstOrDefaultAsync(cancellationToken);
         
         if (order == null)

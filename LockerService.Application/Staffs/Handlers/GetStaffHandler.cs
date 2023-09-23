@@ -26,7 +26,9 @@ public class GetStaffHandler : IRequestHandler<GetStaffQuery, StaffDetailRespons
                     staff => staff.Store.Location.Province,
                     staff => staff.Store.Location.District,
                     staff => staff.Store.Location.Ward
-                }).FirstOrDefaultAsync(cancellationToken);
+                },
+                disableTracking: true
+            ).FirstOrDefaultAsync(cancellationToken);
 
         if (staff is null)
         {
