@@ -53,6 +53,10 @@ public class Locker : BaseAuditableEntity
     [JsonIgnore]
     public IList<Order> Orders { get; set; } = new List<Order>();
 
+    [JsonIgnore]
+    public IList<LockerOrderType> OrderTypes { get; set; } = new List<LockerOrderType>();
+    
     public bool CanUpdateStatus => !Equals(LockerStatus.Initialized, Status) 
                                    && !Equals(LockerStatus.Disconnected, Status);
+
 }

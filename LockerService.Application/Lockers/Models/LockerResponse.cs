@@ -22,5 +22,7 @@ public class LockerResponse : BaseAuditableEntityResponse
     
     public string? IpAddress { get; set; }
     
-    public int BoxCount { get; set; } 
+    public int BoxCount { get; set; }
+
+    public IList<OrderType> OrderTypes { get; set; } = new List<OrderType>();
 }

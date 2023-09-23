@@ -29,7 +29,8 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
                 locker => locker.Location,
                 locker => locker.Location.Province,
                 locker => locker.Location.District,
-                locker => locker.Location.Ward
+                locker => locker.Location.Ward,
+                locker => locker.OrderTypes
             });
 
         var locker = lockerQuery.FirstOrDefault();
@@ -61,35 +62,6 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
                 throw new ApiException(ResponseCode.StoreErrorNotFound);
             }
             locker.StoreId = request.StoreId.Value;
-        }
-
-        if (request.StaffIds != null)
-        {
-            var staffLockers = new List<StaffLocker>();
-            foreach (var staffId in request.StaffIds)
-            {
-                var staff = await _unitOfWork.AccountRepository.GetStaffById(staffId);
-                if (staff == null || !Equals(staff.StoreId, locker.StoreId))
-                {
-                    throw new ApiException(ResponseCode.StaffErrorNotFound);
-                }
-
-                if (!staff.IsActive)
-                {
-                    throw new ApiException(ResponseCode.StaffErrorInvalidStatus);
-                }
-                staffLockers.Add(new StaffLocker()
-                {
-                    Locker = locker,
-                    Staff = staff
-                });
-            }
-
-            var currentStaffLockersQuery =
-                await _unitOfWork.StaffLockerRepository.GetAsync(item => item.LockerId == locker.Id);
-
-            await _unitOfWork.StaffLockerRepository.DeleteRange(currentStaffLockersQuery.ToList());
-            await _unitOfWork.StaffLockerRepository.AddRange(staffLockers);
         }
 
         if (request.Location != null)
@@ -127,6 +99,17 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
             locker.Location.Ward = ward;
             locker.Location.Longitude = location.Longitude;
             locker.Location.Latitude = location.Latitude;
+        }
+
+        if (request.OrderTypes != null)
+        {
+            locker.OrderTypes.Clear();
+
+            foreach (var type in request.OrderTypes)
+            {
+                var lockerOrderType = new LockerOrderType(type);
+                locker.OrderTypes.Add(lockerOrderType);
+            }
         }
 
         await _unitOfWork.LockerRepository.UpdateAsync(locker);

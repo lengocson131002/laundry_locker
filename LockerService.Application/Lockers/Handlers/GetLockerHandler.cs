@@ -29,8 +29,11 @@ public class GetLockerHandler :
                 locker => locker.Store.Location,
                 locker => locker.Store.Location.Province,
                 locker => locker.Store.Location.District,
-                locker => locker.Store.Location.Ward 
-            });
+                locker => locker.Store.Location.Ward,
+                locker => locker.OrderTypes,
+            },
+            disableTracking: true
+        );
         
 
         var locker = query.FirstOrDefault();

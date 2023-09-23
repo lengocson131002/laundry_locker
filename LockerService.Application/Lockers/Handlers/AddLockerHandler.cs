@@ -1,5 +1,3 @@
-using LockerService.Application.Common.Utils;
-
 namespace LockerService.Application.Lockers.Handlers;
 
 public class AddLockerHandler : IRequestHandler<AddLockerCommand, LockerResponse>
