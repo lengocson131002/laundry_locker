@@ -1,6 +1,6 @@
 namespace LockerService.Application.Orders.Handlers;
 
-public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, OrderItemResponse>
+public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, StatusResponse>
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
@@ -11,7 +11,7 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Orde
         _mapper = mapper;
     }
 
-    public async Task<OrderItemResponse> Handle(AddOrderDetailCommand request, CancellationToken cancellationToken)
+    public async Task<StatusResponse> Handle(AddOrderDetailCommand request, CancellationToken cancellationToken)
     {
         var order = await _unitOfWork.OrderRepository
             .Get(order => Equals(order.Id, request.OrderId))
@@ -26,28 +26,31 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Orde
         }
 
         // Get service
-        var service = await _unitOfWork.ServiceRepository.GetStoreService(order.Locker.StoreId, request.ServiceId);
-        if (service == null || !service.IsActive)
+        foreach (var detail in request.Details)
         {
-            throw new ApiException(ResponseCode.ServiceErrorNotFound);
-        }
+            var service = await _unitOfWork.ServiceRepository.GetStoreService(order.Locker.StoreId, detail.ServiceId);
+            if (service == null || !service.IsActive)
+            {
+                throw new ApiException(ResponseCode.ServiceErrorNotFound);
+            }
 
-        var existed = await _unitOfWork.OrderDetailRepository
-            .Get(detail => detail.ServiceId == request.ServiceId && detail.OrderId == request.OrderId)
-            .AnyAsync(cancellationToken);
-        if (existed)
-        {
-            throw new ApiException(ResponseCode.OrderDetailErrorExisted);
-        }
+            var existed = await _unitOfWork.OrderDetailRepository
+                .Get(d => d.ServiceId == detail.ServiceId && d.OrderId == request.OrderId)
+                .AnyAsync(cancellationToken);
+            if (existed)
+            {
+                throw new ApiException(ResponseCode.OrderDetailErrorExisted);
+            }
 
-        var orderDetail = new OrderDetail()
-        {
-            Service = service,
-            Order = order,
-            Quantity = request.Quantity,
-            Price = service.Price
-        };
-        await _unitOfWork.OrderDetailRepository.AddAsync(orderDetail);
+            var orderDetail = new OrderDetail()
+            {
+                Service = service,
+                Order = order,
+                Quantity = detail.Quantity,
+                Price = service.Price
+            };
+            await _unitOfWork.OrderDetailRepository.AddAsync(orderDetail);
+        }
         
         // Update order status to processing
         order.Status = OrderStatus.Processing;
@@ -55,6 +58,6 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Orde
         
         await _unitOfWork.SaveChangesAsync();
 
-        return _mapper.Map<OrderItemResponse>(orderDetail);
+        return new StatusResponse();
     }
 }

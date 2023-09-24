@@ -172,7 +172,7 @@ public class OrderController : ApiControllerBase
     
     [HttpPost("{id:long}/details")]
     [Authorize]
-    public async Task<ActionResult<OrderItemResponse>> AddOrderDetail([FromRoute] long id, [FromBody] AddOrderDetailCommand command)
+    public async Task<ActionResult<StatusResponse>> AddOrderDetail([FromRoute] long id, [FromBody] AddOrderDetailCommand command)
     {
         command.OrderId = id;
         return await Mediator.Send(command);
