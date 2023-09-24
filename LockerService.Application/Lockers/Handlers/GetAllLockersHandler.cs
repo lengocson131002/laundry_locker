@@ -32,6 +32,7 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
         }
 
         var boxes = _unitOfWork.BoxRepository.Get();
+        
         var lockersQuery = _unitOfWork.LockerRepository.Get(
                 predicate: request.GetExpressions(),
                 orderBy: request.GetOrder(),
@@ -45,7 +46,8 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
                     locker => locker.OrderTypes
                 },
                 disableTracking: true
-            ).GroupJoin(boxes, 
+            )
+            .GroupJoin(boxes, 
             locker => locker.Id, 
             box => box.LockerId, 
             (locker, boxGroup) => new
@@ -55,7 +57,12 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
             });
 
         var count = await lockersQuery.CountAsync(cancellationToken);
-        var lockerBoxCount = await lockersQuery.ToListAsync(cancellationToken);
+        
+        var lockerBoxCount = await lockersQuery
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(cancellationToken);
+        
         var lockers = lockerBoxCount.Select(lb =>
         {
             var lo = _mapper.Map<LockerResponse>(lb.Locker);
