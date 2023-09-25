@@ -11,5 +11,7 @@ public class OrderDetailResponse : OrderResponse
     public BillResponse? Bill { get; set; }
     
     public LocationResponse? DeliveryAddress { get; set; }
+    
+    public bool UpdatedInfo { get; set; }
 
 }
