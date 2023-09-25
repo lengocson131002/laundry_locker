@@ -18,6 +18,8 @@ public class OrderSettingsCommandValidator : AbstractValidator<OrderSettingsComm
             .GreaterThanOrEqualTo(1);
         RuleFor(model => model.ReservationFee)
             .GreaterThanOrEqualTo(1);
+        RuleFor(model => model.MinTimeProcessLaundryOrderInHours)
+            .GreaterThanOrEqualTo(1);
     }
 }
 
@@ -36,4 +38,6 @@ public class OrderSettingsCommand
     public int MaxActiveOrderCount { get; set; }
     
     public decimal ReservationFee { get; set; }
+    
+    public int MinTimeProcessLaundryOrderInHours { get; set; }
 }

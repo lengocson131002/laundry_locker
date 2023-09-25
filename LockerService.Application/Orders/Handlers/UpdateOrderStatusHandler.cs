@@ -132,7 +132,16 @@ public class UpdateOrderStatusHandler : IRequestHandler<UpdateOrderStatusCommand
 
         if (order.IsLaundry)
         {
-            order.IntendedOvertime = order.IntendedReceiveAt.AddHours(orderSettings.MaxTimeInHours);
+            var intendedReceiveAt = order.IntendedReceiveAt;
+            if (intendedReceiveAt != null && intendedReceiveAt <= DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours))
+            {
+                throw new ApiException(ResponseCode.OrderErrorInvalidReceiveTime);
+            }
+            
+            order.IntendedOvertime = intendedReceiveAt != null 
+                    ? intendedReceiveAt.Value.AddHours(orderSettings.MaxTimeInHours)
+                    : DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours + orderSettings.MaxTimeInHours);
+            
             order.ExtraFee = orderSettings.ExtraFee;
         }
     }

@@ -173,7 +173,7 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             SendBox = availableBox,
             ReceiveBox = availableBox,
             DeliveryAddress = deliveryAddress,
-            IntendedReceiveAt = command.IntendedReceiveAt.ToUniversalTime()
+            IntendedReceiveAt = command.IntendedReceiveAt?.ToUniversalTime()
         };
         await _unitOfWork.OrderRepository.AddAsync(order);
         await _unitOfWork.SaveChangesAsync();

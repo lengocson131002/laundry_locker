@@ -37,6 +37,8 @@ public class OrderResponse : BaseAuditableEntityResponse
 
     public decimal? ReservationFee { get; set; }
     
+    public  decimal? TotalExtraFee { get; set; }
+    
     public decimal? TotalPrice { get; set; }
 
     public string? Description { get; set; }

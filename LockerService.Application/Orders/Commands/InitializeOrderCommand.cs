@@ -28,10 +28,6 @@ public class InitializeOrderCommandValidation : AbstractValidator<InitializeOrde
         RuleFor(model => model.DeliveryAddress)
             .SetInheritanceValidator(v => v.Add(new AddLocationCommandValidator()))
             .When(model => model.DeliveryAddress != null);
-
-        RuleFor(model => model.IntendedReceiveAt)
-            .NotNull()
-            .GreaterThan(DateTimeOffset.Now);
     }
 
     public bool UniqueServices(IList<long> serviceIds)
@@ -69,7 +65,7 @@ public class InitializeOrderCommand : IRequest<OrderResponse>
     
     public LocationCommand? DeliveryAddress { get; set; }
     
-    public DateTimeOffset IntendedReceiveAt { get; set; }
+    public DateTimeOffset? IntendedReceiveAt { get; set; }
 
     public bool IsReserving { get; set; } = false;
 }

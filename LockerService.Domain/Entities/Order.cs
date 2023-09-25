@@ -35,7 +35,7 @@ public class Order : BaseAuditableEntity
     public Account? Receiver { get; set; }
 
     // Thời gian nhận dự kiến
-    public DateTimeOffset IntendedReceiveAt { get; set; }
+    public DateTimeOffset? IntendedReceiveAt { get; set; }
 
     // Thời gian quá hạn dự kiến
     public DateTimeOffset? IntendedOvertime { get; set; }
@@ -85,6 +85,8 @@ public class Order : BaseAuditableEntity
         }
     }
 
+    public decimal? TotalExtraFee => ExtraFee * (decimal) ExtraCount;
+
     // Tổng chi phí dịch vụ
     public decimal Price
     {
@@ -108,7 +110,7 @@ public class Order : BaseAuditableEntity
                 : 0);
         }
     }
-
+    
     public decimal TotalPrice { get; set; }
 
     public string? Description { get; set; }

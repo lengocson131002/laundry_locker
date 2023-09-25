@@ -93,6 +93,8 @@ public enum ResponseCode
     
     [Description("Can't create order because your account has currently had over allowed active order count")] OrderErrorExceedAllowOrderCount = 411,
 
+    [Description("Invalid receive time")] OrderErrorInvalidReceiveTime = 412,
+
     // Address
     [Description("Province not found")] AddressErrorProvinceNotFound = 501,
     
