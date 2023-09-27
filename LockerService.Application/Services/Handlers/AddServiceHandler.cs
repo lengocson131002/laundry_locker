@@ -29,16 +29,6 @@ public class AddServiceHandler : IRequestHandler<AddServiceCommand, ServiceRespo
             throw new ApiException(ResponseCode.StoreErrorNotFound);
         }
         
-        // check exist name
-        var query = await _unitOfWork.ServiceRepository.GetAsync(
-            predicate: ser => ser.Name.Equals(service.Name)
-        );
-
-        if (query.Any())
-        {
-            throw new ApiException(ResponseCode.ServiceErrorExistedName);
-        }
-        
         service = await _unitOfWork.ServiceRepository.AddAsync(service);
         
         // Save changes 
