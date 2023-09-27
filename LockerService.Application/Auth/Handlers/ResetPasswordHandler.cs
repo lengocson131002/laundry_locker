@@ -13,10 +13,21 @@ public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, Status
 
     public async Task<StatusResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
+        // Validate username
+        var account = await _unitOfWork
+            .AccountRepository.Get((acc => Equals(acc.Username, request.Username)))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (account == null)
+        {
+            throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
+        }
+        
         // validate token
         var token = await _unitOfWork.TokenRepository
             .Get(token => Equals(token.Type, TokenType.ResetPassword) 
-                          && Equals(token.Value, request.Token) 
+                          && Equals(token.Value, request.Token)
+                          && Equals(token.AccountId, account.Id)
                           && !token.IsExpired)
             .Include(token => token.Account)
             .FirstOrDefaultAsync(cancellationToken);
@@ -27,7 +38,6 @@ public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, Status
         }
         
         // update password
-        var account = token.Account;
         account.Status = AccountStatus.Active;
         account.Password = BCryptUtils.Hash(request.Password);
         await _unitOfWork.AccountRepository.UpdateAsync(account);

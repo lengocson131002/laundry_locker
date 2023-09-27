@@ -7,6 +7,9 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
         RuleFor(model => model.Token)
             .NotEmpty();
 
+        RuleFor(model => model.Username)
+            .NotEmpty();    
+        
         RuleFor(model => model.Password)
             .NotEmpty();
 
@@ -21,6 +24,9 @@ public class ResetPasswordCommand : IRequest<StatusResponse>
 {
     [TrimString(true)] 
     public string Token { get; set; } = default!;
+    
+    [TrimString(true)] 
+    public string Username { get; set; } = default!;
 
     [TrimString(true)] 
     public string Password { get; set; } = default!;
