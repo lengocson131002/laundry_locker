@@ -7,14 +7,17 @@ public class GetAllServicesHandler : IRequestHandler<GetAllServicesQuery, Pagina
     private readonly ILogger<AddServiceHandler> _logger;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentAccountService _currentAccountService;
 
     public GetAllServicesHandler(
         ILogger<AddServiceHandler> logger,
-        IMapper mapper, IUnitOfWork unitOfWork)
+        IMapper mapper, IUnitOfWork unitOfWork, 
+        ICurrentAccountService currentAccountService)
     {
         _logger = logger;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _currentAccountService = currentAccountService;
     }
 
 
@@ -22,6 +25,17 @@ public class GetAllServicesHandler : IRequestHandler<GetAllServicesQuery, Pagina
         CancellationToken cancellationToken)
     {
         var lockerId = request.LockerId;
+        
+        /*
+         * Check current logged in user
+         * if Store Staff, get only their store's locker
+         */
+        var currentLoggedInAccount = await _currentAccountService.GetCurrentAccount();
+        if (currentLoggedInAccount != null && currentLoggedInAccount.IsStoreStaff)
+        {
+            request.StoreId = currentLoggedInAccount.StoreId;
+        }
+        
         if (lockerId != null)
         {
             var locker = await _unitOfWork.LockerRepository.GetByIdAsync(lockerId);
