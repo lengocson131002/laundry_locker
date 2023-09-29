@@ -1,11 +1,13 @@
 using LockerService.API.Attributes;
+using LockerService.API.Common;
 using LockerService.Application.Staffs.Models;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/staffs")]
-[Authorize]
+[AuthorizeRoles(Role.Admin, Role.Manager)]
 [ApiKey]
 public class StaffController : ApiControllerBase
 {

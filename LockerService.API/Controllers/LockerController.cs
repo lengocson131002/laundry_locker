@@ -1,10 +1,12 @@
 using LockerService.API.Attributes;
+using LockerService.API.Common;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Lockers.Commands;
 using LockerService.Application.Lockers.Models;
 using LockerService.Application.Lockers.Queries;
 using LockerService.Application.Services.Models;
 using LockerService.Application.Services.Queries;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
@@ -14,7 +16,7 @@ namespace LockerService.API.Controllers;
 public class LockerController : ApiControllerBase
 {
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<LockerResponse>> AddLocker([FromBody] AddLockerCommand command)
     {
         return await Mediator.Send(command);
@@ -42,55 +44,58 @@ public class LockerController : ApiControllerBase
         };
         return await Mediator.Send(query);
     }
-    
+
     [HttpGet("{id:long}/services")]
-    public async Task<ActionResult<PaginationResponse<Service, ServiceResponse>>> GetLockerServices([FromRoute] long id, [FromQuery] GetAllServicesQuery query)
+    public async Task<ActionResult<PaginationResponse<Service, ServiceResponse>>> GetLockerServices([FromRoute] long id,
+        [FromQuery] GetAllServicesQuery query)
     {
         query.LockerId = id;
-        
+
         if (string.IsNullOrWhiteSpace(query.SortColumn))
         {
             query.SortColumn = "UpdatedAt";
             query.SortDir = SortDirection.Desc;
         }
-        
+
         return await Mediator.Send(query);
     }
 
     [HttpPost("{id:long}/staffs")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> AssignStaffs([FromRoute] long id, [FromBody] AssignStaffCommand command)
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
+    public async Task<ActionResult<StatusResponse>> AssignStaffs([FromRoute] long id,
+        [FromBody] AssignStaffCommand command)
     {
         command.LockerId = id;
         return await Mediator.Send(command);
     }
-    
+
     [HttpDelete("{id:long}/staffs")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> UnAssignStaffs([FromRoute] long id, [FromBody] RevokeStaffCommand command)
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
+    public async Task<ActionResult<StatusResponse>> UnAssignStaffs([FromRoute] long id,
+        [FromBody] RevokeStaffCommand command)
     {
         command.LockerId = id;
         return await Mediator.Send(command);
     }
-    
+
     [HttpPut("{id:long}")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StatusResponse>> UpdateLocker([FromRoute] long id,
         [FromBody] UpdateLockerCommand command)
     {
         command.LockerId = id;
         await Mediator.Send(command);
-        return new StatusResponse(true);
+        return new StatusResponse();
     }
 
     [HttpPut("{id:long}/status")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StatusResponse>> UpdateLockerStatus([FromRoute] long id,
         [FromBody] UpdateLockerStatusCommand command)
     {
         command.LockerId = id;
         await Mediator.Send(command);
-        return new StatusResponse(true);
+        return new StatusResponse();
     }
 
     [HttpPost("connect")]
@@ -100,13 +105,13 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPost("{id:long}/boxes")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> AddBox([FromRoute] long id, [FromBody] AddBoxCommand  command)
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
+    public async Task<ActionResult<StatusResponse>> AddBox([FromRoute] long id, [FromBody] AddBoxCommand command)
     {
         command.LockerId = id;
         return await Mediator.Send(command);
     }
-    
+
     [HttpGet("{id:long}/boxes")]
     public async Task<ActionResult<ListResponse<BoxResponse>>> GetAllBoxes([FromRoute] long id)
     {
@@ -114,8 +119,9 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/boxes")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<StatusResponse>> UpdateBoxStatus([FromRoute] long id, [FromBody] UpdateBoxStatusCommand command)
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
+    public async Task<ActionResult<StatusResponse>> UpdateBoxStatus([FromRoute] long id,
+        [FromBody] UpdateBoxStatusCommand command)
     {
         command.LockerId = id;
         return await Mediator.Send(command);
@@ -137,7 +143,7 @@ public class LockerController : ApiControllerBase
     }
 
     [HttpGet("{id:long}/statistics")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<ListResponse<LockerEventStatisticItem>>> GetLockerEventStatistic(
         [FromRoute] long id,
         [FromQuery] LockerEventStatisticQuery query)
@@ -145,6 +151,4 @@ public class LockerController : ApiControllerBase
         query.LockerId = id;
         return await Mediator.Send(query);
     }
-
-    
 }

@@ -1,7 +1,9 @@
 using LockerService.API.Attributes;
+using LockerService.API.Common;
 using LockerService.Application.Settings.Commands;
 using LockerService.Application.Settings.Models;
 using LockerService.Application.Settings.Queries;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
@@ -17,7 +19,7 @@ public class SettingController : ApiControllerBase
     }
 
     [HttpPut]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin)]
     public async Task<ActionResult<SettingsResponse>> UpdateSettings([FromBody] UpdateSettingsCommand command)
     {
         return await Mediator.Send(command);

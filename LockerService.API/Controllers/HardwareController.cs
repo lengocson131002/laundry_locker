@@ -1,14 +1,16 @@
 using LockerService.API.Attributes;
+using LockerService.API.Common;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Hardwares.Commands;
 using LockerService.Application.Hardwares.Models;
 using LockerService.Application.Hardwares.Queries;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/lockers/{id:long}/hardwares")]
-[Authorize(Roles = "Admin")]
+[AuthorizeRoles(Role.Admin, Role.Manager)]
 [ApiKey]
 public class HardwareController : ApiControllerBase
 {

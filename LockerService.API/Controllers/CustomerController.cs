@@ -1,8 +1,10 @@
 using LockerService.API.Attributes;
+using LockerService.API.Common;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Customers.Commands;
 using LockerService.Application.Customers.Models;
 using LockerService.Application.Customers.Queries;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
@@ -39,7 +41,7 @@ public class CustomerController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/status")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin)]
     public async Task<ActionResult<StatusResponse>> UpdateCustomerStatus([FromRoute] long id, [FromBody] UpdateCustomerStatusCommand command)
     {
         command.Id = id;

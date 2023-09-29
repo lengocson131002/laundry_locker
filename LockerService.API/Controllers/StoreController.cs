@@ -1,8 +1,10 @@
 using LockerService.API.Attributes;
+using LockerService.API.Common;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Services.Commands;
 using LockerService.Application.Services.Models;
 using LockerService.Application.Services.Queries;
+using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
@@ -28,14 +30,14 @@ public class StoreController : ApiControllerBase
     }
 
     [HttpPost("")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin)]
     public async Task<ActionResult<StoreResponse>> AddStore([FromBody] AddStoreCommand command)
     {
         return await Mediator.Send(command);
     }
 
     [HttpPut("{id:long}")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin)]
     public async Task<ActionResult<StoreResponse>> UpdateStore(
         [FromRoute] long id,
         [FromBody] UpdateStoreCommand command)
@@ -45,7 +47,7 @@ public class StoreController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/status")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin)]
     public async Task<ActionResult<StoreResponse>> UpdateStoreStatus(
         [FromRoute] long id,
         UpdateStoreStatusCommand command)
@@ -56,7 +58,7 @@ public class StoreController : ApiControllerBase
 
     // Services
     [HttpPost("{id:long}/services")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<ServiceResponse>> AddService(
         [FromRoute] long id,
         [FromBody] AddServiceCommand command)
@@ -82,7 +84,7 @@ public class StoreController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/services/{serviceId:long}")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StatusResponse>> UpdateService(
         [FromRoute] long id, 
         [FromRoute] long serviceId, 
@@ -103,7 +105,7 @@ public class StoreController : ApiControllerBase
     }
 
     [HttpPut("{id:long}/services/{serviceId:long}/status")]
-    [Authorize(Roles = "Admin")]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StatusResponse>> UpdateServiceStatus(
         [FromRoute] long id, 
         [FromRoute] long serviceId,
