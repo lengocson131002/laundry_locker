@@ -30,7 +30,7 @@ public class Notifier : INotifier
         // SYSTEM NOTIFICATION TYPE
         _provider.Attach(NotificationType.SystemStaffCreated, new List<INotificationService>()
         {
-            // smsNotificationService,
+            smsNotificationService,
             mobileNotificationService,
         });
         
@@ -87,13 +87,13 @@ public class Notifier : INotifier
         _provider.Attach(NotificationType.CustomerOrderCreated, new List<INotificationService>()
         {
             mobileNotificationService,
-            // smsNotificationService
+            smsNotificationService
         });
         
         _provider.Attach(NotificationType.CustomerOrderReturned, new List<INotificationService>()
         {
             mobileNotificationService,
-            // smsNotificationService
+            smsNotificationService
         });
         
         _provider.Attach(NotificationType.CustomerOrderCanceled, new List<INotificationService>()
@@ -109,7 +109,7 @@ public class Notifier : INotifier
         _provider.Attach(NotificationType.CustomerOrderOverTime, new List<INotificationService>()
         {
             mobileNotificationService,
-            // smsNotificationService
+            smsNotificationService
         });
     }
     
