@@ -33,6 +33,29 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
         var currentAccountId = currentAccount?.Id;
         var currentAccountUsername = currentAccount?.Username;
         
+        var audits = new List<Audit>();
+        foreach (var entry in context.ChangeTracker.Entries())
+        {
+            // Save audit log table
+            var auditEntry = GetAuditEntry(entry);
+            if (auditEntry != null)
+            {
+                var audit = auditEntry.ToAudit();
+                
+                audit.CreatedBy = currentAccountId;
+                audit.CreatedByUsername = currentAccountUsername;
+                audit.UpdatedBy = currentAccountId;
+                audit.UpdatedByUsername = currentAccountUsername;
+                
+                audits.Add(audit);
+            }
+        }
+        
+        foreach (var audit in audits)
+        {
+            context.Add(audit);
+        }
+        
         foreach (var entry in context.ChangeTracker.Entries<BaseAuditableEntity>())
         {
             if (entry.State == EntityState.Added)
@@ -47,23 +70,6 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
                 entry.Entity.UpdatedBy = currentAccountId;
                 entry.Entity.UpdatedByUsername = currentAccountUsername;
                 entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
-            }
-        }
-        
-        foreach (var entry in context.ChangeTracker.Entries())
-        {
-            // Save audit log table
-            var auditEntry = GetAuditEntry(entry);
-            if (auditEntry != null)
-            {
-                var audit = auditEntry.ToAudit();
-                
-                audit.CreatedBy = currentAccountId;
-                audit.CreatedByUsername = currentAccountUsername;
-                audit.UpdatedBy = currentAccountId;
-                audit.UpdatedByUsername = currentAccountUsername;
-                
-                context.Add(audit);
             }
         }
     }
