@@ -32,12 +32,15 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
     public IQueryable<Account> GetStaffs(long? storeId, Role? role = null, bool? isActive = null)
     {
         var staffQuery = _dbContext.Accounts
-            .Where(account => (storeId == null || account.StoreId == storeId) && (isActive == null || account.IsActive == isActive));
+            .Where(account => (storeId == null || account.StoreId == storeId) 
+                              && (isActive == null || account.IsActive == isActive) 
+                              && account.IsStaff);
 
         if (role != null)
         {
             return staffQuery.Where(acc => acc.Role == role);
         }
+ 
 
         return staffQuery;
     }
