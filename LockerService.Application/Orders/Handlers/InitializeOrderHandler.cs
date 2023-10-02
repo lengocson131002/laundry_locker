@@ -167,7 +167,8 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             LockerId = command.LockerId,
             Type = command.Type,
             Details = details,
-            Status = !command.IsReserving ? OrderStatus.Initialized : OrderStatus.Reserved,
+            Status = command.IsReserving ? OrderStatus.Reserved : OrderStatus.Initialized,
+            PinCode = command.IsReserving ? await _unitOfWork.OrderRepository.GenerateOrderPinCode() : null,
             Sender = sender,
             Receiver = receiver,
             SendBox = availableBox,
@@ -175,6 +176,7 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             DeliveryAddress = deliveryAddress,
             IntendedReceiveAt = command.IntendedReceiveAt?.ToUniversalTime()
         };
+        
         await _unitOfWork.OrderRepository.AddAsync(order);
         await _unitOfWork.SaveChangesAsync();
         
