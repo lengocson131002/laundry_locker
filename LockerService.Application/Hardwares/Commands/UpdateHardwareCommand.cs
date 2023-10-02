@@ -7,9 +7,13 @@ public class UpdateHardwareCommandValidator : AbstractValidator<UpdateHardwareCo
         RuleFor(model => model.Price)
             .GreaterThan(0)
             .When(model => model.Price != null);
+        
+        RuleFor(model => model.Price)
+            .GreaterThan(0)
+            .When(model => model.Count != null);
     }
 }
-public class UpdateHardwareCommand : IRequest<StatusResponse>
+public class UpdateHardwareCommand : IRequest<HardwareResponse>
 {
     [JsonIgnore] 
     public long LockerId { get; set; }
@@ -27,6 +31,8 @@ public class UpdateHardwareCommand : IRequest<StatusResponse>
     public string? Brand { get; set; }
     
     public decimal? Price { get; set; }
+    
+    public long? Count { get; set; }
     
     [TrimString(true)]
     public string? Description { get; set; }

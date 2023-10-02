@@ -14,5 +14,7 @@ public class HardwareResponse : BaseAuditableEntityResponse
     
     public string? Description { get; set; }
     
+    public long? Count { get; set; }
+    
     public bool IsActive { get; set; }
 }

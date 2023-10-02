@@ -39,7 +39,7 @@ public class HardwareController : ApiControllerBase
     }
     
     [HttpPut("{hardwareId:long}")]
-    public async Task<ActionResult<StatusResponse>> UpdateHardware(
+    public async Task<ActionResult<HardwareResponse>> UpdateHardware(
         [FromRoute] long id,        
         [FromRoute] long hardwareId,
         [FromBody] UpdateHardwareCommand command)
@@ -51,7 +51,7 @@ public class HardwareController : ApiControllerBase
     }
     
     [HttpDelete("{hardwareId:long}")]
-    public async Task<ActionResult<StatusResponse>> RemoveHardware(
+    public async Task<ActionResult<HardwareResponse>> RemoveHardware(
         [FromRoute] long id,
         [FromRoute] long hardwareId)
     {

@@ -1,17 +1,19 @@
 namespace LockerService.Application.Hardwares.Handlers;
 
-public class RemoveHardwareHandler : IRequestHandler<RemoveHardwareCommand, StatusResponse>
+public class RemoveHardwareHandler : IRequestHandler<RemoveHardwareCommand, HardwareResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentPrincipalService _currentPrincipalService;
-
-    public RemoveHardwareHandler(IUnitOfWork unitOfWork, ICurrentPrincipalService currentPrincipalService)
+    private readonly IMapper _mapper;
+    
+    public RemoveHardwareHandler(IUnitOfWork unitOfWork, ICurrentPrincipalService currentPrincipalService, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _currentPrincipalService = currentPrincipalService;
+        _mapper = mapper;
     }
 
-    public async Task<StatusResponse> Handle(RemoveHardwareCommand request, CancellationToken cancellationToken)
+    public async Task<HardwareResponse> Handle(RemoveHardwareCommand request, CancellationToken cancellationToken)
     {
         var locker = await _unitOfWork.LockerRepository.GetByIdAsync(request.LockerId);
         if (locker == null)
@@ -25,12 +27,9 @@ public class RemoveHardwareHandler : IRequestHandler<RemoveHardwareCommand, Stat
             throw new ApiException(ResponseCode.HardwareErrorNotFound);
         }
     
-        hardware.DeletedAt = DateTimeOffset.UtcNow;
-        hardware.DeletedBy = _currentPrincipalService.CurrentSubjectId;
-        
-        await _unitOfWork.HardwareRepository.UpdateAsync(hardware);
-        var result = await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.HardwareRepository.DeleteAsync(hardware);
+        await _unitOfWork.SaveChangesAsync();
 
-        return new StatusResponse(result > 0);
+        return _mapper.Map<HardwareResponse>(hardware);
     }
 }

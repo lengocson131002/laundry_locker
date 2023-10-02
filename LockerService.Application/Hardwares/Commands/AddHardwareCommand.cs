@@ -7,14 +7,19 @@ public class AddHardwareCommandValidator : AbstractValidator<AddHardwareCommand>
         RuleFor(model => model.Name)
             .MaximumLength(200)
             .NotEmpty();
+        
         RuleFor(model => model.Code)
             .MaximumLength(200);
+        
         RuleFor(model => model.Brand)
-            .MaximumLength(200)
-            .NotEmpty();
+            .MaximumLength(200);
+        
         RuleFor(model => model.Price)
             .GreaterThan(0)
             .When(model => model.Price != null);
+
+        RuleFor(model => model.Count)
+            .GreaterThan(0);
     }
 }
 
@@ -33,6 +38,8 @@ public class AddHardwareCommand : IRequest<HardwareResponse>
     public string? Brand { get; set; }
     
     public double? Price { get; set; }
+    
+    public long Count { get; set; }
     
     [TrimString(true)]
     public string? Description { get; set; }

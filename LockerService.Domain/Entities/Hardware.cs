@@ -20,6 +20,8 @@ public class Hardware : BaseAuditableEntity
     public string? Description { get; set; }
     
     public long LockerId { get; set; }
+    
+    public long Count { get; set; }
 
     public Locker Locker { get; set; } = default!;
 

@@ -1,6 +1,6 @@
 namespace LockerService.Application.Hardwares.Commands;
 
-public class RemoveHardwareCommand : IRequest<StatusResponse>
+public class RemoveHardwareCommand : IRequest<HardwareResponse>
 {
     public long LockerId { get; set; }
     
