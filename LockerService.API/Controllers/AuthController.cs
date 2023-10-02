@@ -31,14 +31,14 @@ public class AuthController : ApiControllerBase
     }
 
     [HttpGet("staff/profile")]
-    [AuthorizeRoles(Role.Admin, Role.Shipper, Role.Manager, Role.LaundryAttendant)]
+    [AuthorizeRoles(Role.Admin, Role.Manager, Role.LaundryAttendant)]
     public async Task<ActionResult<AccountResponse>> GetStaffProfile()
     {
         return await Mediator.Send(new GetStaffProfileQuery());
     }
     
     [HttpPut("staff/profile")]
-    [AuthorizeRoles(Role.Admin, Role.Shipper, Role.Manager, Role.LaundryAttendant)]
+    [AuthorizeRoles(Role.Admin, Role.Manager, Role.LaundryAttendant)]
     public async Task<ActionResult<AccountResponse>> UpdateProfile([FromBody] UpdateStaffProfileCommand command)
     {
         return await Mediator.Send(command);

@@ -47,14 +47,11 @@ public class Account : BaseAuditableEntity
     public bool IsLaundryAttendant => Equals(Role, Role.LaundryAttendant);
 
     [Projectable]
-    public bool IsShipper => Equals(Role, Role.Shipper);
-
-    [Projectable]
     public bool IsCustomer => Equals(Role, Role.Customer);
 
     [Projectable] 
-    public bool IsStaff => IsShipper || IsManager || IsLaundryAttendant || IsAdmin;
+    public bool IsStaff => IsManager || IsLaundryAttendant || IsAdmin;
 
     [Projectable]
-    public bool IsStoreStaff => StoreId != null && (IsManager || IsShipper || IsLaundryAttendant);
+    public bool IsStoreStaff => StoreId != null && (IsManager || IsLaundryAttendant);
 }

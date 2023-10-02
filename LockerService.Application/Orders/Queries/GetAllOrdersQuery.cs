@@ -56,6 +56,7 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
             queryExpression = queryExpression.Or(order => order.Sender.PhoneNumber.ToLower().Contains(Search)
                                                           || (order.Receiver != null && order.Receiver.PhoneNumber
                                                               .ToLower().Contains(Search)));
+            queryExpression = queryExpression.Or(order => order.PinCode != null && order.PinCode.ToLower().Contains(Search));
             
             Expression = Expression.And(queryExpression); 
         }

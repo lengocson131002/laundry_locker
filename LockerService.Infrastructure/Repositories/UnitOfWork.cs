@@ -41,6 +41,8 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     private INotificationRepository? _notificationRepository;
     
     private ILaundryItemRepository? _laundryItemRepository;
+
+    private IAuditRepository? _auditRepository;
     
     private readonly ApplicationDbContext _dbContext;
 
@@ -92,4 +94,6 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
         _notificationRepository ??= new NotificationRepository(_dbContext);
 
     public ILaundryItemRepository LaundryItemRepository => _laundryItemRepository ??= new LaundryItemRepository(_dbContext);
+
+    public IAuditRepository AuditRepository => _auditRepository ??= new AuditRepository(_dbContext);
 }

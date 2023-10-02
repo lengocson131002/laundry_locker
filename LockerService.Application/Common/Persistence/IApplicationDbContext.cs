@@ -35,4 +35,6 @@ public interface IApplicationDbContext
     DbSet<Token> Tokens { get; }
     
     DbSet<LaundryItem> LaundryItems { get; }
+    
+    DbSet<Audit> Audits { get; }
 }

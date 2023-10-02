@@ -80,7 +80,7 @@ public class UpdateOrderStatusHandler : IRequestHandler<UpdateOrderStatusCommand
                 : null,
             Image = request.Image,
             Description = request.Description,
-            Time = DateTimeOffset.Now
+            Time = DateTimeOffset.UtcNow
         }, cancellationToken);
 
         _logger.LogInformation("Update order status to {0}", order.Status);

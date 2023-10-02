@@ -23,6 +23,9 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
         var orders = await _unitOfWork.OrderRepository
             .GetAsync(order => order.IsCompleted && (request.From == null || order.CreatedAt >= request.From) && (request.To == null || order.CreatedAt <= request.To));
         
+        var services = await _unitOfWork.ServiceRepository
+            .GetAsync(service => (request.From == null || service.CreatedAt >= request.From) && (request.To == null || service.CreatedAt <= request.To));
+
         var stores = _unitOfWork.StoreRepository.Get();
 
         var storeQuery = from store in stores
@@ -32,11 +35,14 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
             from s in staffGroup.DefaultIfEmpty()
             join order in orders on store.Id equals order.Locker.StoreId into orderGroup
             from o in orderGroup.DefaultIfEmpty()
+            join service in services on store.Id equals service.StoreId into serviceGroup
+            from se in serviceGroup.DefaultIfEmpty()
             group new
             {
                 LockerId = l.Id,
                 StaffId = s.Id,
-                OrderId = o.Id
+                OrderId = o.Id,
+                ServiceId = se.Id
             } by new { store.Id, store.Name, store.Image, store.Status, store.CreatedAt, store.UpdatedAt }
             into storeGroup
             select new DashboardStoreItem()
@@ -50,6 +56,7 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
                 StaffCount = storeGroup.Select(g => g.StaffId).Distinct().Count(),
                 LockerCount = storeGroup.Select(g => g.LockerId).Distinct().Count(),
                 OrderCount = storeGroup.Select(g => g.OrderId).Distinct().Count(),
+                ServiceCount = storeGroup.Select(g => g.ServiceId).Distinct().Count(),
             };
         
         // Calculate revenue
@@ -82,6 +89,7 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
                 StaffCount = store.StaffCount,
                 LockerCount = store.LockerCount,
                 OrderCount = store.OrderCount,
+                ServiceCount = store.ServiceCount,
                 Revenue = r.Revenue
             };
 

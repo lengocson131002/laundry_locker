@@ -111,6 +111,8 @@ public class Order : BaseAuditableEntity
         }
     }
     
+    public decimal ShippingFee { get; set; }
+    
     public decimal TotalPrice { get; set; }
 
     public string? Description { get; set; }

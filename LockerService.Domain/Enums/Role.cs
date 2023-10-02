@@ -13,9 +13,6 @@ public enum Role
     [Description("Quản lý cửa hàng")]
     Manager,
     
-    [Description("Nhân viên nhận và trả đồ")]
-    Shipper,
-
     [Description("Khách hàng")]
     Customer
 }

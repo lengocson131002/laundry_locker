@@ -71,4 +71,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Token> Tokens => Set<Token>();
 
     public DbSet<LaundryItem> LaundryItems => Set<LaundryItem>();
+
+    public DbSet<Audit> Audits => Set<Audit>();
 }

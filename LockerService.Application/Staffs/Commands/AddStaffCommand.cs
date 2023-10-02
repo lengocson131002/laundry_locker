@@ -29,7 +29,7 @@ public class AddStaffCommandValidator : AbstractValidator<AddStaffCommand>
 
         RuleFor(model => model.Role)
             .NotNull()
-            .Must(role => Equals(Role.Manager, role) || Equals(Role.Shipper, role) || Equals(Role.LaundryAttendant, role));
+            .Must(role => Equals(Role.Manager, role) || Equals(Role.LaundryAttendant, role));
     }
 }
 

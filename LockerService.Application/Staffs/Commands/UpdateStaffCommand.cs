@@ -13,7 +13,7 @@ public class UpdateStaffCommandValidator : AbstractValidator<UpdateStaffCommand>
             .WithMessage("Invalid image url");
         
         RuleFor(model => model.Role)
-            .Must(role => role == null || Equals(Role.Manager, role) || Equals(Role.Shipper, role) || Equals(Role.LaundryAttendant, role));
+            .Must(role => role == null || Equals(Role.Manager, role) || Equals(Role.LaundryAttendant, role));
     }
 }
 

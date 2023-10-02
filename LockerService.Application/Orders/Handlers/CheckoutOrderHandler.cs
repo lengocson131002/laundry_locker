@@ -42,7 +42,6 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, BillRe
         
         /*
          * Test only
-         * Set job to complete order in 30s
          */
         await _paymentService.Pay(order, command.Method);
         

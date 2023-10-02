@@ -1,3 +1,4 @@
+using LockerService.Application.Audits.Models;
 using LockerService.Application.Bills.Models;
 using LockerService.Application.Customers.Models;
 using LockerService.Application.Locations.Commands;
@@ -88,6 +89,9 @@ public class MappingProfiles : Profile
         
         // Notifications
         CreateMap<Notification, NotificationModel>();
+        
+        // Audi
+        CreateMap<Audit, AuditResponse>();
     }
 
 }

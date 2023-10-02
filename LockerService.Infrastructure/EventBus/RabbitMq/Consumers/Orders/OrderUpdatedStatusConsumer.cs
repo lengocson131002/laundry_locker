@@ -160,18 +160,18 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         }
         
         // Notify manager to handle this order
-        var managers = await _unitOfWork.AccountRepository
+        var laundryAttendants = await _unitOfWork.AccountRepository
             .GetStaffs(
                 storeId: order.Locker.StoreId, 
-                role: Role.Manager, 
+                role: Role.LaundryAttendant, 
                 isActive: true)
             .ToListAsync();;
         
-        foreach (var manager in managers)
+        foreach (var la in laundryAttendants)
         {
             var notification = new Notification()
             {
-                Account = manager,
+                Account = la,
                 Type = NotificationType.SystemOrderOverTime,
                 Content = NotificationType.SystemOrderOverTime.GetDescription(),
                 EntityType = EntityType.Locker,
@@ -204,11 +204,14 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         _logger.LogInformation("Handle order completed event");
         
         // Push MQTT to open box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent()
+        if (order.ReceiveBox != null && order.ReceiveBoxId != null)
         {
-            LockerCode = order.Locker.Code,
-            BoxNumber = order.ReceiveBox.Number
-        });
+            await _mqttBus.PublishAsync(new MqttOpenBoxEvent()
+            {
+                LockerCode = order.Locker.Code,
+                BoxNumber = order.ReceiveBox.Number
+            });
+        }
         
         // Push notification
         var notiData = JsonSerializerUtils.Serialize(order);
@@ -242,11 +245,14 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         _logger.LogInformation("Handle order returned event");
         
         // Mqtt Open Box
-        await _mqttBus.PublishAsync(new MqttOpenBoxEvent()
+        if (order.ReceiveBox != null && order.ReceiveBoxId != null)
         {
-            LockerCode = order.Locker.Code,
-            BoxNumber = order.ReceiveBox.Number
-        });
+            await _mqttBus.PublishAsync(new MqttOpenBoxEvent()
+            {
+                LockerCode = order.Locker.Code,
+                BoxNumber = order.ReceiveBox.Number
+            });
+        }
         
         // Push notification
         var orderInfoData = JsonSerializerUtils.Serialize(order);
@@ -266,40 +272,15 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         await CheckLockerBoxAvailability(order.Locker);
     }
 
-    private async Task HandleOrderProcessed(Order order, DateTimeOffset time)
+    private Task HandleOrderProcessed(Order order, DateTimeOffset time)
     {
         if (!order.IsLaundry)
         {
-            return;
+            return Task.CompletedTask;
         }
         
         _logger.LogInformation("Handle order process event");
-        
-        var orderInfoData = JsonSerializerUtils.Serialize(order);
-        
-        // Notify for shipper to return order
-        var shippers = await _unitOfWork.AccountRepository
-            .GetStaffs(
-                storeId: order.Locker.StoreId, 
-                role: Role.Shipper,
-                isActive: true)
-            .ToListAsync();
-        
-        foreach (var shipper in shippers)
-        {
-            var notification = new Notification()
-            {
-                Account = shipper,
-                Type = NotificationType.SystemOrderProcessed,
-                Content = NotificationType.SystemOrderProcessed.GetDescription(),
-                EntityType = EntityType.Order,
-                ReferenceId = order.Id.ToString(),
-                Data = orderInfoData,
-            };
-            
-            await _notifier.NotifyAsync(notification);
-        }     
-        
+        return Task.CompletedTask;
     }
 
     private async Task HandleOrderCollected(Order order, DateTimeOffset time)
@@ -317,32 +298,6 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
             LockerCode = order.Locker.Code,
             BoxNumber = order.SendBox.Number
         });
-        
-        var orderInfoData = JsonSerializerUtils.Serialize(order);
-        
-        // Notify for landry attendants to laundry order
-        var laundryAttendants = await _unitOfWork.AccountRepository
-            .GetStaffs(
-                storeId: order.Locker.StoreId, 
-                role: Role.LaundryAttendant,
-                isActive: true)
-            .ToListAsync();
-        
-        foreach (var laundryAttendant in laundryAttendants)
-        {
-            var notification = new Notification()
-            {
-                Account = laundryAttendant,
-                Type = NotificationType.SystemOrderCollected,
-                Content = NotificationType.SystemOrderCollected.GetDescription(),
-                EntityType = EntityType.Order,
-                ReferenceId = order.Id.ToString(),
-                Data = orderInfoData,
-            };
-            
-            await _notifier.NotifyAsync(notification);
-        }     
-        
     }
 
     private async Task HandleOrderInitialized(Order order, DateTimeOffset time)
@@ -394,18 +349,18 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         // Notify for shippers to collect when order type is laundry
         if (order.IsLaundry)
         {
-            var shippers = await _unitOfWork.AccountRepository
+            var laundryAttendants = await _unitOfWork.AccountRepository
                 .GetStaffs(
                     storeId: order.Locker.StoreId, 
-                    role: Role.Shipper,
+                    role: Role.LaundryAttendant,
                     isActive: true)
                 .ToListAsync();
             
-            foreach (var shipper in shippers)
+            foreach (var la in laundryAttendants)
             {
                 var notification = new Notification()
                 {
-                    Account = shipper,
+                    Account = la,
                     Type = NotificationType.SystemOrderCreated,
                     Content = NotificationType.SystemOrderCreated.GetDescription(),
                     EntityType = EntityType.Order,
@@ -431,18 +386,18 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         {
             var lockerInfoData = JsonSerializerUtils.Serialize(locker);
             
-            var shippers =await _unitOfWork.AccountRepository
+            var laundryAttendants =await _unitOfWork.AccountRepository
                 .GetStaffs(
                     storeId: locker.StoreId, 
-                    role: Role.Shipper,
+                    role: Role.LaundryAttendant,
                     isActive: true)
                 .ToListAsync();
             
-            foreach (var shipper in shippers)
+            foreach (var la in laundryAttendants)
             {
                 var notification = new Notification()
                 {
-                    Account = shipper,
+                    Account = la,
                     Type = NotificationType.SystemLockerBoxWarning,
                     Content = NotificationType.SystemLockerBoxWarning.GetDescription(),
                     EntityType = EntityType.Locker,

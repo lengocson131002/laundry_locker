@@ -1,26 +1,30 @@
 using LockerService.Application.Common.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LockerService.Infrastructure.Services;
 
 public class CurrentAccountService : ICurrentAccountService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ICurrentPrincipalService _currentPrincipalService;
 
-    public CurrentAccountService(IUnitOfWork unitOfWork, ICurrentPrincipalService currentPrincipalService)
+    public CurrentAccountService(ICurrentPrincipalService currentPrincipalService, IServiceScopeFactory serviceScopeFactory)
     {
-        _unitOfWork = unitOfWork;
         _currentPrincipalService = currentPrincipalService;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<Account?> GetCurrentAccount()
     {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var serviceProvider = scope.ServiceProvider;
+        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>(); 
         var currentAccountId = _currentPrincipalService.CurrentSubjectId;
         if (currentAccountId == null)
         {
             return null;
         }
 
-        return await _unitOfWork.AccountRepository.GetByIdAsync(currentAccountId);
+        return await unitOfWork.AccountRepository.GetByIdAsync(currentAccountId);
     }
 }

@@ -7,13 +7,28 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Events" />
         <Folder Include="Exceptions" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="EntityFrameworkCore.Projectables" />
       <PackageReference Include="LinqKit" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EntityDeploy Remove="Events\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Events\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Events\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Events\**" />
     </ItemGroup>
 
 </Project>

@@ -34,6 +34,7 @@
         <Folder Include="Accounts\Commands" />
         <Folder Include="Accounts\Handlers" />
         <Folder Include="Accounts\Queries" />
+        <Folder Include="Audits\Commands" />
         <Folder Include="Common\Commands" />
         <Folder Include="Common\Interfaces" />
         <Folder Include="Dashboard\Commands" />

@@ -16,6 +16,8 @@ public class DashboardStoreItem
     
     public int OrderCount { get; set; }
     
+    public int ServiceCount { get; set; }
+    
     public decimal Revenue { get; set; }
     
     public DateTimeOffset? CreatedAt { get; set; }

@@ -39,4 +39,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     INotificationRepository NotificationRepository { get; }
     
     ILaundryItemRepository LaundryItemRepository { get; }
+    
+    IAuditRepository AuditRepository { get; }
 }

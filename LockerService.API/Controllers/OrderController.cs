@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using LockerService.API.Attributes;
-using LockerService.API.Common;
 using LockerService.Application.Bills.Models;
 using LockerService.Application.Bills.Queries;
 using LockerService.Application.Common.Enums;
