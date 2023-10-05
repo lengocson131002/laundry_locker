@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Common.Exceptions;
-using LockerService.Application.Common.Services;
 using LockerService.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

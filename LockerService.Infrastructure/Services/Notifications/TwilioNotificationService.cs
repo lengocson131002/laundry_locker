@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Infrastructure.Settings;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;

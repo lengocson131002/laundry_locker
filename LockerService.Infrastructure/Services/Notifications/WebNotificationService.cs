@@ -1,5 +1,4 @@
 using AutoMapper;
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.Notifications.Models;
 using LockerService.Infrastructure.SignalR;
 using LockerService.Infrastructure.SignalR.Notifications;

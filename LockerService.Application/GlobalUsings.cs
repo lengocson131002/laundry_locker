@@ -31,6 +31,7 @@ global using LockerService.Application.Orders.Commands;
 global using LockerService.Application.Orders.Models;
 global using LockerService.Application.Services.Models;
 global using LockerService.Application.Accounts.Models;
+global using LockerService.Application.EventBus.RabbitMq;
 global using LockerService.Application.Stores.Commands;
 global using LockerService.Application.Stores.Models;
 global using LockerService.Application.Stores.Handlers;

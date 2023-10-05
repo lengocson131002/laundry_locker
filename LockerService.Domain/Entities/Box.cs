@@ -29,6 +29,7 @@ public class Box : BaseAuditableEntity
     public IList<Order> ReceiveOrders { get; set; } = new List<Order>();
     
     [NotMapped]
+    [JsonIgnore]
     public Order? LastOrder { get; set; }
 
     [Projectable]

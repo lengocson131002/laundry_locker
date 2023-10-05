@@ -1,5 +1,7 @@
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
@@ -26,9 +28,9 @@ public class Order : BaseAuditableEntity
     public Account Sender { get; set; } = default!;
 
     // Receiver info
-    public long ReceiveBoxId { get; set; }
+    public long? ReceiveBoxId { get; set; }
 
-    public Box ReceiveBox { get; set; } = default!;
+    public Box? ReceiveBox { get; set; } = default!;
 
     public long? ReceiverId { get; set; }
 
@@ -85,7 +87,7 @@ public class Order : BaseAuditableEntity
         }
     }
 
-    public decimal? TotalExtraFee => ExtraFee * (decimal) ExtraCount;
+    public decimal TotalExtraFee => ExtraFee * (decimal) ExtraCount;
 
     // Tổng chi phí dịch vụ
     public decimal Price
@@ -99,12 +101,7 @@ public class Order : BaseAuditableEntity
                 var durationInHours = (float)Math.Round(orderDuration.TotalMinutes / 60.0, 2, MidpointRounding.AwayFromZero);;
                 return (decimal) Math.Max(1, durationInHours) * StoragePrice;
             }
-
-            if (!UpdatedInfo)
-            {
-                return 0;
-            }
-
+         
             return Details.Sum(item => item.Quantity != null 
                 ? item.Price * (decimal) item.Quantity.Value 
                 : 0);
@@ -122,14 +119,11 @@ public class Order : BaseAuditableEntity
     // Địa chỉ giao trả đồ nếu có
     public Location? DeliveryAddress { get; set; }
 
-    public long? BillId { get; set; }
-
-    public Bill? Bill { get; set; }
-
     public IList<OrderTimeline> Timelines { get; set; } = new List<OrderTimeline>();
 
     public IList<OrderDetail> Details { get; set; } = new List<OrderDetail>();
-    
+
+    public IList<Payment> Payments { get; set; } = new List<Payment>();
 
     [Projectable] 
     public bool IsFinished => IsCanceled || IsCompleted;
@@ -194,7 +188,7 @@ public class Order : BaseAuditableEntity
      * Order status, which takes a box in the locker
      */
     [Projectable]
-    public bool IsBusyOrder => IsInitialized || IsWaiting || IsReturned || IsOvertime;
+    public bool IsBusyOrder => IsInitialized || IsReserved || IsWaiting || IsReturned || IsOvertime;
     
     [Projectable] 
     public bool DeliverySupported => DeliveryAddressId != null;
@@ -209,7 +203,7 @@ public class Order : BaseAuditableEntity
 
     public bool CanUpdateStatus(OrderStatus status)
     {
-        if (Equals(status, OrderStatus.Initialized) || Equals(status, OrderStatus.Reserved))
+        if (Equals(status, OrderStatus.Initialized))
         {
             return false;
         }
@@ -235,8 +229,11 @@ public class Order : BaseAuditableEntity
                 return (OrderType.Storage.Equals(Type) && IsWaiting)
                        || (OrderType.Laundry.Equals(Type) && IsReturned)
                        || IsOvertime;
+            case OrderStatus.Canceled:
+                return IsReserved;
+            
             default:
-                return true;
+                return false;
         }
     }
 }

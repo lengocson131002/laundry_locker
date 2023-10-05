@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using INotificationService = LockerService.Application.Common.Services.Notifications.INotificationService;

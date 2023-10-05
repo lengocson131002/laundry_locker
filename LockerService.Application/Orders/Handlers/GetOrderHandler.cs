@@ -26,7 +26,6 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
             .Include(order => order.Sender)
             .Include(order => order.Receiver)
             .Include(order => order.Staff)
-            .Include(order => order.Bill)
             .Include(order => order.Details)
                 .ThenInclude(detail => detail.Service)
             .Include(order => order.Details)

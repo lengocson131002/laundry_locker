@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Services;
 using LockerService.Domain.Entities.Settings;
 
 namespace LockerService.Infrastructure.Services;

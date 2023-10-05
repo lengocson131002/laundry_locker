@@ -41,4 +41,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     ILaundryItemRepository LaundryItemRepository { get; }
     
     IAuditRepository AuditRepository { get; }
+    
+    IPaymentRepository PaymentRepository { get;  }
 }

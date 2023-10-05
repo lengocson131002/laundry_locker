@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using LockerService.Application.Common.Services;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Infrastructure.HttpClients;
 using LockerService.Infrastructure.Settings;

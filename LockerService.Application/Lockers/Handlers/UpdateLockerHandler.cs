@@ -1,4 +1,3 @@
-using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 

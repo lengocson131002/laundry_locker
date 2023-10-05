@@ -1,3 +1,5 @@
+using LockerService.Domain;
+
 namespace LockerService.Application.Common.Persistence;
 
 public interface IApplicationDbContext
@@ -37,4 +39,6 @@ public interface IApplicationDbContext
     DbSet<LaundryItem> LaundryItems { get; }
     
     DbSet<Audit> Audits { get; }
+
+    DbSet<Payment> Payments { get; }
 }

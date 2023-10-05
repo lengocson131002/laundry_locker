@@ -1,7 +1,5 @@
 using AutoMapper;
 using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Services;
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.Common.Utils;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Domain.Enums;
@@ -58,7 +56,6 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
             .Include(order => order.Locker.Location.Ward)
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
-            .Include(order => order.Bill)
             .FirstOrDefaultAsync();
         
         if (order == null)

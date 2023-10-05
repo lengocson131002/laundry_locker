@@ -1,4 +1,5 @@
-using LockerService.Application.Common.Services;
+using LockerService.Application.Common.Enums;
+using LockerService.Application.Common.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LockerService.Infrastructure.Services;
@@ -26,5 +27,10 @@ public class CurrentAccountService : ICurrentAccountService
         }
 
         return await unitOfWork.AccountRepository.GetByIdAsync(currentAccountId);
+    }
+
+    public async Task<Account> GetRequiredCurrentAccount()
+    {
+        return await GetCurrentAccount() ?? throw new ApiException(ResponseCode.Unauthorized);
     }
 }

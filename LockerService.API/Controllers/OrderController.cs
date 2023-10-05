@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using LockerService.API.Attributes;
-using LockerService.Application.Bills.Models;
-using LockerService.Application.Bills.Queries;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Orders.Commands;
 using LockerService.Application.Orders.Models;
 using LockerService.Application.Orders.Queries;
+using LockerService.Application.Payments.Models;
 using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
@@ -42,10 +41,9 @@ public class OrderController : ApiControllerBase
     [HttpPut("{id:long}/confirm")]
     public async Task<ActionResult<OrderResponse>> ConfirmOrder([FromRoute] long id)
     {
-        var command = new UpdateOrderStatusCommand()
+        var command = new ConfirmOrderCommand()
         {
             OrderId = id,
-            OrderStatus = OrderStatus.Waiting
         };
 
         return await Mediator.Send(command);
@@ -55,10 +53,9 @@ public class OrderController : ApiControllerBase
     [Authorize]
     public async Task<ActionResult<OrderResponse>> CollectOrder([FromRoute] long id)
     {
-        var command = new UpdateOrderStatusCommand()
+        var command = new CollectOrderCommand()
         {
             OrderId = id,
-            OrderStatus = OrderStatus.Collected
         };
         return await Mediator.Send(command);
     }
@@ -67,10 +64,9 @@ public class OrderController : ApiControllerBase
     [Authorize]
     public async Task<ActionResult<OrderResponse>> ProcessOrder([FromRoute] long  id)
     {
-        var command = new UpdateOrderStatusCommand()
+        var command = new ProcessOrderCommand()
         {
             OrderId = id,
-            OrderStatus = OrderStatus.Processed
         };
         return await Mediator.Send(command);
     }
@@ -79,16 +75,15 @@ public class OrderController : ApiControllerBase
     [Authorize]
     public async Task<ActionResult<OrderResponse>> ReturnOrder([FromRoute] long id)
     {
-        var command = new UpdateOrderStatusCommand()
+        var command = new ReturnOrderCommand()
         {
             OrderId = id,
-            OrderStatus = OrderStatus.Returned
         };
         return await Mediator.Send(command);
     }
     
     [HttpPut("{id:long}/checkout")]
-    public async Task<ActionResult<BillResponse>> CheckoutOrder([FromRoute] long id, [FromBody] CheckoutOrderCommand command)
+    public async Task<ActionResult<PaymentResponse>> CheckoutOrder([FromRoute] long id, [FromBody] CheckoutOrderCommand command)
     {
         command.Id = id;
         return await Mediator.Send(command);
@@ -112,13 +107,6 @@ public class OrderController : ApiControllerBase
         };
 
         return await Mediator.Send(getOrderRequest);
-    }
-    
-    [HttpGet("{id:long}/bill")]
-    public async Task<ActionResult<BillResponse>> GetBill([FromRoute] long id)
-    {
-        var query = new BillQuery(id);
-        return await Mediator.Send(query);
     }
     
     [HttpGet("pin-code/{pinCode}")]

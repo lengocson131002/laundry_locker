@@ -1,4 +1,3 @@
-using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 
 namespace LockerService.Application.Lockers.Handlers;

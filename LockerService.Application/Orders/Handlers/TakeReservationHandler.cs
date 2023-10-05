@@ -1,4 +1,3 @@
-using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 
@@ -19,7 +18,19 @@ public class TakeReservationHandler : IRequestHandler<TakeReservationCommand, Or
 
     public async Task<OrderResponse> Handle(TakeReservationCommand request, CancellationToken cancellationToken)
     {
-        var order = await _unitOfWork.OrderRepository.GetByIdAsync(request.Id);
+        var order = await _unitOfWork.OrderRepository.Get(order => order.Id == request.Id)
+            .Include(order => order.Locker)
+            .Include(order => order.SendBox)
+            .Include(order => order.ReceiveBox)
+            .Include(order => order.Sender)
+            .Include(order => order.Receiver)
+            .Include(order => order.Locker.Location)
+            .Include(order => order.Locker.Location.Ward)
+            .Include(order => order.Locker.Location.District)
+            .Include(order => order.Locker.Location.Province)
+            .Include(order => order.Details)
+            .FirstOrDefaultAsync(cancellationToken);
+        
         if (order == null)
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
@@ -30,37 +41,19 @@ public class TakeReservationHandler : IRequestHandler<TakeReservationCommand, Or
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
         
-        var availableBox = await _unitOfWork.BoxRepository.FindAvailableBox(order.LockerId);
-        if (availableBox == null)
-        {
-            var exception = new ApiException(ResponseCode.LockerErrorNoAvailableBox);
-            await _rabbitMqBus.PublishAsync(new LockerOverloadedEvent()
-            {
-                LockerId = order.Id,
-                Time = DateTimeOffset.UtcNow,
-                ErrorCode = exception.ErrorCode,
-                Error = exception.ErrorMessage
-            }, cancellationToken);
-
-            throw exception;
-        }
-
         var currentStatus = order.Status;
 
         // regenerate order pin code
         order.PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode();
         order.PinCodeIssuedAt = DateTimeOffset.UtcNow;
-        order.SendBox = availableBox;
-        order.ReceiveBox = availableBox;
         order.Status = OrderStatus.Initialized;
 
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
 
-        await _rabbitMqBus.PublishAsync(new OrderUpdatedStatusEvent()
+        await _rabbitMqBus.PublishAsync(new OrderInitializedEvent()
         {
-            OrderId = order.Id,
-            Status = order.Status,
+            Order = order,
             PreviousStatus = currentStatus,
             Time = DateTimeOffset.UtcNow
         }, cancellationToken);

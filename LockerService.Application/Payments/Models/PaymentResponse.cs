@@ -1,14 +1,10 @@
-namespace LockerService.Application.Bills.Models;
+namespace LockerService.Application.Payments.Models;
 
-public class BillResponse : BaseAuditableEntityResponse
+public class PaymentResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
     
-    public long ReferenceOrderId { get; set; }
-    
     public decimal Amount { get; set; }
-    
-    public decimal Prepaid { get; set; }
 
     public PaymentMethod Method { get; set; }
     
@@ -18,6 +14,11 @@ public class BillResponse : BaseAuditableEntityResponse
     
     public string? Qr { get; set; }
     
-    public string? CheckoutUrl { get; set; }
+    public string? Url { get; set; }
+    
+    public long OrderId { get; set; }
 
+    public long CustomerId { get; set; }
+
+    public PaymentStatus Status { get; set; }
 }

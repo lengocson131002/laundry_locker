@@ -715,9 +715,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("BillId")
-                        .HasColumnType("bigint");
-
                     b.Property<int?>("CancelReason")
                         .HasColumnType("integer");
 
@@ -769,7 +766,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("ReceiveAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("ReceiveBoxId")
+                    b.Property<long?>("ReceiveBoxId")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("ReceiverId")
@@ -812,8 +809,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BillId");
 
                     b.HasIndex("DeliveryAddressId");
 
@@ -1237,6 +1232,77 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.ToTable("Token");
                 });
 
+            modelBuilder.Entity("LockerService.Domain.Payment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CreatedByUsername")
+                        .HasColumnType("text");
+
+                    b.Property<long>("CustomerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("DeletedByUsername")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Qr")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReferenceTransactionId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UpdatedByUsername")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Payment");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Account", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Locker", null)
@@ -1364,10 +1430,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LockerService.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("LockerService.Domain.Entities.Bill", "Bill")
-                        .WithMany()
-                        .HasForeignKey("BillId");
-
                     b.HasOne("LockerService.Domain.Entities.Location", "DeliveryAddress")
                         .WithMany()
                         .HasForeignKey("DeliveryAddressId");
@@ -1380,9 +1442,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
 
                     b.HasOne("LockerService.Domain.Entities.Box", "ReceiveBox")
                         .WithMany("ReceiveOrders")
-                        .HasForeignKey("ReceiveBoxId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReceiveBoxId");
 
                     b.HasOne("LockerService.Domain.Entities.Account", "Receiver")
                         .WithMany()
@@ -1403,8 +1463,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.HasOne("LockerService.Domain.Entities.Account", "Staff")
                         .WithMany()
                         .HasForeignKey("StaffId");
-
-                    b.Navigation("Bill");
 
                     b.Navigation("DeliveryAddress");
 
@@ -1509,6 +1567,25 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("LockerService.Domain.Payment", b =>
+                {
+                    b.HasOne("LockerService.Domain.Entities.Account", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LockerService.Domain.Entities.Order", "Order")
+                        .WithMany("Payments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("LockerService.Domain.Entities.Box", b =>
                 {
                     b.Navigation("ReceiveOrders");
@@ -1536,6 +1613,8 @@ namespace LockerService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("LockerService.Domain.Entities.Order", b =>
                 {
                     b.Navigation("Details");
+
+                    b.Navigation("Payments");
 
                     b.Navigation("Timelines");
                 });

@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using LockerService.Application.Common.Services;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace LockerService.Infrastructure.Services;

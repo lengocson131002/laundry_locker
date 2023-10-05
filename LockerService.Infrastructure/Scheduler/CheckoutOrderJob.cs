@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Services;
 using LockerService.Domain.Enums;
 using Quartz;
 
@@ -7,47 +6,62 @@ namespace LockerService.Infrastructure.Scheduler;
 public class CheckoutOrderJob : IJob
 {
     public static string OrderIdKey = "orderId";
-    public static string MethodKey = "method";
+    public static string PaymentIdKey = "paymentId";
     
     private readonly ILogger<OrderTimeoutJob> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPublishEndpoint _rabbitMqBus;
-    private readonly IOrderService _orderService;
 
-    public CheckoutOrderJob(ILogger<OrderTimeoutJob> logger, IUnitOfWork unitOfWork, IPublishEndpoint rabbitMqBus, IOrderService orderService)
+    public CheckoutOrderJob(ILogger<OrderTimeoutJob> logger, IUnitOfWork unitOfWork, IPublishEndpoint rabbitMqBus)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _rabbitMqBus = rabbitMqBus;
-        _orderService = orderService;
     }
 
     public async Task Execute(IJobExecutionContext context)
     {
         var dataMap = context.JobDetail.JobDataMap;
         var orderId = dataMap.GetLongValue(OrderIdKey);
+        var paymentId = dataMap.GetLongValue(PaymentIdKey);
         
-        if (orderId == 0 || !Enum.TryParse(dataMap.GetString(MethodKey), out PaymentMethod method))
+        if (orderId == 0 || paymentId == 0)
         {
             return;
         }
 
-        var order = await _unitOfWork.OrderRepository.Get(
-            predicate: order => order.Id == orderId,
-            includes: new List<Expression<Func<Order, object>>>()
-            {
-                order => order.Details
-            }).FirstOrDefaultAsync();
+        var order = await _unitOfWork.OrderRepository.Get(order => order.Id == orderId)
+            .Include(order => order.Locker)
+            .Include(order => order.SendBox)
+            .Include(order => order.ReceiveBox)
+            .Include(order => order.Sender)
+            .Include(order => order.Receiver)
+            .Include(order => order.Locker.Location)
+            .Include(order => order.Locker.Location.Ward)
+            .Include(order => order.Locker.Location.District)
+            .Include(order => order.Locker.Location.Province)
+            .Include(order => order.Details)
+            .FirstOrDefaultAsync();
         
-        if (order == null || !order.CanCheckout)
+        if (order == null)
         {
             return;
         }
 
+        var payment = await _unitOfWork.PaymentRepository
+            .Get(pay => pay.Id == paymentId)
+            .FirstOrDefaultAsync();
+
+        if (payment == null)
+        {
+            return;
+        }
+
+        // Update payment status
+        payment.Status = PaymentStatus.Completed;
+        
+        // Update order status
         var currStatus = order.Status;
-
-        var bill = Bill.CreateBill(order, method);
-        order.Bill = bill;
         order.Status = OrderStatus.Completed;
         order.ReceiveAt = DateTimeOffset.UtcNow;
         order.TotalPrice = order.Price
@@ -58,11 +72,11 @@ public class CheckoutOrderJob : IJob
         await _unitOfWork.SaveChangesAsync();
         
         // Push event
-        await _rabbitMqBus.Publish(new OrderUpdatedStatusEvent()
+        await _rabbitMqBus.Publish(new OrderCompletedEvent()
         {
-            OrderId = order.Id,
+            Order = order,
             PreviousStatus = currStatus,
-            Status = order.Status
+            Time = DateTimeOffset.UtcNow
         });
         
         _logger.LogInformation("Completed order {0}.", order.Id);

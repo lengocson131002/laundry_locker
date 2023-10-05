@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using LockerService.Application.Common.Services;
 using LockerService.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

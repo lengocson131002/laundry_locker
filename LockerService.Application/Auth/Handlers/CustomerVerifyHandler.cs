@@ -1,4 +1,3 @@
-using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Accounts;
 
 namespace LockerService.Application.Auth.Handlers;

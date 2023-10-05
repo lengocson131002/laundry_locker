@@ -5,7 +5,6 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using LockerService.Application.Common.Enums;
 using LockerService.Application.Common.Exceptions;
-using LockerService.Application.Common.Services;
 using LockerService.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
 

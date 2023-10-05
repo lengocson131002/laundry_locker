@@ -1,8 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Services;
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.Common.Utils;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Domain.Enums;

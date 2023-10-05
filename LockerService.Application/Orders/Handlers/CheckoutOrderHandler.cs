@@ -1,9 +1,8 @@
-using LockerService.Application.Bills.Models;
-using Quartz;
+using LockerService.Application.Payments.Models;
 
 namespace LockerService.Application.Orders.Handlers;
 
-public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, BillResponse>
+public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, PaymentResponse>
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
@@ -18,33 +17,33 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, BillRe
         _paymentService = paymentService;
     }
 
-    public async Task<BillResponse> Handle(CheckoutOrderCommand command, CancellationToken cancellationToken)
+    public async Task<PaymentResponse> Handle(CheckoutOrderCommand command, CancellationToken cancellationToken)
     {
-        var orderQuery = await _unitOfWork.OrderRepository.GetAsync(
-            predicate: order => order.Id == command.Id,
-            includes: new List<Expression<Func<Order, object>>>()
-            {
-                order => order.Details
-            });
-
-        var order = await orderQuery.FirstOrDefaultAsync(cancellationToken);
+        var order = await _unitOfWork.OrderRepository.Get(order => order.Id == command.Id)
+            .Include(order => order.Locker)
+            .Include(order => order.SendBox)
+            .Include(order => order.ReceiveBox)
+            .Include(order => order.Sender)
+            .Include(order => order.Receiver)
+            .Include(order => order.Locker.Location)
+            .Include(order => order.Locker.Location.Ward)
+            .Include(order => order.Locker.Location.District)
+            .Include(order => order.Locker.Location.Province)
+            .Include(order => order.Details)
+            .FirstOrDefaultAsync(cancellationToken);
+        
         if (order == null)
         {
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        if (!order.CanCheckout)
+        if (!order.CanUpdateStatus(OrderStatus.Completed))
         {
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
-
-        var bill = Bill.CreateBill(order, command.Method);
         
-        /*
-         * Test only
-         */
-        await _paymentService.Pay(order, command.Method);
+        var payment = await _paymentService.Pay(order, command.Method);
         
-        return _mapper.Map<BillResponse>(bill);
+        return _mapper.Map<PaymentResponse>(payment);
     }
 }

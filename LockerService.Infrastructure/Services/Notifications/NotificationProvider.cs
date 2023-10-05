@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Infrastructure.Services.Notifications;

@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Services;
 using LockerService.Infrastructure.Scheduler;
 using Quartz;
 

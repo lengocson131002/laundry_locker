@@ -1,5 +1,4 @@
-using LockerService.Infrastructure.Common.Extensions;
-using Microsoft.EntityFrameworkCore.Metadata;
+using LockerService.Domain;
 
 namespace LockerService.Infrastructure.Persistence;
 
@@ -73,4 +72,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<LaundryItem> LaundryItems => Set<LaundryItem>();
 
     public DbSet<Audit> Audits => Set<Audit>();
+
+    public DbSet<Payment> Payments => Set<Payment>();
 }

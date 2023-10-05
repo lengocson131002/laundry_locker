@@ -62,6 +62,8 @@ public enum ResponseCode
     [Description("Box not found")] LockerErrorBoxNotFound = 110,
     
     [Description("Box status is not allowed to do this function")] LockerErrorInvalidBoxStatus = 111,
+    
+    [Description("Order type not supported")] LockerErrorUnsupportedOrderType = 112,
 
 
     // Service
@@ -163,4 +165,7 @@ public enum ResponseCode
 
     // Bill
     [Description("Bill not found")] BillErrorNotFound = 1601,
+    
+    // Payment
+    [Description("Payment not found")] PaymentErrorNotFound = 1701,
 }

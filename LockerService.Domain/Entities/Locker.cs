@@ -59,4 +59,8 @@ public class Locker : BaseAuditableEntity
     public bool CanUpdateStatus => !Equals(LockerStatus.Initialized, Status) 
                                    && !Equals(LockerStatus.Disconnected, Status);
 
+    public bool CanSupportOrderType(OrderType orderType)
+    {
+        return OrderTypes.Any(lockerOrderType => Equals(lockerOrderType.OrderType, orderType));
+    }
 }

@@ -1,6 +1,5 @@
 using AutoMapper;
 using CorePush.Firebase;
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.Notifications.Models;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;

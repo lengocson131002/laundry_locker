@@ -4,6 +4,8 @@ global using System.Linq.Expressions;
 global using System.Text.Json;
 global using LockerService.Application.Common.Constants;
 global using LockerService.Application.Common.Persistence;
+global using LockerService.Application.Common.Services;
+global using LockerService.Application.Common.Services.Notifications;
 global using LockerService.Application.EventBus.Mqtt;
 global using LockerService.Application.EventBus.Mqtt.Events;
 global using LockerService.Application.EventBus.RabbitMq.Events.Lockers;

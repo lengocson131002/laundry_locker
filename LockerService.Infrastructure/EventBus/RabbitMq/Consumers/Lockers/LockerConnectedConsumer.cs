@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.Common.Utils;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;

@@ -1,4 +1,3 @@
-using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using LockerService.Domain.Entities.Settings;
@@ -47,7 +46,6 @@ public class UpdateOrderStatusHandler : IRequestHandler<UpdateOrderStatusCommand
             .Include(order => order.Locker.Location.Ward)
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
-            .Include(order => order.Bill)
             .Include(order => order.Details)
             .FirstOrDefaultAsync(cancellationToken);
         
@@ -133,11 +131,6 @@ public class UpdateOrderStatusHandler : IRequestHandler<UpdateOrderStatusCommand
         if (order.IsLaundry)
         {
             var intendedReceiveAt = order.IntendedReceiveAt;
-            if (intendedReceiveAt != null && intendedReceiveAt <= DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours))
-            {
-                throw new ApiException(ResponseCode.OrderErrorInvalidReceiveTime);
-            }
-            
             order.IntendedOvertime = intendedReceiveAt != null 
                     ? intendedReceiveAt.Value.AddHours(orderSettings.MaxTimeInHours)
                     : DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours + orderSettings.MaxTimeInHours);

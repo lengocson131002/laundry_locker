@@ -33,6 +33,16 @@ public class OrderTimeoutJob : IJob
         
         var order = await _unitOfWork.OrderRepository
             .Get(order => order.Id == orderId && (order.IsInitialized || order.IsReserved))
+            .Include(order => order.Locker)
+            .Include(order => order.SendBox)
+            .Include(order => order.ReceiveBox)
+            .Include(order => order.Sender)
+            .Include(order => order.Receiver)
+            .Include(order => order.Locker.Location)
+            .Include(order => order.Locker.Location.Ward)
+            .Include(order => order.Locker.Location.District)
+            .Include(order => order.Locker.Location.Province)
+            .Include(order => order.Details)
             .FirstOrDefaultAsync();
         
         if (order == null)
@@ -52,11 +62,10 @@ public class OrderTimeoutJob : IJob
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
         
-        await _rabbitMqBus.Publish(new OrderUpdatedStatusEvent()
+        await _rabbitMqBus.Publish(new OrderCanceledEvent()
         {
-            OrderId = orderId,
+            Order = order,
             PreviousStatus = currentStatus,
-            Status = order.Status,
             Time = DateTimeOffset.Now
         });
         

@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Services;
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Domain.Enums;
@@ -52,11 +51,11 @@ public class OrderOvertimeJob : IJob
             await _unitOfWork.OrderRepository.UpdateAsync(order);
             await _unitOfWork.SaveChangesAsync();
 
-            await _rabbitMqBus.PublishAsync(new OrderUpdatedStatusEvent()
+            await _rabbitMqBus.PublishAsync(new OrderOvertimeEvent()
             {
-                OrderId = order.Id,
-                Status = order.Status,
-                PreviousStatus = currentStatus
+                Order = order,
+                PreviousStatus = currentStatus,
+                Time = DateTimeOffset.Now
             });
         }
 

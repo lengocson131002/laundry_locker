@@ -49,7 +49,7 @@ public class BoxRepository : BaseRepository<Box>, IBoxRepository
                     .Include(order => order.Sender)
                     .Include(order => order.Receiver),
                 box => box.Id,
-                order => order.ReceiveBoxId,
+                order => order.ReceiveBoxId ?? order.SendBoxId,
                 (box, orders) => new Box
                 {
                     Id = box.Id,

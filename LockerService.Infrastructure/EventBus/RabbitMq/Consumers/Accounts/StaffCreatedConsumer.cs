@@ -1,5 +1,4 @@
 using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.EventBus.RabbitMq.Events.Accounts;
 using LockerService.Domain.Enums;
 

@@ -1,4 +1,3 @@
-using LockerService.Application.Common.Services;
 using LockerService.Domain.Enums;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;

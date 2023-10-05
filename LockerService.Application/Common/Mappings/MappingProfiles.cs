@@ -1,11 +1,9 @@
 using LockerService.Application.Audits.Models;
-using LockerService.Application.Bills.Models;
-using LockerService.Application.Customers.Models;
-using LockerService.Application.Locations.Commands;
 using LockerService.Application.Notifications.Models;
+using LockerService.Application.Payments.Models;
 using LockerService.Application.Services.Commands;
 using LockerService.Application.Settings.Commands;
-using LockerService.Application.Staffs.Models;
+using LockerService.Domain;
 using LockerService.Domain.Entities.Settings;
 
 namespace LockerService.Application.Common.Mappings;
@@ -51,9 +49,6 @@ public class MappingProfiles : Profile
         CreateMap<Order, OrderResponse>();
         CreateMap<Order, BoxOrderResponse>();
         
-        // Bill
-        CreateMap<Bill, BillResponse>();
-        
         // OrderDetail
         CreateMap<OrderDetail, OrderItemResponse>();
         CreateMap<Order, OrderDetailResponse>();
@@ -90,8 +85,12 @@ public class MappingProfiles : Profile
         // Notifications
         CreateMap<Notification, NotificationModel>();
         
-        // Audi
+        // Audit
         CreateMap<Audit, AuditResponse>();
+        
+        // Payments
+        CreateMap<Payment, PaymentResponse>();
+
     }
 
 }

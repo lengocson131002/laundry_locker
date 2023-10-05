@@ -1,4 +1,3 @@
-using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using LockerService.Domain.Entities.Settings;
@@ -29,16 +28,26 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
 
     public async Task<OrderResponse> Handle(InitializeOrderCommand command, CancellationToken cancellationToken)
     {
-        var locker = await _unitOfWork.LockerRepository.GetByIdAsync(command.LockerId);
+        var locker = await _unitOfWork.LockerRepository
+            .Get(lo => lo.Id == command.LockerId)
+            .Include(lo => lo.OrderTypes)
+            .FirstOrDefaultAsync(cancellationToken);
+
         if (locker == null)
         {
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
-
+    
+        // Check locker order types
+        if (!locker.CanSupportOrderType(command.Type))
+        {
+            throw new ApiException(ResponseCode.LockerErrorUnsupportedOrderType);
+        }
+        
         // Check Locker status
         if (!LockerStatus.Active.Equals(locker.Status))
         {
-            throw new ApiException(ResponseCode.LockerErrorNotActive);
+            throw new ApiException(ResponseCode.LockerErrorUnsupportedOrderType);
         }
 
         // Check available boxes
@@ -79,6 +88,8 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         }
 
         // Check sender and receiver
+        var orderSettings = await _settingService.GetSettings<OrderSettings>(cancellationToken);
+
         var senderPhone = command.SenderPhone;
         var sender = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(senderPhone);
         if (sender != null)
@@ -88,7 +99,6 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
                 throw new ApiException(ResponseCode.OrderErrorInactiveAccount);
             }
 
-            var orderSettings = await _settingService.GetSettings<OrderSettings>(cancellationToken);
             var currentActiveOrdersCount = await _unitOfWork.OrderRepository.CountActiveOrders(sender.Id);
             if (currentActiveOrdersCount >= orderSettings.MaxActiveOrderCount)
             {
@@ -161,6 +171,15 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
                 Latitude = deliveryAddressCommand.Latitude
             };
         }
+        
+        // check receive at
+        var intendedReceiveAt = command.IntendedReceiveAt;
+        if (intendedReceiveAt != null 
+            && intendedReceiveAt <= DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours)
+            && Equals(OrderType.Laundry, command.Type))
+        {
+            throw new ApiException(ResponseCode.OrderErrorInvalidReceiveTime);
+        }
 
         var order = new Order
         {
@@ -169,27 +188,54 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             Details = details,
             Status = command.IsReserving ? OrderStatus.Reserved : OrderStatus.Initialized,
             PinCode = command.IsReserving ? await _unitOfWork.OrderRepository.GenerateOrderPinCode() : null,
+            PinCodeIssuedAt = command.IsReserving ? DateTimeOffset.UtcNow : null,
             Sender = sender,
             Receiver = receiver,
             SendBox = availableBox,
-            ReceiveBox = availableBox,
+            ReceiveBox = Equals(command.Type, OrderType.Storage) ? availableBox : null,
             DeliveryAddress = deliveryAddress,
             IntendedReceiveAt = command.IntendedReceiveAt?.ToUniversalTime()
         };
         
+        
+        if (order.IsStorage)
+        {
+            order.StoragePrice = orderSettings.StoragePrice;
+        }
+
+        if (order.IsLaundry)
+        {
+            order.IntendedOvertime = intendedReceiveAt != null 
+                ? intendedReceiveAt.Value.AddHours(orderSettings.MaxTimeInHours)
+                : DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours + orderSettings.MaxTimeInHours);
+
+            order.ExtraFee = orderSettings.ExtraFee;
+        }
+
         await _unitOfWork.OrderRepository.AddAsync(order);
         await _unitOfWork.SaveChangesAsync();
         
         _logger.LogInformation("Create new order: {0}", order.Id);
 
         // push event
-        await _rabbitMqBus.PublishAsync(new OrderUpdatedStatusEvent()
+        if (!command.IsReserving)
         {
-            OrderId = order.Id,
-            Time = DateTimeOffset.UtcNow,
-            Status = order.Status
-        }, cancellationToken);
+            await _rabbitMqBus.PublishAsync(new OrderInitializedEvent()
+            {
+                Order = order,
+                Time = DateTimeOffset.UtcNow,
+            }, cancellationToken);
+        }
+        else
+        {
+            await _rabbitMqBus.PublishAsync(new OrderReservedEvent()
+            {
+                Order = order,
+                Time = DateTimeOffset.UtcNow,
+            }, cancellationToken);
+        }
         
         return _mapper.Map<OrderResponse>(order);
+
     }
 }

@@ -1,8 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using LockerService.Application.Common.Security;
-using LockerService.Application.Common.Services;
-using LockerService.Application.Common.Services.Notifications;
+using LockerService.Application.Common.Utils;
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Infrastructure.EventBus.Mqtt;
 using LockerService.Infrastructure.EventBus.RabbitMq;
@@ -25,6 +24,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
 using Quartz;
+using JsonSerializerOptions = System.Text.Json.JsonSerializerOptions;
 
 namespace LockerService.Infrastructure;
 
@@ -161,6 +161,15 @@ public static class ConfigureServices
             // Define RabbitMQ consumer
             // Order events consumers
             config.AddConsumer<OrderUpdatedStatusConsumer>();
+            config.AddConsumer<OrderInitializedConsumer>();
+            config.AddConsumer<OrderConfirmedConsumer>();
+            config.AddConsumer<OrderCollectedConsumer>();
+            config.AddConsumer<OrderProcessedConsumer>();
+            config.AddConsumer<OrderReturnedConsumer>();
+            config.AddConsumer<OrderCompletedConsumer>();
+            config.AddConsumer<OrderOvertimeConsumer>();
+            config.AddConsumer<OrderCanceledConsumer>();
+            
             
             // Locker events consumers
             config.AddConsumer<LockerConnectedConsumer>();
@@ -171,6 +180,7 @@ public static class ConfigureServices
             config.AddConsumer<LockerAddBoxConsumer>();
             config.AddConsumer<LockerResetBoxesConsumer>();
             config.AddConsumer<LockerRemoveBoxConsumer>();
+            config.AddConsumer<OrderReservedConsumer>();
             
             // Account event consumers
             config.AddConsumer<OtpCreatedConsumer>();
@@ -191,6 +201,8 @@ public static class ConfigureServices
                         }
                     );
                 cfg.ConfigureEndpoints(ctx);
+                cfg.UseRawJsonSerializer();
+                cfg.ConfigureJsonSerializerOptions(options => JsonSerializerUtils.GetGlobalJsonSerializerOptions());
             });
             
             config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter(settings.EndpointNamePrefix, false));
@@ -298,6 +310,9 @@ public static class ConfigureServices
 
         // Token Service
         services.AddScoped<ITokenService, TokenService>();
+        
+        // LockerService
+        services.AddScoped<ILockersService, LockersService>();
         
         return services;
     }

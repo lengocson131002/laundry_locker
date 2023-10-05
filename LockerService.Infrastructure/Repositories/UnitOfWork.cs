@@ -44,6 +44,8 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     private IAuditRepository? _auditRepository;
     
+    private readonly IPaymentRepository? _paymentRepository;
+    
     private readonly ApplicationDbContext _dbContext;
 
     private readonly IServiceScopeFactory _scopeFactory;
@@ -96,4 +98,6 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     public ILaundryItemRepository LaundryItemRepository => _laundryItemRepository ??= new LaundryItemRepository(_dbContext);
 
     public IAuditRepository AuditRepository => _auditRepository ??= new AuditRepository(_dbContext);
+
+    public IPaymentRepository PaymentRepository => _paymentRepository ?? new PaymentRepository(_dbContext);
 }
