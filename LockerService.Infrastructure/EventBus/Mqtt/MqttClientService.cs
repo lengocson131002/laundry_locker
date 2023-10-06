@@ -3,6 +3,7 @@ using LockerService.Application.Common.Security;
 using LockerService.Application.Common.Utils;
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Infrastructure.Settings;
+using LockerService.Shared.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using MQTTnet;
 using MQTTnet.Client;

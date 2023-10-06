@@ -1,5 +1,5 @@
 using System.Net;
-using LockerService.Application.Common.Extensions;
+using LockerService.Shared.Extensions;
 
 namespace LockerService.Application.Common.Models.Response;
 

@@ -1,8 +1,8 @@
 using LockerService.API.Attributes;
 using LockerService.Application.Common.Enums;
-using LockerService.Application.Notifications.Commands;
-using LockerService.Application.Notifications.Models;
-using LockerService.Application.Notifications.Queries;
+using LockerService.Application.Features.Notifications.Commands;
+using LockerService.Application.Features.Notifications.Models;
+using LockerService.Application.Features.Notifications.Queries;
 
 namespace LockerService.API.Controllers;
 

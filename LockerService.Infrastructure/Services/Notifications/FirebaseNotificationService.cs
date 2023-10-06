@@ -1,6 +1,7 @@
 using AutoMapper;
 using CorePush.Firebase;
-using LockerService.Application.Notifications.Models;
+using LockerService.Application.Common.Persistence.Repositories;
+using LockerService.Application.Features.Notifications.Models;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;
 using Microsoft.Extensions.DependencyInjection;

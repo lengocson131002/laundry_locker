@@ -1,4 +1,5 @@
 using System.Linq.Dynamic.Core;
+
 namespace LockerService.Application.Common.Models.Request;
 
 public abstract class FilterRequest<T> where T : class

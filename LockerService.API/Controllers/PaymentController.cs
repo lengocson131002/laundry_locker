@@ -1,6 +1,6 @@
 using LockerService.API.Attributes;
-using LockerService.Application.Payments.Models;
-using LockerService.Application.Payments.Queries;
+using LockerService.Application.Features.Payments.Models;
+using LockerService.Application.Features.Payments.Queries;
 using LockerService.Domain;
 
 namespace LockerService.API.Controllers;

@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Exceptions" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="EntityFrameworkCore.Projectables" />
       <PackageReference Include="LinqKit" />
     </ItemGroup>
@@ -29,6 +25,10 @@
 
     <ItemGroup>
       <None Remove="Events\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LockerService.Shared\LockerService.Shared.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,9 @@
 using LockerService.API.Attributes;
 using LockerService.API.Common;
-using LockerService.Application.Auth.Queries;
+using LockerService.Application.Features.Accounts.Models;
+using LockerService.Application.Features.Auth.Commands;
+using LockerService.Application.Features.Auth.Models;
+using LockerService.Application.Features.Auth.Queries;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Common.Constants;
 using LockerService.Infrastructure.Settings;

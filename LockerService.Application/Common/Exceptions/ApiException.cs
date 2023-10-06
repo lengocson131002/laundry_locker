@@ -1,3 +1,5 @@
+using LockerService.Shared.Extensions;
+
 namespace LockerService.Application.Common.Exceptions
 {
     public class ApiException : Exception

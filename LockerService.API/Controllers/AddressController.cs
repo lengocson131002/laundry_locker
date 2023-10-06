@@ -1,4 +1,6 @@
 using LockerService.API.Attributes;
+using LockerService.Application.Features.Locations.Models;
+using LockerService.Application.Features.Locations.Queries;
 
 namespace LockerService.API.Controllers;
 

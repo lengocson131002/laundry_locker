@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Application.Common.Security;
 using LockerService.Application.Common.Utils;
 using LockerService.Application.EventBus.RabbitMq;
@@ -9,13 +10,17 @@ using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Accounts;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 using LockerService.Infrastructure.Persistence;
-using LockerService.Infrastructure.Repositories;
+using LockerService.Infrastructure.Persistence.Contexts;
+using LockerService.Infrastructure.Persistence.Data;
+using LockerService.Infrastructure.Persistence.Interceptors;
+using LockerService.Infrastructure.Persistence.Repositories;
 using LockerService.Infrastructure.Scheduler;
 using LockerService.Infrastructure.Services;
 using LockerService.Infrastructure.Services.Notifications;
 using LockerService.Infrastructure.Settings;
 using LockerService.Infrastructure.SignalR;
 using LockerService.Infrastructure.SignalR.Notifications;
+using LockerService.Shared.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,7 +76,6 @@ public static class ConfigureServices
         services.AddScoped<ICurrentAccountService, CurrentAccountService>();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
         services.AddScoped<SoftDeleteInterceptor>();
-        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),

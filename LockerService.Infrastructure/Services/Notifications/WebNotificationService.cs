@@ -1,5 +1,5 @@
 using AutoMapper;
-using LockerService.Application.Notifications.Models;
+using LockerService.Application.Features.Notifications.Models;
 using LockerService.Infrastructure.SignalR;
 using LockerService.Infrastructure.SignalR.Notifications;
 using Microsoft.AspNetCore.SignalR;

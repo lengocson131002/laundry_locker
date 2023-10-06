@@ -1,7 +1,7 @@
 using LockerService.API.Attributes;
 using LockerService.API.Common;
-using LockerService.Application.Dashboard.Models;
-using LockerService.Application.Dashboard.Queries;
+using LockerService.Application.Features.Dashboard.Models;
+using LockerService.Application.Features.Dashboard.Queries;
 using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;

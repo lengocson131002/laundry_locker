@@ -1,11 +1,12 @@
 using System.Text;
 using System.Text.Json.Serialization;
-using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Utils;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.HttpClients;
 using LockerService.Infrastructure.Settings;
+using LockerService.Shared.Constants;
+using LockerService.Shared.Extensions;
+using LockerService.Shared.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LockerService.Infrastructure.Services.Notifications;

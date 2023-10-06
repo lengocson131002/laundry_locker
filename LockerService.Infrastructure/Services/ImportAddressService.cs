@@ -1,3 +1,4 @@
+using LockerService.Application.Common.Persistence.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;

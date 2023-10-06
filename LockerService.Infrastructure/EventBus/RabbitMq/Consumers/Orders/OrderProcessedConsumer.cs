@@ -1,3 +1,5 @@
+using LockerService.Application.Common.Persistence.Repositories;
+
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 
 public class OrderProcessedConsumer : IConsumer<OrderProcessedEvent>

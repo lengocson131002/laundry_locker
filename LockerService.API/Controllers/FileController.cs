@@ -1,7 +1,7 @@
 using LockerService.API.Attributes;
-using LockerService.Application.Files.Commands;
-using LockerService.Application.Files.Models;
-using LockerService.Application.Files.Queries;
+using LockerService.Application.Features.Files.Commands;
+using LockerService.Application.Features.Files.Models;
+using LockerService.Application.Features.Files.Queries;
 
 namespace LockerService.API.Controllers;
 

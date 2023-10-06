@@ -1,3 +1,4 @@
+using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Infrastructure.Scheduler;
 using Quartz;
 

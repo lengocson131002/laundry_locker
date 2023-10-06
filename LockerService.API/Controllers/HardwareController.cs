@@ -1,9 +1,9 @@
 using LockerService.API.Attributes;
 using LockerService.API.Common;
 using LockerService.Application.Common.Enums;
-using LockerService.Application.Hardwares.Commands;
-using LockerService.Application.Hardwares.Models;
-using LockerService.Application.Hardwares.Queries;
+using LockerService.Application.Features.Hardwares.Commands;
+using LockerService.Application.Features.Hardwares.Models;
+using LockerService.Application.Features.Hardwares.Queries;
 using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;

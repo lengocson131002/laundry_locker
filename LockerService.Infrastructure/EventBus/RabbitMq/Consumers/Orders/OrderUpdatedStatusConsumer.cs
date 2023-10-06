@@ -1,8 +1,9 @@
 using AutoMapper;
-using LockerService.Application.Common.Extensions;
-using LockerService.Application.Common.Utils;
+using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Domain.Enums;
+using LockerService.Shared.Extensions;
+using LockerService.Shared.Utils;
 
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
 

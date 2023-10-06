@@ -1,3 +1,4 @@
+using LockerService.Application.Common.Persistence.Repositories;
 using Microsoft.AspNetCore.SignalR;
 
 namespace LockerService.Infrastructure.SignalR.Notifications;

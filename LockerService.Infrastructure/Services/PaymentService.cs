@@ -1,3 +1,4 @@
+using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Domain;
 using LockerService.Domain.Enums;

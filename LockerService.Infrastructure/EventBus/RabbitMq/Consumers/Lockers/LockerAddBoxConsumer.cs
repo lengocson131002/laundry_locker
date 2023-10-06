@@ -1,3 +1,5 @@
+using LockerService.Application.Common.Persistence.Repositories;
+
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 
 public class LockerAddBoxConsumer : IConsumer<LockerAddBoxEvent>

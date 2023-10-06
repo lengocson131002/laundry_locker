@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using LockerService.API.Attributes;
 using LockerService.Application.Common.Enums;
-using LockerService.Application.Orders.Commands;
-using LockerService.Application.Orders.Models;
-using LockerService.Application.Orders.Queries;
-using LockerService.Application.Payments.Models;
+using LockerService.Application.Features.Orders.Commands;
+using LockerService.Application.Features.Orders.Models;
+using LockerService.Application.Features.Orders.Queries;
+using LockerService.Application.Features.Payments.Models;
 using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;

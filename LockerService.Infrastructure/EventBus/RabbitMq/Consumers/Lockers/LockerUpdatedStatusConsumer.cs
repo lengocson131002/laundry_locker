@@ -1,6 +1,8 @@
+using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Application.Common.Utils;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;
+using LockerService.Shared.Utils;
 
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 

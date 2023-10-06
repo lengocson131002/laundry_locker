@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockerService.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockerService.Domain", "LockerService.Domain\LockerService.Domain.csproj", "{CBBE4EAF-4C7F-46DB-BDF7-21DAE5EDF3F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockerService.Shared", "LockerService.Shared\LockerService.Shared.csproj", "{AB0E3CE1-662C-4320-8FA7-96F6D2F98CC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{CBBE4EAF-4C7F-46DB-BDF7-21DAE5EDF3F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBBE4EAF-4C7F-46DB-BDF7-21DAE5EDF3F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBBE4EAF-4C7F-46DB-BDF7-21DAE5EDF3F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB0E3CE1-662C-4320-8FA7-96F6D2F98CC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB0E3CE1-662C-4320-8FA7-96F6D2F98CC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB0E3CE1-662C-4320-8FA7-96F6D2F98CC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB0E3CE1-662C-4320-8FA7-96F6D2F98CC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -12,7 +12,6 @@ public static class ConfigureServices
     {
         // Auto mapper
         services.AddAutoMapper(typeof(MappingProfiles));
-        services.AddAutoMapper(typeof(RabbitMqEventMappings));
         
         // FluentAPI validation
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

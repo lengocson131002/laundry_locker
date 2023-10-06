@@ -1,4 +1,5 @@
 using System.Text.Json;
+using LockerService.Shared.Extensions;
 
 namespace LockerService.Application.Common.Utils;
 

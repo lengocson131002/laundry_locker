@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\LockerService.Domain\LockerService.Domain.csproj" />
+        <ProjectReference Include="..\LockerService.Shared\LockerService.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,14 +32,27 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Accounts\Commands" />
-        <Folder Include="Accounts\Handlers" />
-        <Folder Include="Accounts\Queries" />
-        <Folder Include="Audits\Commands" />
-        <Folder Include="Common\Commands" />
+        <Folder Include="Common\Extensions" />
         <Folder Include="Common\Interfaces" />
-        <Folder Include="Dashboard\Commands" />
-        <Folder Include="Payments\Commands" />
+        <Folder Include="Features\Accounts\Commands" />
+        <Folder Include="Features\Accounts\Handlers" />
+        <Folder Include="Features\Accounts\Queries" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EntityDeploy Remove="Common\Commands\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Common\Commands\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Common\Commands\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Common\Commands\**" />
     </ItemGroup>
 
 </Project>

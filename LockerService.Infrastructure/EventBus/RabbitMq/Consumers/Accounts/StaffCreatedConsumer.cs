@@ -1,6 +1,6 @@
-using LockerService.Application.Common.Extensions;
 using LockerService.Application.EventBus.RabbitMq.Events.Accounts;
 using LockerService.Domain.Enums;
+using LockerService.Shared.Extensions;
 
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Accounts;
 
