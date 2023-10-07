@@ -64,10 +64,8 @@ public class CheckoutOrderJob : IJob
         // Update order status
         var currStatus = order.Status;
         order.Status = OrderStatus.Completed;
-        order.ReceiveAt = DateTimeOffset.UtcNow;
-        order.TotalPrice = order.Price
-                           + (decimal)order.ExtraCount * order.ExtraFee
-                           - order.Discount;
+        order.CompletedAt = DateTimeOffset.UtcNow;
+        order.TotalPrice = order.CalculateTotalPrice();
 
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();

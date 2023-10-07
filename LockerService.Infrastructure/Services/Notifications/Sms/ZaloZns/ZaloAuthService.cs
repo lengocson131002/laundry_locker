@@ -3,7 +3,7 @@ using LockerService.Domain.Entities.Settings;
 using LockerService.Infrastructure.HttpClients;
 using LockerService.Infrastructure.Settings;
 
-namespace LockerService.Infrastructure.Services.Notifications;
+namespace LockerService.Infrastructure.Services.Notifications.Sms.ZaloZns;
 
 public class ZaloAuthService
 {

@@ -40,6 +40,8 @@ public class OrderOvertimeJob : IJob
             .Include(order => order.Locker.Location.Ward)
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
+            .Include(order => order.Details)
+            .ThenInclude(detail => detail.Service)
             .ToListAsync();
 
         foreach (var order in overtimeOrders)

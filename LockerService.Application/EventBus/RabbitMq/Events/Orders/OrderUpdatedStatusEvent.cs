@@ -8,7 +8,7 @@ public class OrderUpdatedStatusEvent : RabbitMqBaseEvent
 
     public OrderStatus Status { get; set; }
     
-    public DateTimeOffset Time { get; set; } = DateTimeOffset.Now;
+    public DateTimeOffset Time { get; set; } = DateTimeOffset.UtcNow;
     
     public long? StaffId { get; set; }
     

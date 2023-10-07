@@ -3,6 +3,8 @@ namespace LockerService.Application.Features.Payments.Models;
 public class PaymentResponse : BaseAuditableEntityResponse
 {
     public long Id { get; set; }
+
+    public string ReferenceId { get; set; } = default!;
     
     public decimal Amount { get; set; }
 
@@ -16,9 +18,13 @@ public class PaymentResponse : BaseAuditableEntityResponse
     
     public string? Url { get; set; }
     
+    public string? Deeplink { get; set; }
+    
     public long OrderId { get; set; }
 
     public long CustomerId { get; set; }
 
     public PaymentStatus Status { get; set; }
+    
+    public string? Description { get; set; }
 }

@@ -43,6 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Services\Notifications\Email" />
       <Folder Include="SignalR\Chat" />
     </ItemGroup>
 

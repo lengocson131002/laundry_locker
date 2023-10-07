@@ -6,7 +6,7 @@ using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LockerService.Infrastructure.Services.Notifications;
+namespace LockerService.Infrastructure.Services.Notifications.Mobile.Firebase;
 
 public class FirebaseNotificationService : IMobileNotificationService
 {

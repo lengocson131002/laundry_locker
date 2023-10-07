@@ -3,7 +3,7 @@ using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 
-namespace LockerService.Infrastructure.Services.Notifications;
+namespace LockerService.Infrastructure.Services.Notifications.Sms.Twilio;
 
 public class TwilioNotificationService : ISmsNotificationService
 {

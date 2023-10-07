@@ -85,18 +85,10 @@ public class OrderController : ApiControllerBase
     [HttpPut("{id:long}/checkout")]
     public async Task<ActionResult<PaymentResponse>> CheckoutOrder([FromRoute] long id, [FromBody] CheckoutOrderCommand command)
     {
-        command.Id = id;
+        command.OrderId = id;
         return await Mediator.Send(command);
     }
-
-    [HttpGet("{id:long}/checkout/callback")]
-    public async Task<ActionResult> CheckoutOrderCallBack([FromRoute] long id, [FromBody] CheckoutOrderCallbackCommand command)
-    {
-        command.Id = id;
-        await Mediator.Send(command);
-        return Ok();
-    }
-
+    
     [HttpGet("{id:long}")]
     [Authorize]
     public async Task<ActionResult<OrderDetailResponse>> GetOrder([FromRoute] long id)

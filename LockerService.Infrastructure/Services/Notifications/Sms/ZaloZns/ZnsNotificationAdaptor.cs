@@ -1,76 +1,29 @@
-using System.Text;
 using System.Text.Json.Serialization;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Domain.Enums;
-using LockerService.Infrastructure.HttpClients;
 using LockerService.Infrastructure.Settings;
 using LockerService.Shared.Constants;
 using LockerService.Shared.Extensions;
 using LockerService.Shared.Utils;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace LockerService.Infrastructure.Services.Notifications;
+namespace LockerService.Infrastructure.Services.Notifications.Sms.ZaloZns;
 
-public class ZnsNotificationService : ISmsNotificationService
+public class ZnsNotificationAdaptor
 {
     private readonly ZaloZnsSettings _znsSettings;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly ILogger<ZnsNotificationService> _logger;
+    private readonly ILogger<ZnsNotificationAdaptor> _logger;
+    private readonly ISettingService _settingService;
 
-    public ZnsNotificationService(
-        ZaloZnsSettings znsSettings, 
-        ILogger<ZnsNotificationService> logger, IServiceScopeFactory serviceScopeFactory)
+    public ZnsNotificationAdaptor(ILogger<ZnsNotificationAdaptor> logger, ZaloZnsSettings znsSettings, ISettingService settingService)
     {
-        _znsSettings = znsSettings;
         _logger = logger;
-        _serviceScopeFactory = serviceScopeFactory;
+        _znsSettings = znsSettings;
+        _settingService = settingService;
     }
 
-    public async Task NotifyAsync(Notification notification)
-    {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var serviceProvider = scope.ServiceProvider;
-        var zaloAuthService = serviceProvider.GetRequiredService<ZaloAuthService>();
-        var settingService = serviceProvider.GetRequiredService<ISettingService>();
-        var zaloAuthSettings = await settingService.GetSettings<ZaloAuthSettings>();
-
-        using var httpClient = new HttpClient(new ZaloRequestHandler(
-                zaloAuthService,
-                _logger,
-                settingService
-            ));
-        httpClient.Timeout = TimeSpan.FromSeconds(30);
-        
-        var requestData = await GetRequestContent(notification);
-        var content = new StringContent(
-            JsonSerializer.Serialize(requestData, JsonSerializerUtils.GetGlobalJsonSerializerOptions()), 
-            Encoding.UTF8, 
-            "application/json");
-        
-        var httpRequest = new HttpRequestMessage(HttpMethod.Post, _znsSettings.ZnsUrl)
-        {
-            Content = content,
-        };
-        httpRequest.Headers.Add("access_token", zaloAuthSettings.AccessToken);
-        
-        using var response = await httpClient.SendAsync(httpRequest);
-        var jsonString = await response.Content.ReadAsStringAsync();
-        var responseData = JsonSerializer.Deserialize<BaseZaloZnsResponse>(jsonString);
-        if (response.IsSuccessStatusCode && responseData != null && !responseData.IsError)
-        {
-            _logger.LogInformation("[Zalo ZNS] Send message successfully: {0}", requestData);
-            return;
-        }
-        _logger.LogError("[Zalo ZNS] Send message failed. {0}", responseData?.Message);
-    }
-
-    private async Task<BaseZaloZnsRequest> GetRequestContent(Notification notification)
+    public async Task<BaseZaloZnsRequest> GetRequestContent(Notification notification)
     {
 
-        using var scope = _serviceScopeFactory.CreateScope();
-        var serviceProvider = scope.ServiceProvider;
-        var settingService = serviceProvider.GetRequiredService<ISettingService>();
-            
         var account = notification.Account;
         if (account == null)
         {
@@ -197,8 +150,7 @@ public class ZnsNotificationService : ISmsNotificationService
                     ? string.Join(", ", returnedOrderDetails.Select(item => item.Service.Name))
                     : "None";
                 
-                var orderSettings = await settingService.GetSettings<OrderSettings>();
-                var timeSettings = await settingService.GetSettings<TimeSettings>();
+                var timeSettings = await _settingService.GetSettings<TimeSettings>();
     
                 return new BaseZaloZnsRequest()
                 {
@@ -213,8 +165,10 @@ public class ZnsNotificationService : ISmsNotificationService
                         pin_code = returnedOrder.PinCode,
                         order_price = returnedOrder.Price,
                         order_detail = returnOrderDetailDescription,
-                        extra_at = returnedOrder.IntendedOvertime.Value.ToString(timeSettings.TimeZone, DateTimeConstants.DateTimeFormat),
-                        extra_fee = orderSettings.ExtraFee,
+                        extra_at = returnedOrder.IntendedOvertime != null 
+                            ? returnedOrder.IntendedOvertime.Value.ToString(timeSettings.TimeZone, DateTimeConstants.DateTimeFormat)
+                            : string.Empty,
+                        extra_fee = returnedOrder.ExtraFee,
                         locker_name = returnedOrderLocker.Name,
                         locker_address = returnedOrderLocker.Location.ToString()
                     }
@@ -258,70 +212,6 @@ public class ZnsNotificationService : ISmsNotificationService
         }
         
         throw new Exception("[Zalo ZNS] Invalid notification type");
-    }
-
-    public Task SendSmsAsync(string phoneNumber, string content)
-    {
-        throw new NotImplementedException();
-    }
-
-}
-
-public class ZaloRequestHandler : DelegatingHandler
-{
-    private readonly ZaloAuthService _zaloAuthService;
-
-    private readonly ISettingService _settingService;
-    
-    private readonly ILogger _logger;
-    
-    private const int InvalidAccessTokenErrorCode = -124;
-        
-    public ZaloRequestHandler(
-        ZaloAuthService zaloAuthService, 
-        ILogger logger, 
-        ISettingService settingService) : base(new RetryHandler())
-    {
-        _zaloAuthService = zaloAuthService;
-        _logger = logger;
-        _settingService = settingService;
-    }
-
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        var zaloAuthSettings = await _settingService.GetSettings<ZaloAuthSettings>(cancellationToken);
-        HttpResponseMessage response = null;
-        while (true)
-        {
-            response = await base.SendAsync(request, cancellationToken);
-            var jsonString = await response.Content.ReadAsStringAsync(cancellationToken);
-            var responseData = JsonSerializer.Deserialize<BaseZaloZnsResponse>(jsonString);
-            
-            // Recreate access token when expired
-            if (response.IsSuccessStatusCode && responseData != null && responseData.Error == InvalidAccessTokenErrorCode)
-            {
-                _logger.LogInformation("[Zalo ZNS] Invalid access token. Recreate access token");
-                var authToken = await _zaloAuthService.GetAccessToken(zaloAuthSettings.RefreshToken);
-                if (authToken == null)
-                {
-                    break;
-                }
-                
-                request.Headers.Clear();
-                request.Headers.Add("access_token", authToken.AccessToken);
-
-                await _settingService.UpdateSettings(new ZaloAuthSettings()
-                {
-                    AccessToken = authToken.AccessToken,
-                    RefreshToken = authToken.RefreshToken
-                }, cancellationToken);
-            }
-            else
-            {
-                break;
-            }
-        }
-        return response;
     }
 }
 

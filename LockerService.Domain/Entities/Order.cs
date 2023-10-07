@@ -12,6 +12,8 @@ public class Order : BaseAuditableEntity
 {
     [Key] public long Id { get; set; }
 
+    public string? ReferenceId { get; set; }
+
     public OrderType Type { get; set; }
 
     public string? PinCode { get; set; }
@@ -44,6 +46,9 @@ public class Order : BaseAuditableEntity
 
     // Thời gian nhận thật sự
     public DateTimeOffset? ReceiveAt { get; set; }
+    
+    // Thời gian nhận thật sự
+    public DateTimeOffset? CompletedAt { get; set; }
 
     public OrderStatus Status { get; set; } = OrderStatus.Initialized;
 
@@ -74,14 +79,16 @@ public class Order : BaseAuditableEntity
     {
         get
         {
-            var now = DateTimeOffset.Now;
+            var calculateAt = IsFinished 
+                ? CompletedAt ?? DateTimeOffset.UtcNow 
+                : DateTimeOffset.UtcNow;
 
-            if (IsStorage || now < IntendedOvertime || IntendedOvertime == null)
+            if (IsStorage || calculateAt < IntendedOvertime || IntendedOvertime == null)
             {
                 return 0;
             }
 
-            var extraTimespan = now - IntendedOvertime.Value;
+            var extraTimespan = calculateAt - IntendedOvertime.Value;
             var extraInHours = (float)extraTimespan.TotalMinutes / 60;
             return (float)Math.Round(extraInHours, 2, MidpointRounding.AwayFromZero);
         }
@@ -96,8 +103,11 @@ public class Order : BaseAuditableEntity
         {
             if (IsStorage)
             {
-                var now = DateTimeOffset.Now;
-                var orderDuration = now - CreatedAt;
+                var calculateAt = IsFinished 
+                    ? CompletedAt ?? DateTimeOffset.UtcNow 
+                    : DateTimeOffset.UtcNow;
+                
+                var orderDuration = calculateAt - CreatedAt;
                 var durationInHours = (float)Math.Round(orderDuration.TotalMinutes / 60.0, 2, MidpointRounding.AwayFromZero);;
                 return (decimal) Math.Max(1, durationInHours) * StoragePrice;
             }
@@ -235,5 +245,18 @@ public class Order : BaseAuditableEntity
             default:
                 return false;
         }
+    }
+
+    public Order()
+    {
+        ReferenceId = Guid.NewGuid().ToString();
+    }
+
+    public decimal CalculateTotalPrice()
+    {
+        return Price
+               + (decimal)ExtraCount * ExtraFee
+               + ShippingFee
+               - Discount;
     }
 }

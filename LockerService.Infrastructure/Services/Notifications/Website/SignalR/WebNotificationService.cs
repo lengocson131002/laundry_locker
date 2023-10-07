@@ -4,7 +4,7 @@ using LockerService.Infrastructure.SignalR;
 using LockerService.Infrastructure.SignalR.Notifications;
 using Microsoft.AspNetCore.SignalR;
 
-namespace LockerService.Infrastructure.Services.Notifications;
+namespace LockerService.Infrastructure.Services.Notifications.Website.SignalR;
 
 public class WebNotificationService : IWebNotificationService
 {

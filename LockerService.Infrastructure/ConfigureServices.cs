@@ -2,14 +2,13 @@ using System.Text;
 using System.Text.Json.Serialization;
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Application.Common.Security;
-using LockerService.Application.Common.Utils;
+using LockerService.Application.Common.Services.Payments;
 using LockerService.Application.EventBus.RabbitMq;
 using LockerService.Infrastructure.EventBus.Mqtt;
 using LockerService.Infrastructure.EventBus.RabbitMq;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Accounts;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
-using LockerService.Infrastructure.Persistence;
 using LockerService.Infrastructure.Persistence.Contexts;
 using LockerService.Infrastructure.Persistence.Data;
 using LockerService.Infrastructure.Persistence.Interceptors;
@@ -17,6 +16,11 @@ using LockerService.Infrastructure.Persistence.Repositories;
 using LockerService.Infrastructure.Scheduler;
 using LockerService.Infrastructure.Services;
 using LockerService.Infrastructure.Services.Notifications;
+using LockerService.Infrastructure.Services.Notifications.Mobile.Firebase;
+using LockerService.Infrastructure.Services.Notifications.Sms.ZaloZns;
+using LockerService.Infrastructure.Services.Notifications.Website.SignalR;
+using LockerService.Infrastructure.Services.Payments.Momo;
+using LockerService.Infrastructure.Services.Payments.VnPay;
 using LockerService.Infrastructure.Settings;
 using LockerService.Infrastructure.SignalR;
 using LockerService.Infrastructure.SignalR.Notifications;
@@ -27,9 +31,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Converters;
 using Quartz;
-using JsonSerializerOptions = System.Text.Json.JsonSerializerOptions;
 
 namespace LockerService.Infrastructure;
 
@@ -257,7 +259,21 @@ public static class ConfigureServices
         services.AddHostedService<ImportAddressService>();
         
         // Payment
-        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddOptions<MomoSettings>()
+            .BindConfiguration(MomoSettings.ConfigSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<VnPaySettings>()
+            .BindConfiguration(VnPaySettings.ConfigSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+              
+        services.AddSingleton(sp => sp.GetRequiredService<IOptions<VnPaySettings>>().Value);
+        services.AddSingleton(sp => sp.GetRequiredService<IOptions<MomoSettings>>().Value);
+
+        services.AddScoped<IMomoPaymentService, MomoPaymentService>();
+        services.AddScoped<IVnPayPaymentService, VnPayPaymentService>();
         
         // Notification
         services.AddOptions<FcmSettings>()
@@ -287,6 +303,7 @@ public static class ConfigureServices
         
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<ZaloZnsSettings>>().Value);
         services.AddScoped<ZaloAuthService>();
+        services.AddScoped<ZnsNotificationAdaptor>();
         
         services.AddSingleton<ISmsNotificationService, ZnsNotificationService>();
         services.AddSingleton<IWebNotificationService, WebNotificationService>();

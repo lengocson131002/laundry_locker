@@ -11,6 +11,8 @@ public class Payment : BaseAuditableEntity
     [Key]
     public long Id { get; set; }
     
+    public string? ReferenceId { get; set; }
+    
     public decimal Amount { get; set; }
 
     public PaymentMethod Method { get; set; }
@@ -23,6 +25,8 @@ public class Payment : BaseAuditableEntity
     
     public string? Url { get; set; }
     
+    public string? Deeplink { get; set; }
+    
     public long OrderId { get; set; }
 
     public Order Order { get; set; } = default!;
@@ -31,24 +35,28 @@ public class Payment : BaseAuditableEntity
 
     public Account Customer { get; set; } = default!;
     
+    public string? Description { get; set; }
+    
     public PaymentStatus Status { get; set; }
 
     public Payment()
     {
         Status = PaymentStatus.Created;
+        ReferenceId = Guid.NewGuid().ToString();
     }
 
-    public Payment(Order order, PaymentMethod method)
+    public Payment(Order order, PaymentMethod method, PaymentStatus? status = PaymentStatus.Created)
     {
-        Status = PaymentStatus.Created;
-        Amount = order.Price + order.TotalExtraFee + order.ShippingFee - order.Discount - order.ReservationFee;
+        Status = status ?? PaymentStatus.Created;
+        ReferenceId = Guid.NewGuid().ToString();
+        Amount = order.CalculateTotalPrice();
         Method = method;
         Content = PaymentContent(order.Type);
         OrderId = order.Id;
         CustomerId = order.ReceiverId ?? order.SenderId;
     }
 
-    private string PaymentContent(OrderType type)
+    public static string PaymentContent(OrderType type)
     {
         return type switch
         {

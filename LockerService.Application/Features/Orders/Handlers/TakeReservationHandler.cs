@@ -31,6 +31,7 @@ public class TakeReservationHandler : IRequestHandler<TakeReservationCommand, Or
             .Include(order => order.Locker.Location.District)
             .Include(order => order.Locker.Location.Province)
             .Include(order => order.Details)
+            .ThenInclude(detail => detail.Service)
             .FirstOrDefaultAsync(cancellationToken);
         
         if (order == null)

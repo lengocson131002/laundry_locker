@@ -168,4 +168,6 @@ public enum ResponseCode
     
     // Payment
     [Description("Payment not found")] PaymentErrorNotFound = 1701,
+    
+    [Description("Unsupported payment method")] PaymentErrorUnsupportedPaymentMethod = 1702,
 }

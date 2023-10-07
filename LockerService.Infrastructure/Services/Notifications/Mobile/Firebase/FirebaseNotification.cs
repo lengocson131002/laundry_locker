@@ -1,4 +1,4 @@
-namespace LockerService.Infrastructure.Services.Notifications;
+namespace LockerService.Infrastructure.Services.Notifications.Mobile.Firebase;
 
 public class FirebaseNotification
 {

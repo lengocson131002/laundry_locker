@@ -61,12 +61,19 @@ public class MappingProfiles : Profile
         
         // Order
         CreateMap<InitializeOrderCommand, Order>();
-        CreateMap<Order, OrderResponse>();
+        CreateMap<Order, OrderResponse>()
+            .ForMember(
+                response => response.TotalPrice,
+                options => options.MapFrom(order => order.CalculateTotalPrice()));
+        
         CreateMap<Order, BoxOrderResponse>();
         
         // OrderDetail
         CreateMap<OrderDetail, OrderItemResponse>();
-        CreateMap<Order, OrderDetailResponse>();
+        CreateMap<Order, OrderDetailResponse>()
+            .ForMember(
+                response => response.TotalPrice,
+                options => options.MapFrom(order => order.CalculateTotalPrice()));;
         
         // Order timeline
         CreateMap<OrderTimeline, OrderTimelineResponse>();
