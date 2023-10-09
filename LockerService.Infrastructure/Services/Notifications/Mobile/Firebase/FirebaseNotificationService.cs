@@ -44,6 +44,8 @@ public class FirebaseNotificationService : IMobileNotificationService
 
         var settings = new FirebaseSettings(_fcmSettings.ProjectId, _fcmSettings.PrivateKey, _fcmSettings.ClientEmail, _fcmSettings.TokenUri);
         var fcmSender = new FirebaseSender(settings, new HttpClient());
+        
+        _logger.LogInformation("Firebase key: {0}", _fcmSettings.PrivateKey);
         foreach (var token in deviceIds)
         {
             try
