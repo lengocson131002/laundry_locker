@@ -78,6 +78,7 @@ public class MomoPaymentService : IMomoPaymentService
                 {
                     Method = PaymentMethod.Momo,
                     Amount = momoPaymentResponse.Amount,
+                    // Test with QR
                     Qr = momoPaymentResponse.PayUrl,
                     Url = momoPaymentResponse.PayUrl,
                     Deeplink = momoPaymentResponse.Deeplink,
