@@ -52,7 +52,7 @@ public class MomoPaymentService : IMomoPaymentService
         request.IpnUrl = $"{_momoSettings.IpnUrl}/{payment.PaymentReferenceId}";
         request.RedirectUrl = $"{_momoSettings.RedirectUrl}/{payment.PaymentReferenceId}";
         request.Amount = payment.Amount;
-        request.OrderId = payment.OrderReferenceId;
+        request.OrderId = payment.PaymentReferenceId;
         request.ReferenceId = $"{payment.PaymentReferenceId}";
         request.RequestId = Guid.NewGuid().ToString();
         request.RequestType = requestType;

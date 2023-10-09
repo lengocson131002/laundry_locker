@@ -50,7 +50,7 @@ public class VnPayPaymentService : IVnPayPaymentService
         pay.AddRequestData("vnp_OrderInfo", payment.Info ?? DefaultPaymentInfo);
         pay.AddRequestData("vnp_OrderType", payment.OrderType.ToString());
         pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
-        pay.AddRequestData("vnp_TxnRef", payment.OrderReferenceId);
+        pay.AddRequestData("vnp_TxnRef", payment.PaymentReferenceId);
         pay.AddRequestData("vnp_BankCode", string.Empty);
 
         var paymentUrl =
