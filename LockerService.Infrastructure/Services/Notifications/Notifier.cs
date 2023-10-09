@@ -103,9 +103,6 @@ public class Notifier : INotifier
     
     public async Task NotifyAsync(Notification notification)
     {
-        _logger.LogInformation("[PUSH NOTIFICATION]: {0}", JsonSerializerUtils.Serialize(notification));
-        await _provider.NotifyAsync(notification);
-
         if (notification.Saved)
         {
             // persist notification into database
@@ -114,5 +111,8 @@ public class Notifier : INotifier
             await unitOfWork.NotificationRepository.AddAsync(notification);
             await unitOfWork.SaveChangesAsync();
         }
+        
+        _logger.LogInformation("[PUSH NOTIFICATION]: {0}", JsonSerializerUtils.Serialize(notification));
+        await _provider.NotifyAsync(notification);
     }
 }

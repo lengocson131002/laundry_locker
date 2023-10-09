@@ -39,7 +39,9 @@ public class FirebaseNotificationService : IMobileNotificationService
         var notiAdapter = scope.ServiceProvider.GetRequiredService<INotificationAdapter>();
         
         var deviceIds = await unitOfWork.TokenRepository
-            .Get(token => Equals(TokenType.DeviceToken, token.Type) && Equals(TokenStatus.Valid, token.Status))
+            .Get(token => token.AccountId == notification.AccountId 
+                          && Equals(TokenType.DeviceToken, token.Type) 
+                          && Equals(TokenStatus.Valid, token.Status))
             .ToListAsync();
         
         _logger.LogInformation("Firebase key: {0}", _fcmSettings.PrivateKey);
