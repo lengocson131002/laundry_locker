@@ -1,45 +1,47 @@
-using System.Text.Json;
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Application.Common.Services.Notifications;
 using LockerService.Application.Features.Notifications.Commands;
-using LockerService.Shared.Extensions;
-using LockerService.Shared.Utils;
+using LockerService.Application.Features.Notifications.Models;
 
 namespace LockerService.Application.Features.Notifications.Handlers;
 
-public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
+public class PushNotificationHandler : IRequestHandler<PushNotificationCommand, NotificationModel>
 {
     private readonly INotifier _notifier;
     private readonly IUnitOfWork _unitOfWork;
-    public PushNotificationHandler(INotifier notifier, IUnitOfWork unitOfWork)
+    private readonly IMapper _mapper;
+    
+    public PushNotificationHandler(INotifier notifier, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _notifier = notifier;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
-    public async Task Handle(PushNotificationCommand request, CancellationToken cancellationToken)
+    public async Task<NotificationModel> Handle(PushNotificationCommand request, CancellationToken cancellationToken)
     {
         var account = await _unitOfWork.AccountRepository.GetByIdAsync(request.AccountId);
+        
         if (account == null)
         {
             throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
         }
         
-        var notification = new Notification()
-        {
-            Type = request.Type,
-            Content = request.Type.GetDescription(),
-            EntityType = EntityType.Account,
-            AccountId = account.Id,
-            Account = account,
-            Data = GetNotificationData(request.Type),
-            Saved = false
-        };
+        account.Password = "12345678";
+        var notification = new Notification(
+            type: request.Type,
+            entityType: EntityType.Account,
+            account: account,
+            data: GetNotificationData(request.Type),
+            saved: false
+        );
 
         await _notifier.NotifyAsync(notification);
+
+        return _mapper.Map<NotificationModel>(notification);
     }
 
-    private string? GetNotificationData(NotificationType notificationType)
+    private object? GetNotificationData(NotificationType notificationType)
     {
         var store = new Store()
         {
@@ -103,7 +105,7 @@ public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
 
         var order = new Order()
         {
-            Id = 2,
+            Id = 26,
             SendBox = box2,
             Sender = account1,
             Receiver = account2,
@@ -121,20 +123,25 @@ public class PushNotificationHandler : IRequestHandler<PushNotificationCommand>
         
         switch (notificationType)
         {
+            case NotificationType.AccountOtpCreated:
+                return "012345";
+            
             case NotificationType.SystemLockerConnected:
             case NotificationType.SystemLockerDisconnected:
             case NotificationType.SystemLockerBoxOverloaded:
             case NotificationType.SystemLockerBoxWarning:
-                return JsonSerializer.Serialize(locker, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+                return locker;
             
+            case NotificationType.SystemOrderOverTime:
+            case NotificationType.SystemOrderCreated:
             case NotificationType.CustomerOrderCreated:
             case NotificationType.CustomerOrderCanceled:
             case NotificationType.CustomerOrderCompleted:
             case NotificationType.CustomerOrderReturned:
             case NotificationType.CustomerOrderOverTime:
-                return JsonSerializer.Serialize(order, JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+                return order;
         }
 
-        return string.Empty;
+        return null;
     }
 }

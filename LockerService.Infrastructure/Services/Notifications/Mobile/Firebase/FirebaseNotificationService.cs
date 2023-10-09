@@ -1,7 +1,6 @@
 using AutoMapper;
 using CorePush.Firebase;
 using LockerService.Application.Common.Persistence.Repositories;
-using LockerService.Application.Features.Notifications.Models;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,30 +36,26 @@ public class FirebaseNotificationService : IMobileNotificationService
         // get device ids
         using var scope = _serviceScopeFactory.CreateScope();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        var notiAdapter = scope.ServiceProvider.GetRequiredService<INotificationAdapter>();
+        
         var deviceIds = await unitOfWork.TokenRepository
-            .Get(token => Equals(TokenType.DeviceId, token.Type) && Equals(TokenStatus.Valid, token.Status))
+            .Get(token => Equals(TokenType.DeviceToken, token.Type) && Equals(TokenStatus.Valid, token.Status))
             .ToListAsync();
 
-        var firebaseNotificationData = _mapper.Map<NotificationModel>(notification);
         var settings = new FirebaseSettings(_fcmSettings.ProjectId, _fcmSettings.PrivateKey, _fcmSettings.ClientEmail, _fcmSettings.TokenUri);
         var fcmSender = new FirebaseSender(settings, new HttpClient());
-        try
+        foreach (var token in deviceIds)
         {
-            foreach (var token in deviceIds)
+            try
             {
-                var firebaseNotification = new FirebaseNotification()
-                {
-                    Token = token.Value,
-                    Data = JsonSerializer.Serialize(firebaseNotificationData)
-                };
+                var firebaseNotification = await notiAdapter.ToFirebaseNotification(notification, token.Value);
                 await fcmSender.SendAsync(firebaseNotification);
             }
+            catch (Exception exception)
+            {
+                _logger.LogError($"[MOBILE NOTIFICATION] Error when push notification: {exception.Message}");
+            }
         }
-        catch (Exception exception)
-        {
-            _logger.LogError($"[MOBILE NOTIFICATION] Error when push notification: {exception.Message}");
-        }
-            
         _logger.LogInformation("[[MOBILE NOTIFICATION]] Handle firebase notification: {0}", notification.Id);
     }
 }

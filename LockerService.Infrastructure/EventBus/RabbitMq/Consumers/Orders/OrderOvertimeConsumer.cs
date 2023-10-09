@@ -25,30 +25,22 @@ public class OrderOvertimeConsumer : IConsumer<OrderOvertimeEvent>
         var message = context.Message;
         var order = message.Order;
             
-        var orderInfoData = JsonSerializerUtils.Serialize(order);
-        
         await _notifier.NotifyAsync(
-            new Notification()
-            {
-                Account = order.Sender,
-                Type = NotificationType.CustomerOrderOverTime,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderOverTime.GetDescription(),
-                Data = orderInfoData,
-                ReferenceId = order.Id.ToString(),
-            });
+            new Notification(
+                account: order.Sender,
+                type: NotificationType.CustomerOrderOverTime,
+                entityType: EntityType.Order,
+                data: order
+            ));
         
         if (order.ReceiverId != null && order.Receiver != null)
         {
-            await _notifier.NotifyAsync(new Notification()
-            {
-                Account = order.Receiver,
-                Type = NotificationType.CustomerOrderOverTime,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderOverTime.GetDescription(),
-                Data = orderInfoData,
-                ReferenceId = order.Id.ToString(),
-            });
+            await _notifier.NotifyAsync(new Notification(
+                account: order.Receiver,
+                type: NotificationType.CustomerOrderOverTime,
+                entityType: EntityType.Order,
+                data: order
+            ));
         }
         
         // Notify manager to handle this order
@@ -60,15 +52,12 @@ public class OrderOvertimeConsumer : IConsumer<OrderOvertimeEvent>
         
         foreach (var la in laundryAttendants)
         {
-            var notification = new Notification()
-            {
-                Account = la,
-                Type = NotificationType.SystemOrderOverTime,
-                Content = NotificationType.SystemOrderOverTime.GetDescription(),
-                EntityType = EntityType.Locker,
-                ReferenceId = order.Id.ToString(),
-                Data = orderInfoData,
-            };
+            var notification = new Notification(
+                account: la,
+                type: NotificationType.SystemOrderOverTime,
+                entityType: EntityType.Locker,
+                data: order
+            );
             
             await _notifier.NotifyAsync(notification);
         }

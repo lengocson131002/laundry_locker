@@ -14,7 +14,7 @@ public class AdminLoginRequestValidator : AbstractValidator<AdminLoginRequest>
     }
 }
 
-public class AdminLoginRequest : IRequest<TokenResponse>
+public class AdminLoginRequest : IRequest<AccessTokenResponse>
 {
     [TrimString(true)]
     public string Username { get; set; } = default!;

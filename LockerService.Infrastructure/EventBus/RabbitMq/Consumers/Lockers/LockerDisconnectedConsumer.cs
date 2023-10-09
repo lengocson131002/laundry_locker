@@ -67,16 +67,12 @@ public class LockerDisconnectedConsumer : IConsumer<LockerDisconnectedEvent>
         
         foreach (var manager in managers)
         {
-            var notification = new Notification()
-            {
-                Account = manager,
-                Type = NotificationType.SystemLockerDisconnected,
-                Content = NotificationType.SystemLockerDisconnected.GetDescription(),
-                EntityType = EntityType.Locker,
-                Data = lockerInfoData,
-                ReferenceId = locker.Id.ToString()
-            };
-
+            var notification = new Notification(
+                account: manager,
+                type: NotificationType.SystemLockerDisconnected,
+                entityType: EntityType.Locker,
+                data: locker
+            );
             await _notifier.NotifyAsync(notification);
         }
 

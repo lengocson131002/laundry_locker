@@ -4,7 +4,7 @@ using LockerService.Application.Features.Auth.Models;
 
 namespace LockerService.Application.Features.Auth.Handlers;
 
-public class CustomerLoginHandler : IRequestHandler<CustomerLoginRequest, TokenResponse>
+public class CustomerLoginHandler : IRequestHandler<CustomerLoginRequest, AccessTokenResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
@@ -17,7 +17,7 @@ public class CustomerLoginHandler : IRequestHandler<CustomerLoginRequest, TokenR
         _jwtService = jwtService;
     }
 
-    public async Task<TokenResponse> Handle(CustomerLoginRequest request, CancellationToken cancellationToken)
+    public async Task<AccessTokenResponse> Handle(CustomerLoginRequest request, CancellationToken cancellationToken)
     {
         var account = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(request.PhoneNumber);
         if (account is null)
@@ -52,6 +52,6 @@ public class CustomerLoginHandler : IRequestHandler<CustomerLoginRequest, TokenR
         var token = _jwtService.GenerateJwtToken(account);
         var refreshToken = _jwtService.GenerateJwtRefreshToken(account);
 
-        return new TokenResponse(token, refreshToken);
+        return new AccessTokenResponse(token, refreshToken);
     }
 }

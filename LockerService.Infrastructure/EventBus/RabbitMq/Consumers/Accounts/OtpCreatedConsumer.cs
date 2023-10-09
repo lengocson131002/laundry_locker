@@ -24,15 +24,13 @@ public class OtpCreatedConsumer : IConsumer<OtpCreatedEvent>
             return;
         }
 
-        var notification = new Notification()
-        {
-            Account = account,
-            Content = eventMessage.Otp,
-            Data = eventMessage.Otp,
-            Type = NotificationType.AccountOtpCreated,
-            EntityType = EntityType.Account,
-            Saved = false
-        };
+        var notification = new Notification(
+            account: account,
+            data: eventMessage.Otp,
+            type: NotificationType.AccountOtpCreated,
+            entityType: EntityType.Account,
+            saved: false
+        );
 
         await _notifier.NotifyAsync(notification);
     }

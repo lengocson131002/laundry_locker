@@ -131,30 +131,22 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         
         _logger.LogInformation("Handle order overtime event");
         
-        var orderInfoData = JsonSerializerUtils.Serialize(order);
-        
         await _notifier.NotifyAsync(
-            new Notification()
-            {
-                Account = order.Sender,
-                Type = NotificationType.CustomerOrderOverTime,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderOverTime.GetDescription(),
-                Data = orderInfoData,
-                ReferenceId = order.Id.ToString(),
-            });
+            new Notification(
+                account: order.Sender,
+                type: NotificationType.CustomerOrderOverTime,
+                entityType: EntityType.Order,
+                data: order
+            ));
         
         if (order.ReceiverId != null && order.Receiver != null)
         {
-            await _notifier.NotifyAsync(new Notification()
-            {
-                Account = order.Receiver,
-                Type = NotificationType.CustomerOrderOverTime,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderOverTime.GetDescription(),
-                Data = orderInfoData,
-                ReferenceId = order.Id.ToString(),
-            });
+            await _notifier.NotifyAsync(new Notification(
+                account: order.Receiver,
+                type: NotificationType.CustomerOrderOverTime,
+                entityType: EntityType.Order,
+                data: order
+            ));
         }
         
         // Notify manager to handle this order
@@ -167,15 +159,12 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         
         foreach (var la in laundryAttendants)
         {
-            var notification = new Notification()
-            {
-                Account = la,
-                Type = NotificationType.SystemOrderOverTime,
-                Content = NotificationType.SystemOrderOverTime.GetDescription(),
-                EntityType = EntityType.Locker,
-                ReferenceId = order.Id.ToString(),
-                Data = orderInfoData,
-            };
+            var notification = new Notification(
+                account: la,
+                type: NotificationType.SystemOrderOverTime,
+                entityType: EntityType.Locker,
+                data: order
+            );
             
             await _notifier.NotifyAsync(notification);
         }
@@ -186,15 +175,12 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
     {
         var notificationData = JsonSerializerUtils.Serialize(order);
 
-        await _notifier.NotifyAsync(new Notification()
-        {
-            Account = order.Sender,
-            Type = NotificationType.CustomerOrderCanceled,
-            Content = NotificationType.CustomerOrderCanceled.GetDescription(),
-            EntityType = EntityType.Order,
-            Data = notificationData,
-            ReferenceId = order.Id.ToString()
-        });
+        await _notifier.NotifyAsync(new Notification(
+            account: order.Sender,
+            type: NotificationType.CustomerOrderCanceled,
+            entityType: EntityType.Order,
+            data: notificationData
+        ));
     }
 
     private async Task HandlerOrderCompleted(Order order, DateTimeOffset eventMessageTime)
@@ -214,27 +200,21 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         // Push notification
         var notiData = JsonSerializerUtils.Serialize(order);
         await _notifier.NotifyAsync(
-            new Notification()
-            {
-                Account = order.Sender,
-                Type = NotificationType.CustomerOrderCompleted,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderCompleted.GetDescription(),
-                Data = notiData,
-                ReferenceId = order.Id.ToString(),
-            });
+            new Notification(
+                account: order.Sender,
+                type: NotificationType.CustomerOrderCompleted,
+                entityType: EntityType.Order,
+                data: notiData
+            ));
         
         if (order.Receiver != null)
         {
-            await _notifier.NotifyAsync(new Notification()
-            {
-                Account = order.Receiver,
-                Type = NotificationType.CustomerOrderCompleted,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderCompleted.GetDescription(),
-                Data = notiData,
-                ReferenceId = order.Id.ToString(),
-            });
+            await _notifier.NotifyAsync(new Notification(
+                account: order.Receiver,
+                type: NotificationType.CustomerOrderCompleted,
+                entityType: EntityType.Order,
+                data: notiData
+            ));
         }
     }
 
@@ -253,18 +233,13 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         }
         
         // Push notification
-        var orderInfoData = JsonSerializerUtils.Serialize(order);
         var notiAccount = order.ReceiverId != null && order.Receiver != null ? order.Receiver : order.Sender;
         await _notifier.NotifyAsync(
-            new Notification()
-            {
-                Account = notiAccount,
-                Type = NotificationType.CustomerOrderReturned,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderReturned.GetDescription(),
-                Data = orderInfoData,
-                ReferenceId = order.Id.ToString(),
-            });
+            new Notification(
+                account: notiAccount,
+                type: NotificationType.CustomerOrderReturned,
+                entityType: EntityType.Order,
+                data: order));
         
         // Check locker box availability
         await CheckLockerBoxAvailability(order.Locker);
@@ -318,30 +293,23 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
     {
         _logger.LogInformation("Handle order confirm event");
         
-        var orderInfoData = JsonSerializerUtils.Serialize(order);
         await _notifier.NotifyAsync(
-            new Notification()
-            {
-                Account = order.Sender,
-                Type = NotificationType.CustomerOrderCreated,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderCreated.GetDescription(),
-                Data = orderInfoData,
-                ReferenceId = order.Id.ToString(),
-            });
+            new Notification(
+                account: order.Sender,
+                type: NotificationType.CustomerOrderCreated,
+                entityType: EntityType.Order,
+                data: order
+            ));
 
         if (order.ReceiverId != null && order.Receiver != null)
         {
             await _notifier.NotifyAsync(
-                new Notification()
-                {
-                    Account = order.Receiver,
-                    Type = NotificationType.CustomerOrderCreated,
-                    EntityType = EntityType.Order,
-                    Content = NotificationType.CustomerOrderCreated.GetDescription(),
-                    Data = orderInfoData,
-                    ReferenceId = order.Id.ToString(),
-                });
+                new Notification(
+                    account: order.Receiver,
+                    type: NotificationType.CustomerOrderCreated,
+                    entityType: EntityType.Order,
+                    data: order
+                ));
         }
         
         // Notify for shippers to collect when order type is laundry
@@ -356,15 +324,12 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
             
             foreach (var la in laundryAttendants)
             {
-                var notification = new Notification()
-                {
-                    Account = la,
-                    Type = NotificationType.SystemOrderCreated,
-                    Content = NotificationType.SystemOrderCreated.GetDescription(),
-                    EntityType = EntityType.Order,
-                    ReferenceId = order.Id.ToString(),
-                    Data = orderInfoData,
-                };
+                var notification = new Notification(
+                    account: la,
+                    type: NotificationType.SystemOrderCreated,
+                    entityType: EntityType.Order,
+                    data: order
+                );
             
                 await _notifier.NotifyAsync(notification);
             }     
@@ -382,8 +347,6 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
 
         if (availableBoxes.Count <= lockerSettings.AvailableBoxCountWarning)
         {
-            var lockerInfoData = JsonSerializerUtils.Serialize(locker);
-            
             var laundryAttendants =await _unitOfWork.AccountRepository
                 .GetStaffs(
                     storeId: locker.StoreId, 
@@ -393,15 +356,12 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
             
             foreach (var la in laundryAttendants)
             {
-                var notification = new Notification()
-                {
-                    Account = la,
-                    Type = NotificationType.SystemLockerBoxWarning,
-                    Content = NotificationType.SystemLockerBoxWarning.GetDescription(),
-                    EntityType = EntityType.Locker,
-                    ReferenceId = locker.Id.ToString(),
-                    Data = lockerInfoData,
-                };
+                var notification = new Notification(
+                    account: la,
+                    type: NotificationType.SystemLockerBoxWarning,
+                    entityType: EntityType.Locker,
+                    data: locker
+                );
 
                 await _notifier.NotifyAsync(notification);
             }

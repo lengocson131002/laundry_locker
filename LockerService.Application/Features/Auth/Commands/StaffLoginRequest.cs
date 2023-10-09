@@ -14,7 +14,7 @@ public class StaffLoginRequestValidator : AbstractValidator<StaffLoginRequest>
     }
 }
 
-public class StaffLoginRequest : IRequest<TokenResponse>
+public class StaffLoginRequest : IRequest<AccessTokenResponse>
 {
     public string Username { get; set; } = default!;
 

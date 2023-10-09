@@ -13,28 +13,30 @@ public class WebNotificationService : IWebNotificationService
     private readonly IConnectionManager _connectionManager;
     private readonly IMapper _mapper;
     private const string ReceiveNotificationFunctionName = "ReceiveNotification";
+    private readonly INotificationAdapter _notificationAdapter;
 
     public WebNotificationService(
         ILogger<WebNotificationService> logger, 
         IMapper mapper, 
         IHubContext<NotificationHub> notificationHubContext,
-        ConnectionManagerServiceResolver connectionManagerServiceResolver)
+        ConnectionManagerServiceResolver connectionManagerServiceResolver, 
+        INotificationAdapter notificationAdapter)
     {
         _logger = logger;
         _mapper = mapper;
         _notificationHubContext = notificationHubContext;
+        _notificationAdapter = notificationAdapter;
         _connectionManager = connectionManagerServiceResolver(typeof(NotificationConnectionManager));
     }
 
     public async Task NotifyAsync(Notification notification)
     {
-        var notificationModel = _mapper.Map<NotificationModel>(notification);
-        
         var connections = _connectionManager.GetConnections(notification.AccountId);
         if (connections.Any())
         {
             foreach (var connection in connections)
             {
+                var notificationModel = await _notificationAdapter.ToWebNotification(notification, connection);
                 await _notificationHubContext.Clients.Client(connection).SendAsync(ReceiveNotificationFunctionName, notificationModel);
             }
         }

@@ -1,5 +1,6 @@
 using LockerService.Application.Features.Accounts.Models;
 using LockerService.Application.Features.Audits.Models;
+using LockerService.Application.Features.Auth.Models;
 using LockerService.Application.Features.Customers.Models;
 using LockerService.Application.Features.Dashboard.Models;
 using LockerService.Application.Features.Hardwares.Commands;
@@ -113,6 +114,7 @@ public class MappingProfiles : Profile
         // Payments
         CreateMap<Payment, PaymentResponse>();
 
+        CreateMap<Token, TokenResponse>();
     }
 
 }

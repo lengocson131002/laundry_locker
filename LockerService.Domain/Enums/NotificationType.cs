@@ -33,12 +33,6 @@ public enum NotificationType
     // Order
     [Description("[System] New order created")] 
     SystemOrderCreated,
-    
-    [Description("[System] Order collected to the store")]
-    SystemOrderCollected,
-    
-    [Description("[System] Order is processed")]
-    SystemOrderProcessed,
 
     [Description("[System] Order is overtime")]
     SystemOrderOverTime,
@@ -62,5 +56,6 @@ public enum NotificationType
     
     [Description("[Customer] Your Order is overtime")]
     CustomerOrderOverTime,
-    
+ 
 }
+

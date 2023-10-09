@@ -60,15 +60,12 @@ public class LockerOverloadedConsumer : IConsumer<LockerOverloadedEvent>
         var staffs = await _unitOfWork.StaffLockerRepository.GetStaffs(locker.Id);
         foreach (var staff in staffs)
         {
-            var notification = new Notification()
-            {
-                Account = staff,
-                Type = NotificationType.SystemLockerBoxOverloaded,
-                Content = NotificationType.SystemLockerBoxOverloaded.GetDescription(),
-                EntityType = EntityType.Locker,
-                ReferenceId = locker.Id.ToString(),
-                Data = lockerInfoData,
-            };
+            var notification = new Notification(
+                account: staff,
+                type: NotificationType.SystemLockerBoxOverloaded,
+                entityType: EntityType.Locker,
+                data: locker
+            );
             
             await _notifier.NotifyAsync(notification);
         }

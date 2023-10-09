@@ -58,15 +58,12 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
             var orderInfoData = JsonSerializerUtils.Serialize(order);
             var notiAccount = order.ReceiverId != null && order.Receiver != null ? order.Receiver : order.Sender;
             await _notifier.NotifyAsync(
-                new Notification()
-                {
-                    Account = notiAccount,
-                    Type = NotificationType.CustomerOrderReturned,
-                    EntityType = EntityType.Order,
-                    Content = NotificationType.CustomerOrderReturned.GetDescription(),
-                    Data = orderInfoData,
-                    ReferenceId = order.Id.ToString(),
-                });
+                new Notification(
+                    account: notiAccount,
+                    type: NotificationType.CustomerOrderReturned,
+                    entityType: EntityType.Order,
+                    data: order
+                ));
         }
         
         // Check locker box availability

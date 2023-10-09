@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Infrastructure.HttpClients;
 using LockerService.Infrastructure.Settings;
@@ -12,34 +13,40 @@ public class ZnsNotificationService : ISmsNotificationService
     private readonly ZaloZnsSettings _znsSettings;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<ZnsNotificationService> _logger;
-
+    private readonly INotificationAdapter _notificationAdapter;
+    private readonly ZaloAuthService _zaloAuthService;
+    
     public ZnsNotificationService(
         ZaloZnsSettings znsSettings, 
         ILogger<ZnsNotificationService> logger, 
-        IServiceScopeFactory serviceScopeFactory)
+        IServiceScopeFactory serviceScopeFactory,
+        INotificationAdapter notificationAdapter, 
+        ZaloAuthService zaloAuthService)
     {
         _znsSettings = znsSettings;
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
+        _notificationAdapter = notificationAdapter;
+        _zaloAuthService = zaloAuthService;
     }
 
     public async Task NotifyAsync(Notification notification)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var serviceProvider = scope.ServiceProvider;
-        var zaloAuthService = serviceProvider.GetRequiredService<ZaloAuthService>();
-        var znsNotificationAdaptor = serviceProvider.GetRequiredService<ZnsNotificationAdaptor>();
+        
+        // Scoped services
         var settingService = serviceProvider.GetRequiredService<ISettingService>();
         var zaloAuthSettings = await settingService.GetSettings<ZaloAuthSettings>();
 
         using var httpClient = new HttpClient(new ZaloRequestHandler(
-                zaloAuthService,
+                _zaloAuthService,
                 _logger,
                 settingService
             ));
         httpClient.Timeout = TimeSpan.FromSeconds(30);
         
-        var requestData = await znsNotificationAdaptor.GetRequestContent(notification);
+        var requestData = await _notificationAdapter.ToZaloZnsNotification(notification);
         var content = new StringContent(
             JsonSerializer.Serialize(requestData, JsonSerializerUtils.GetGlobalJsonSerializerOptions()), 
             Encoding.UTF8, 
@@ -125,4 +132,19 @@ public class ZaloRequestHandler : DelegatingHandler
         }
         return response;
     }
+}
+
+
+public class BaseZaloZnsResponse
+{
+    [JsonPropertyName(("error"))]
+    public int Error { get; set; }
+
+    [JsonPropertyName("message")] 
+    public string Message { get; set; } = default!;
+
+    [JsonPropertyName("data")]
+    public object Data { get; set; } = default!;
+
+    public bool IsError => Error != 0;
 }

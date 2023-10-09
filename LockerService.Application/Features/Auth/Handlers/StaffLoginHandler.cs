@@ -6,7 +6,7 @@ using LockerService.Application.Features.Auth.Models;
 
 namespace LockerService.Application.Features.Auth.Handlers;
 
-public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenResponse>
+public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, AccessTokenResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
@@ -21,7 +21,7 @@ public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenRespons
         _tokenService = tokenService;
     }
 
-    public async Task<TokenResponse> Handle(StaffLoginRequest request, CancellationToken cancellationToken)
+    public async Task<AccessTokenResponse> Handle(StaffLoginRequest request, CancellationToken cancellationToken)
     {
         var staff = await _unitOfWork.AccountRepository
             .Get(acc => Equals(acc.Username, request.Username))
@@ -60,6 +60,6 @@ public class StaffLoginHandler : IRequestHandler<StaffLoginRequest, TokenRespons
         var token = _jwtService.GenerateJwtToken(staff);
         var refreshToken = _jwtService.GenerateJwtRefreshToken(staff);
 
-        return new TokenResponse(token, refreshToken);
+        return new AccessTokenResponse(token, refreshToken);
     }
 }

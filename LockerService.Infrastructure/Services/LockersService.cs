@@ -40,15 +40,12 @@ public class LockersService : ILockersService
             
             foreach (var la in laundryAttendants)
             {
-                var notification = new Notification()
-                {
-                    Account = la,
-                    Type = NotificationType.SystemLockerBoxWarning,
-                    Content = NotificationType.SystemLockerBoxWarning.GetDescription(),
-                    EntityType = EntityType.Locker,
-                    ReferenceId = locker.Id.ToString(),
-                    Data = lockerInfoData,
-                };
+                var notification = new Notification(
+                    account: la,
+                    type: NotificationType.SystemLockerBoxWarning,
+                    entityType: EntityType.Locker,
+                    data: lockerInfoData
+                );
 
                 await _notifier.NotifyAsync(notification);
             }

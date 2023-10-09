@@ -42,29 +42,22 @@ public class OrderCompletedConsumer : IConsumer<OrderCompletedEvent>
         }
         
         // Push notification
-        var notiData = JsonSerializerUtils.Serialize(order);
         await _notifier.NotifyAsync(
-            new Notification()
-            {
-                Account = order.Sender,
-                Type = NotificationType.CustomerOrderCompleted,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderCompleted.GetDescription(),
-                Data = notiData,
-                ReferenceId = order.Id.ToString(),
-            });
+            new Notification(
+                account: order.Sender,
+                type: NotificationType.CustomerOrderCompleted,
+                entityType: EntityType.Order,
+                data: order
+            ));
         
         if (order.Receiver != null)
         {
-            await _notifier.NotifyAsync(new Notification()
-            {
-                Account = order.Receiver,
-                Type = NotificationType.CustomerOrderCompleted,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderCompleted.GetDescription(),
-                Data = notiData,
-                ReferenceId = order.Id.ToString(),
-            });
+            await _notifier.NotifyAsync(new Notification(
+                account : order.Receiver,
+                type : NotificationType.CustomerOrderCompleted,
+                entityType : EntityType.Order,
+                data : order
+            ));
         }
         
         // Save timeline

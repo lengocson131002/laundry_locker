@@ -27,7 +27,7 @@ public class AuthController : ApiControllerBase
      */
     [HttpPost("staff/login")]
     [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
+    public async Task<ActionResult<AccessTokenResponse>> LoginStaff([FromBody] StaffLoginRequest request)
     {
         var response = await Mediator.Send(request);
         return response;
@@ -52,7 +52,7 @@ public class AuthController : ApiControllerBase
      */
     [HttpPost("customer/login")]
     [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> LoginCustomer([FromBody] CustomerLoginRequest request)
+    public async Task<ActionResult<AccessTokenResponse>> LoginCustomer([FromBody] CustomerLoginRequest request)
     {
         var response = await Mediator.Send(request);
         return response;
@@ -81,7 +81,7 @@ public class AuthController : ApiControllerBase
 
     [HttpPost("refresh")]
     [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
+    public async Task<ActionResult<AccessTokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
         var response = await Mediator.Send(request); 
         return response;
@@ -109,7 +109,7 @@ public class AuthController : ApiControllerBase
         return Ok();
     }
 
-    private Task SetHttpCookieToken(TokenResponse token)
+    private Task SetHttpCookieToken(AccessTokenResponse token)
     {
         var tokenExpireInMinutes = _jwtSettings.TokenExpire;
         var refreshTokenExpireInMinutes = _jwtSettings.RefreshTokenExpire;
@@ -138,6 +138,13 @@ public class AuthController : ApiControllerBase
             });
 
         return Task.CompletedTask;
+    }
+
+    [HttpPost("device-token")]
+    [Authorize]
+    public async Task<ActionResult<TokenResponse>> RegisterDeviceToken([FromBody] RegisterDeviceTokenCommand command)
+    {
+        return await Mediator.Send(command);
     }
 
 }

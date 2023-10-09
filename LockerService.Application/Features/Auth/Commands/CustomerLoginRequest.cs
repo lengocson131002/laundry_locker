@@ -15,7 +15,7 @@ public class CustomerLoginRequestValidator : AbstractValidator<CustomerLoginRequ
     }
 }
 
-public class CustomerLoginRequest : IRequest<TokenResponse>
+public class CustomerLoginRequest : IRequest<AccessTokenResponse>
 {
     [NormalizePhone]
     public string PhoneNumber { get; set; } = default!;

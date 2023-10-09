@@ -1,29 +1,51 @@
-using System.Text.Json.Serialization;
+using LockerService.Application.Common.Persistence.Repositories;
+using LockerService.Application.Common.Services.Notifications.Models;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;
 using LockerService.Shared.Constants;
 using LockerService.Shared.Extensions;
-using LockerService.Shared.Utils;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace LockerService.Infrastructure.Services.Notifications.Sms.ZaloZns;
+namespace LockerService.Infrastructure.Services.Notifications;
 
-public class ZnsNotificationAdaptor
+public class NotificationAdapter : INotificationAdapter
 {
     private readonly ZaloZnsSettings _znsSettings;
-    private readonly ILogger<ZnsNotificationAdaptor> _logger;
-    private readonly ISettingService _settingService;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public ZnsNotificationAdaptor(ILogger<ZnsNotificationAdaptor> logger, ZaloZnsSettings znsSettings, ISettingService settingService)
+    public NotificationAdapter(ZaloZnsSettings znsSettings, IServiceScopeFactory serviceScopeFactory)
     {
-        _logger = logger;
         _znsSettings = znsSettings;
-        _settingService = settingService;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<BaseZaloZnsRequest> GetRequestContent(Notification notification)
+    public async Task<WebNotification> ToWebNotification(Notification notification, string connectionId)
     {
+        var webNotification = new WebNotification()
+        {
+            Id = notification.Id,
+            AccountId = notification.AccountId,
+            Type = notification.Type,
+            EntityType = notification.EntityType,
+            ReferenceId = notification.ReferenceId,
+            Content = notification.Content,
+            Data = notification.Data,
+            ReadAt = notification.ReadAt,
+            CreatedAt = notification.CreatedAt,
+            Level = notification.Level,
+            Title = notification.Title
+        };
 
+        return await Task.FromResult(webNotification);
+    }
+
+    public async Task<ZaloZnsNotification> ToZaloZnsNotification(Notification notification)
+    {
+        var scope = _serviceScopeFactory.CreateScope();
+        var settingService = scope.ServiceProvider.GetRequiredService<ISettingService>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            
         var account = notification.Account;
         if (account == null)
         {
@@ -34,7 +56,7 @@ public class ZnsNotificationAdaptor
         switch (notification.Type)
         {
             case NotificationType.AccountOtpCreated:
-                return new BaseZaloZnsRequest()
+                return new ZaloZnsNotification()
                 {
                     Phone = toPhoneNumber,
                     TemplateId = _znsSettings.Templates.Otp,
@@ -45,7 +67,7 @@ public class ZnsNotificationAdaptor
                 };
             
             case NotificationType.SystemStaffCreated:
-                return new BaseZaloZnsRequest()
+                return new ZaloZnsNotification()
                 {
                     Phone = toPhoneNumber,
                     TemplateId = _znsSettings.Templates.StaffAccountCreated,
@@ -59,9 +81,11 @@ public class ZnsNotificationAdaptor
                 };
             
             case NotificationType.CustomerOrderCreated:
-                var createdOrder = JsonSerializer.Deserialize<Order>(
-                    notification.Data ?? string.Empty, 
-                    JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+                var createdOrder = notification.ReferenceId != null 
+                    ? await unitOfWork.OrderRepository
+                        .GetOrderInformation(long.Parse(notification.ReferenceId))
+                        .FirstOrDefaultAsync()
+                    : null;
                     
                 if (createdOrder == null)
                 {
@@ -81,7 +105,7 @@ public class ZnsNotificationAdaptor
                     ? string.Join(", ", details.Select(item => item.Service.Name))
                     : "None";
 
-                return new BaseZaloZnsRequest()
+                return new ZaloZnsNotification()
                 {
                     Phone = toPhoneNumber,
                     TemplateId = _znsSettings.Templates.OrderCreated,
@@ -100,9 +124,11 @@ public class ZnsNotificationAdaptor
                 };
             
             case  NotificationType.CustomerOrderCanceled:
-                var canceledOrder = JsonSerializer.Deserialize<Order>(
-                    notification.Data ?? string.Empty, 
-                    JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+                var canceledOrder = notification.ReferenceId != null 
+                    ? await unitOfWork.OrderRepository
+                        .GetOrderInformation(long.Parse(notification.ReferenceId))
+                        .FirstOrDefaultAsync()
+                    : null;
                     
                 if (canceledOrder == null)
                 {
@@ -112,7 +138,7 @@ public class ZnsNotificationAdaptor
                 var canceledOrderLocker = canceledOrder.Locker 
                                           ?? throw new Exception("[Zalo ZNS] Order locker is required");
 
-                return new BaseZaloZnsRequest()
+                return new ZaloZnsNotification()
                 {
                     Phone = toPhoneNumber,
                     TemplateId = _znsSettings.Templates.OrderCanceled,
@@ -131,10 +157,12 @@ public class ZnsNotificationAdaptor
                 };
             
             case  NotificationType.CustomerOrderReturned:
-                var returnedOrder = JsonSerializer.Deserialize<Order>(
-                    notification.Data ?? string.Empty,
-                    JsonSerializerUtils.GetGlobalJsonSerializerOptions());
-
+                var returnedOrder = notification.ReferenceId != null 
+                    ? await unitOfWork.OrderRepository
+                        .GetOrderInformation(long.Parse(notification.ReferenceId))
+                        .FirstOrDefaultAsync()
+                    : null;
+                
                 if (returnedOrder == null)
                 {
                     throw new Exception("[Zalo ZNS] Notification's data is required");
@@ -150,9 +178,9 @@ public class ZnsNotificationAdaptor
                     ? string.Join(", ", returnedOrderDetails.Select(item => item.Service.Name))
                     : "None";
                 
-                var timeSettings = await _settingService.GetSettings<TimeSettings>();
+                var timeSettings = await settingService.GetSettings<TimeSettings>();
     
-                return new BaseZaloZnsRequest()
+                return new ZaloZnsNotification()
                 {
                     Phone = toPhoneNumber,
                     TemplateId = _znsSettings.Templates.OrderReturned,
@@ -175,9 +203,11 @@ public class ZnsNotificationAdaptor
                 };
             
             case NotificationType.CustomerOrderOverTime:
-                var overtimeOrder = JsonSerializer.Deserialize<Order>(
-                    notification.Data ?? string.Empty,
-                    JsonSerializerUtils.GetGlobalJsonSerializerOptions());
+                var overtimeOrder = notification.ReferenceId != null 
+                    ? await unitOfWork.OrderRepository
+                        .GetOrderInformation(long.Parse(notification.ReferenceId))
+                        .FirstOrDefaultAsync()
+                    : null;
                 
                 if (overtimeOrder == null)
                 {
@@ -191,7 +221,7 @@ public class ZnsNotificationAdaptor
                     ? string.Join(", ", overtimeOrder.Details.Select(item => item.Service.Name))
                     : "None";
                 
-                return new BaseZaloZnsRequest()
+                return new ZaloZnsNotification()
                 {
                     Phone = toPhoneNumber,
                     TemplateId = _znsSettings.Templates.OrderOvertime,
@@ -213,32 +243,27 @@ public class ZnsNotificationAdaptor
         
         throw new Exception("[Zalo ZNS] Invalid notification type");
     }
-}
 
-public class BaseZaloZnsResponse
-{
-    [JsonPropertyName(("error"))]
-    public int Error { get; set; }
+    public async Task<FirebaseNotification> ToFirebaseNotification(Notification notification, string deviceToken, DeviceType? deviceType = null)
+    {
+        var firebaseNotification = new FirebaseNotification()
+        {
+            Message = new()
+            {
+                Token = deviceToken,
+                Notification = new ()
+                {
+                    Title = notification.Title,
+                    Body = notification.Content
+                },
+                Data = new {
+                    Type = notification.Type.ToString(),
+                    EntityType = notification.EntityType.ToString(),
+                    ReferenceId = notification.ReferenceId
+                },
+            }
+        };
 
-    [JsonPropertyName("message")] 
-    public string Message { get; set; } = default!;
-
-    [JsonPropertyName("data")]
-    public object Data { get; set; } = default!;
-
-    public bool IsError => Error != 0;
-}
-
-
-public class BaseZaloZnsRequest
-{
-    [JsonPropertyName("phone")]
-    public string Phone { get; set; } = default!;
-
-    [JsonPropertyName("template_id")]
-    public string TemplateId { get; set; } = default!;
-
-    [JsonPropertyName("template_data")]
-    public object TemplatedData { get; set; } = default!;
-
+        return await Task.FromResult(firebaseNotification);
+    }
 }

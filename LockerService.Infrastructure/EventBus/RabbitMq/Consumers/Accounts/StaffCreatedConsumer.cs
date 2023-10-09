@@ -26,16 +26,13 @@ public class StaffCreatedConsumer : IConsumer<StaffCreatedEvent>
             FullName = eventMessage.FullName,
         };
         
-        var notification = new Notification()
-        {
-            Account = staffAccount,
-            Type = NotificationType.SystemStaffCreated,
-            EntityType = EntityType.Account,
-            Content = NotificationType.SystemStaffCreated.GetDescription(),
-            Data = string.Empty,
-            Saved = false,
-            ReferenceId = eventMessage.AccountId.ToString()
-        };
+        var notification = new Notification(
+            account: staffAccount,
+            type: NotificationType.SystemStaffCreated,
+            entityType: EntityType.Account,
+            data: staffAccount,
+            saved: false
+        );
         
         await _notifier.NotifyAsync(notification);
     }

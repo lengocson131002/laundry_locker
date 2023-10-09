@@ -294,16 +294,15 @@ public static class ConfigureServices
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<TwilioSettings>>().Value);
+        services.AddSingleton<INotificationAdapter, NotificationAdapter>();
         
-        // ZaloZns
         services.AddOptions<ZaloZnsSettings>()
             .BindConfiguration(ZaloZnsSettings.ConfigSection)
             .ValidateDataAnnotations()
             .ValidateOnStart();
         
         services.AddSingleton(sp => sp.GetRequiredService<IOptions<ZaloZnsSettings>>().Value);
-        services.AddScoped<ZaloAuthService>();
-        services.AddScoped<ZnsNotificationAdaptor>();
+        services.AddSingleton<ZaloAuthService>();
         
         services.AddSingleton<ISmsNotificationService, ZnsNotificationService>();
         services.AddSingleton<IWebNotificationService, WebNotificationService>();

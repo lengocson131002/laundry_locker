@@ -36,27 +36,24 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
         var orderInfoData = JsonSerializerUtils.Serialize(order);
         
         await _notifier.NotifyAsync(
-            new Notification
-            {
-                Account = order.Sender,
-                Type = NotificationType.CustomerOrderCreated,
-                EntityType = EntityType.Order,
-                Content = NotificationType.CustomerOrderCreated.GetDescription(),
-                Data = orderInfoData,
-                ReferenceId = order.Id.ToString()
-            });
+            new Notification(
+                account: order.Sender,
+                type: NotificationType.CustomerOrderCreated,
+                entityType: EntityType.Order,
+                data: orderInfoData
+            ));
 
         if (order.ReceiverId != null && order.Receiver != null)
+        {
             await _notifier.NotifyAsync(
-                new Notification
-                {
-                    Account = order.Receiver,
-                    Type = NotificationType.CustomerOrderCreated,
-                    EntityType = EntityType.Order,
-                    Content = NotificationType.CustomerOrderCreated.GetDescription(),
-                    Data = orderInfoData,
-                    ReferenceId = order.Id.ToString()
-                });
+                new Notification(
+                    account: order.Receiver,
+                    type: NotificationType.CustomerOrderCreated,
+                    entityType: EntityType.Order,
+                    data: orderInfoData
+                ));
+        }
+
 
         // Notify for staffs to collect when order type is laundry
         if (order.IsLaundry)
@@ -70,15 +67,12 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
 
             foreach (var la in laundryAttendants)
             {
-                var notification = new Notification
-                {
-                    Account = la,
-                    Type = NotificationType.SystemOrderCreated,
-                    Content = NotificationType.SystemOrderCreated.GetDescription(),
-                    EntityType = EntityType.Order,
-                    ReferenceId = order.Id.ToString(),
-                    Data = orderInfoData
-                };
+                var notification = new Notification(
+                    account: la,
+                    type: NotificationType.SystemOrderCreated,
+                    entityType: EntityType.Order,
+                    data: order
+                );
 
                 await _notifier.NotifyAsync(notification);
             }

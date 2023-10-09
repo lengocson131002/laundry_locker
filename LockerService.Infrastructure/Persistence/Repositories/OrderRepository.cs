@@ -55,22 +55,20 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
         return query;
     }
 
-    public IQueryable<Order> GetOrder(long id)
+    public IQueryable<Order> GetOrderInformation(long id)
     {
-        return Get(
-            order => order.Id == id,
-            includes: new List<Expression<Func<Order, object>>>
-            {
-                order => order.Locker,
-                order => order.Sender,
-                order => order.Receiver,
-                order => order.Staff,
-                order => order.Locker.Store,
-                order => order.Locker.Location,
-                order => order.Locker.Location.Ward,
-                order => order.Locker.Location.District,
-                order => order.Locker.Location.Province
-            });
+        return Get(order => order.Id == id)
+            .Include(order => order.Locker)
+            .Include(order => order.SendBox)
+            .Include(order => order.ReceiveBox)
+            .Include(order => order.Sender)
+            .Include(order => order.Receiver)
+            .Include(order => order.Locker.Location)
+            .Include(order => order.Locker.Location.Ward)
+            .Include(order => order.Locker.Location.District)
+            .Include(order => order.Locker.Location.Province)
+            .Include(order => order.Details)
+            .ThenInclude(detail => detail.Service);
     }
 
     public IQueryable<Order> GetOrderByPinCode(string pinCode, long lockerId)

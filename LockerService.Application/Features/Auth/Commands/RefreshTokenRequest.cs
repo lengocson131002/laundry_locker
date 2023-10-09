@@ -12,7 +12,7 @@ public class RefreshTokenRequestValidator : AbstractValidator<RefreshTokenReques
     }
 }
 
-public class RefreshTokenRequest : IRequest<TokenResponse>
+public class RefreshTokenRequest : IRequest<AccessTokenResponse>
 {
     public string RefreshToken { get; set; } = default!;
 }

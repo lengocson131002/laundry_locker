@@ -12,10 +12,9 @@ namespace LockerService.API.Controllers;
 public class NotificationController : ApiControllerBase
 {
     [HttpPost("push")]
-    public async Task<ActionResult> PushNotification(PushNotificationCommand command)
+    public async Task<ActionResult<NotificationModel>> PushNotification(PushNotificationCommand command)
     {
-        await Mediator.Send(command);
-        return Ok();
+        return await Mediator.Send(command);
     }
 
     [HttpGet]

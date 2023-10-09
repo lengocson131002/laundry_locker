@@ -1,7 +1,6 @@
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;
-using LockerService.Shared.Extensions;
 using LockerService.Shared.Utils;
 
 namespace LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
@@ -83,7 +82,7 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
             ApiKey = _apiKeySettings.Key,
         });
         
-        // Push notification and store manager
+        // Push notification admins and store manager
         var managers = await _unitOfWork.AccountRepository
             .GetStaffs(
                 storeId: locker.StoreId, 
@@ -93,15 +92,30 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
         
         foreach (var manager in managers)
         {
-            var notification = new Notification()
-            {
-                Account = manager,
-                Type = NotificationType.SystemLockerConnected,
-                Content = NotificationType.SystemLockerConnected.GetDescription(),
-                EntityType = EntityType.Locker,
-                Data = lockerInfoData,
-                ReferenceId = locker.Id.ToString()
-            };
+            var notification = new Notification(
+                account: manager,
+                type: NotificationType.SystemLockerConnected,
+                entityType: EntityType.Locker,
+                data: locker, 
+                saved: true
+            );
+
+            await _notifier.NotifyAsync(notification);
+        }
+
+        var admins = await _unitOfWork.AccountRepository
+            .Get(acc => Equals(acc.Role, Role.Admin))
+            .ToListAsync();
+        
+        foreach (var admin in admins)
+        {
+            var notification = new Notification(
+                account: admin,
+                type: NotificationType.SystemLockerConnected,
+                entityType: EntityType.Locker,
+                data: locker, 
+                saved: true
+            );
 
             await _notifier.NotifyAsync(notification);
         }

@@ -27,15 +27,12 @@ public class OrderCanceledConsumer : IConsumer<OrderCanceledEvent>
         
         var notificationData = JsonSerializerUtils.Serialize(order);
 
-        await _notifier.NotifyAsync(new Notification()
-        {
-            Account = order.Sender,
-            Type = NotificationType.CustomerOrderCanceled,
-            Content = NotificationType.CustomerOrderCanceled.GetDescription(),
-            EntityType = EntityType.Order,
-            Data = notificationData,
-            ReferenceId = order.Id.ToString()
-        });
+        await _notifier.NotifyAsync(new Notification(
+            account: order.Sender,
+            type: NotificationType.CustomerOrderCanceled,
+            entityType: EntityType.Order,
+            data: order
+        ));
         
         // Save timeline
         var timeline = new OrderTimeline()

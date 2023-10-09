@@ -5,7 +5,7 @@ using LockerService.Application.Features.Auth.Models;
 
 namespace LockerService.Application.Features.Auth.Handlers;
 
-public class RefreshTokenHandler : IRequestHandler<RefreshTokenRequest, TokenResponse>
+public class RefreshTokenHandler : IRequestHandler<RefreshTokenRequest, AccessTokenResponse>
 {
     private readonly ICurrentPrincipalService _currentUserService;
     private readonly IJwtService _jwtService;
@@ -21,7 +21,7 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenRequest, TokenRes
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<TokenResponse> Handle(RefreshTokenRequest request, CancellationToken cancellationToken)
+    public async Task<AccessTokenResponse> Handle(RefreshTokenRequest request, CancellationToken cancellationToken)
     {
         var principal = _currentUserService.GetCurrentPrincipalFromToken(request.RefreshToken);
         var accountId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -43,6 +43,6 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenRequest, TokenRes
         var newAccessToken = _jwtService.GenerateJwtToken(account);
         var newRefreshToken = _jwtService.GenerateJwtRefreshToken(account);
 
-        return new TokenResponse(newAccessToken, newRefreshToken);
+        return new AccessTokenResponse(newAccessToken, newRefreshToken);
     }
 }

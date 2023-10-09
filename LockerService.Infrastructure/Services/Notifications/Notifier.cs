@@ -1,5 +1,6 @@
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Domain.Enums;
+using LockerService.Shared.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using INotificationService = LockerService.Application.Common.Services.Notifications.INotificationService;
 
@@ -9,16 +10,18 @@ public class Notifier : INotifier
 {
     private readonly INotificationProvider _provider;
     private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly ILogger<Notifier> _logger;
     
     public Notifier(
         INotificationProvider provider,
         IWebNotificationService webNotificationService,
         IMobileNotificationService mobileNotificationService,
         ISmsNotificationService smsNotificationService, 
-        IServiceScopeFactory serviceScopeFactory)
+        IServiceScopeFactory serviceScopeFactory, ILogger<Notifier> logger)
     {
         _provider = provider;
         _serviceScopeFactory = serviceScopeFactory;
+        _logger = logger;
 
         // COMMON NOTIFICATION TYPE
         _provider.Attach(NotificationType.AccountOtpCreated, new List<INotificationService> ()
@@ -31,19 +34,16 @@ public class Notifier : INotifier
         _provider.Attach(NotificationType.SystemStaffCreated, new List<INotificationService>()
         {
             smsNotificationService,
-            mobileNotificationService,
         });
         
         _provider.Attach(NotificationType.SystemLockerConnected, new List<INotificationService>()
         {
             webNotificationService,
-            mobileNotificationService,
         });
         
         _provider.Attach(NotificationType.SystemLockerDisconnected, new List<INotificationService>()
         {
             webNotificationService,
-            mobileNotificationService,
         });
         
         _provider.Attach(NotificationType.SystemLockerBoxOverloaded, new List<INotificationService>()
@@ -63,19 +63,7 @@ public class Notifier : INotifier
             webNotificationService,
             mobileNotificationService
         });
-        
-        _provider.Attach(NotificationType.SystemOrderCollected, new List<INotificationService>()
-        {
-            webNotificationService,
-            mobileNotificationService
-        });
-        
-        _provider.Attach(NotificationType.SystemOrderProcessed, new List<INotificationService>()
-        {
-            webNotificationService,
-            mobileNotificationService
-        });
-        
+
         _provider.Attach(NotificationType.SystemOrderOverTime, new List<INotificationService>()
         {
             webNotificationService,
@@ -115,6 +103,7 @@ public class Notifier : INotifier
     
     public async Task NotifyAsync(Notification notification)
     {
+        _logger.LogInformation("[PUSH NOTIFICATION]: {0}", JsonSerializerUtils.Serialize(notification));
         await _provider.NotifyAsync(notification);
 
         if (notification.Saved)

@@ -2,14 +2,19 @@ namespace LockerService.Application.Features.Auth.Models;
 
 public class TokenResponse
 {
-    public string AccessToken { get; private set; }
+    public long Id { get; set; }
 
-    public string RefreshToken { get; private set; }
+    public long AccountId { get; set; }
+    
+    public TokenType Type { get; set; }
 
+    public TokenStatus Status { get; set; }
 
-    public TokenResponse(string accessToken, string refreshToken)
-    {
-        AccessToken = accessToken;
-        RefreshToken = refreshToken;
-    }
+    public string Value { get; set; } = default!;
+    
+    public DateTimeOffset? ExpiredAt { get; set; }
+
+    public bool IsExpired { get; set; }
+
+    public DeviceType? DeviceType { get; set; }
 }
