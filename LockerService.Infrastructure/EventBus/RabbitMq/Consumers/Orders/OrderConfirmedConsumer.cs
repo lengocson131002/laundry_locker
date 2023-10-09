@@ -33,14 +33,12 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
         
         var order = eventMessage.Order;
 
-        var orderInfoData = JsonSerializerUtils.Serialize(order);
-        
         await _notifier.NotifyAsync(
             new Notification(
                 account: order.Sender,
                 type: NotificationType.CustomerOrderCreated,
                 entityType: EntityType.Order,
-                data: orderInfoData
+                data: order
             ));
 
         if (order.ReceiverId != null && order.Receiver != null)
@@ -50,7 +48,7 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
                     account: order.Receiver,
                     type: NotificationType.CustomerOrderCreated,
                     entityType: EntityType.Order,
-                    data: orderInfoData
+                    data: order
                 ));
         }
 

@@ -173,13 +173,11 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
 
     private async Task HandleOrderCanceled(Order order, DateTimeOffset eventMessageTime)
     {
-        var notificationData = JsonSerializerUtils.Serialize(order);
-
         await _notifier.NotifyAsync(new Notification(
             account: order.Sender,
             type: NotificationType.CustomerOrderCanceled,
             entityType: EntityType.Order,
-            data: notificationData
+            data: order
         ));
     }
 
@@ -198,13 +196,12 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         }
         
         // Push notification
-        var notiData = JsonSerializerUtils.Serialize(order);
         await _notifier.NotifyAsync(
             new Notification(
                 account: order.Sender,
                 type: NotificationType.CustomerOrderCompleted,
                 entityType: EntityType.Order,
-                data: notiData
+                data: order
             ));
         
         if (order.Receiver != null)
@@ -213,7 +210,7 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
                 account: order.Receiver,
                 type: NotificationType.CustomerOrderCompleted,
                 entityType: EntityType.Order,
-                data: notiData
+                data: order
             ));
         }
     }

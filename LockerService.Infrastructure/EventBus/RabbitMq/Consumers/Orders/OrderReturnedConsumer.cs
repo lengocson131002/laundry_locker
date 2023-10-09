@@ -55,7 +55,6 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
         // Push notification
         if (!order.DeliverySupported)
         {
-            var orderInfoData = JsonSerializerUtils.Serialize(order);
             var notiAccount = order.ReceiverId != null && order.Receiver != null ? order.Receiver : order.Sender;
             await _notifier.NotifyAsync(
                 new Notification(

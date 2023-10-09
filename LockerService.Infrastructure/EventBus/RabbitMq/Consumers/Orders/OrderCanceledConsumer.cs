@@ -25,8 +25,6 @@ public class OrderCanceledConsumer : IConsumer<OrderCanceledEvent>
         var message = context.Message;
         var order = message.Order;
         
-        var notificationData = JsonSerializerUtils.Serialize(order);
-
         await _notifier.NotifyAsync(new Notification(
             account: order.Sender,
             type: NotificationType.CustomerOrderCanceled,

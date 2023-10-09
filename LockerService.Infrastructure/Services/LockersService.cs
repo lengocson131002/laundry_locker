@@ -29,8 +29,6 @@ public class LockersService : ILockersService
 
         if (availableBoxes.Count <= lockerSettings.AvailableBoxCountWarning)
         {
-            var lockerInfoData = JsonSerializerUtils.Serialize(locker);
-            
             var laundryAttendants =await _unitOfWork.AccountRepository
                 .GetStaffs(
                     storeId: locker.StoreId, 
@@ -44,7 +42,7 @@ public class LockersService : ILockersService
                     account: la,
                     type: NotificationType.SystemLockerBoxWarning,
                     entityType: EntityType.Locker,
-                    data: lockerInfoData
+                    data: locker
                 );
 
                 await _notifier.NotifyAsync(notification);
