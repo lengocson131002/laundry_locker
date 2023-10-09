@@ -47,6 +47,7 @@ public class Notification : BaseAuditableEntity
     {
         Type = type;
         Account = account;
+        AccountId = account.Id;
         EntityType = entityType;
         
         // Save notification into database
