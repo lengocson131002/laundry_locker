@@ -41,11 +41,13 @@ public class FirebaseNotificationService : IMobileNotificationService
         var deviceIds = await unitOfWork.TokenRepository
             .Get(token => Equals(TokenType.DeviceToken, token.Type) && Equals(TokenStatus.Valid, token.Status))
             .ToListAsync();
+        
+        _logger.LogInformation("Firebase key: {0}", _fcmSettings.PrivateKey);
+
 
         var settings = new FirebaseSettings(_fcmSettings.ProjectId, _fcmSettings.PrivateKey, _fcmSettings.ClientEmail, _fcmSettings.TokenUri);
         var fcmSender = new FirebaseSender(settings, new HttpClient());
         
-        _logger.LogInformation("Firebase key: {0}", _fcmSettings.PrivateKey);
         foreach (var token in deviceIds)
         {
             try
