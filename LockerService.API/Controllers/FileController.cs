@@ -11,12 +11,9 @@ namespace LockerService.API.Controllers;
 public class FileController : ApiControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<UploadFileResponse>> UploadFile(IFormFile file)
+    public async Task<ActionResult<UploadFileResponse>> UploadFile([FromForm] UploadFileRequest request)
     {
-        return await Mediator.Send(new UploadFileRequest()
-        {
-            File = file
-        });
+        return await Mediator.Send(request);
     }
     
     [HttpGet("{fileName}")]
