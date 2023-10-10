@@ -76,6 +76,8 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
 
                 throw exception;
             }
+
+            order.ReceiveBoxId = availableBox.Id;
         }
 
         order.Status = OrderStatus.Returned;
