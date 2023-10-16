@@ -86,7 +86,8 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, Paymen
         });
 
         payment.OrderId = order.Id;
-        payment.CustomerId = order.SenderId;
+        payment.CustomerId = order.ReceiverId ?? order.SenderId;
+        payment.StoreId = order.Locker.StoreId;
         
         await _unitOfWork.PaymentRepository.AddAsync(payment);
         
@@ -107,6 +108,7 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, Paymen
 
         payment.OrderId = order.Id;
         payment.CustomerId = order.ReceiverId ?? order.SenderId;
+        payment.StoreId = order.Locker.StoreId;
         
         await _unitOfWork.PaymentRepository.AddAsync(payment);
         

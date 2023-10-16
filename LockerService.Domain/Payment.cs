@@ -31,6 +31,10 @@ public class Payment : BaseAuditableEntity
 
     public Order Order { get; set; } = default!;
     
+    public long? StoreId { get; set; }
+
+    public Store? Store { get; set; } = default!;
+    
     public long CustomerId { get; set; }
 
     public Account Customer { get; set; } = default!;
@@ -54,6 +58,7 @@ public class Payment : BaseAuditableEntity
         Content = PaymentContent(order.Type);
         OrderId = order.Id;
         CustomerId = order.ReceiverId ?? order.SenderId;
+        StoreId = order.Locker.StoreId;
     }
 
     public static string PaymentContent(OrderType type)

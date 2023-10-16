@@ -31,7 +31,7 @@ public class PaymentController : ApiControllerBase
     
     [HttpGet("{id:long}")]
     [ApiKey]
-    public async Task<ActionResult<PaymentResponse>> QueryPayment([FromRoute] long id)
+    public async Task<ActionResult<PaymentDetailResponse>> QueryPayment([FromRoute] long id)
     {
         return await Mediator.Send(new GetPaymentQuery(id));
     }

@@ -27,7 +27,11 @@ public class GetAllPaymentHandler : IRequestHandler<GetAllPaymentQuery, Paginati
         if (currentAccount != null && currentAccount.IsCustomer)
         {
             request.CustomerId = currentAccount.Id;
+        } else if (currentAccount != null && currentAccount.IsStoreStaff)
+        {
+            request.StoreId = currentAccount.StoreId;
         }
+        
         
         var orders = _unitOfWork.PaymentRepository
             .Get(

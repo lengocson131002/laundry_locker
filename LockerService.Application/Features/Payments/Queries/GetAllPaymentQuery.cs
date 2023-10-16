@@ -19,6 +19,8 @@ public class GetAllPaymentQuery : PaginationRequest<Payment>, IRequest<Paginatio
     
     public PaymentMethod? Method { get; set; }
     
+    public long? StoreId { get; set; }
+    
     public override Expression<Func<Payment, bool>> GetExpressions()
     {
         if (!string.IsNullOrWhiteSpace(Search))
@@ -57,6 +59,11 @@ public class GetAllPaymentQuery : PaginationRequest<Payment>, IRequest<Paginatio
         if (Method != null)
         {
             Expression = Expression.And(payment => payment.Method == Method);
+        }
+
+        if (StoreId == null)
+        {
+            Expression = Expression.And(payment => payment.StoreId == StoreId);
         }
         
         return Expression;

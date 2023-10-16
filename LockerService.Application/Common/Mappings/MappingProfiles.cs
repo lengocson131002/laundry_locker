@@ -113,6 +113,7 @@ public class MappingProfiles : Profile
         
         // Payments
         CreateMap<Payment, PaymentResponse>();
+        CreateMap<Payment, PaymentDetailResponse>();
 
         CreateMap<Token, TokenResponse>();
     }

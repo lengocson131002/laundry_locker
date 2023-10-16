@@ -4,7 +4,7 @@ using LockerService.Application.Features.Payments.Queries;
 
 namespace LockerService.Application.Features.Payments.Handlers;
 
-public class GetPaymentHandler : IRequestHandler<GetPaymentQuery, PaymentResponse>
+public class GetPaymentHandler : IRequestHandler<GetPaymentQuery, PaymentDetailResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -16,7 +16,7 @@ public class GetPaymentHandler : IRequestHandler<GetPaymentQuery, PaymentRespons
         _mapper = mapper;
     }
 
-    public async Task<PaymentResponse> Handle(GetPaymentQuery request, CancellationToken cancellationToken)
+    public async Task<PaymentDetailResponse> Handle(GetPaymentQuery request, CancellationToken cancellationToken)
     {
         var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(request.Id);
 
@@ -25,6 +25,6 @@ public class GetPaymentHandler : IRequestHandler<GetPaymentQuery, PaymentRespons
             throw new ApiException(ResponseCode.PaymentErrorNotFound);
         }
 
-        return _mapper.Map<PaymentResponse>(payment);
+        return _mapper.Map<PaymentDetailResponse>(payment);
     }
 }
