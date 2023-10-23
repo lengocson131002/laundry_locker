@@ -35,8 +35,12 @@ public class GetAllPaymentHandler : IRequestHandler<GetAllPaymentQuery, Paginati
         
         var orders = _unitOfWork.PaymentRepository
             .Get(
-                request.GetExpressions(),
-                request.GetOrder(),
+                predicate: request.GetExpressions(),
+                orderBy: request.GetOrder(),
+                includes: new List<Expression<Func<Payment, object>>>()
+                {
+                    payment => payment.Customer
+                },
                 disableTracking: true);
 
         return new PaginationResponse<Payment, PaymentResponse>(

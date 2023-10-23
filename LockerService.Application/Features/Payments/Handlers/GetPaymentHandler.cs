@@ -18,7 +18,10 @@ public class GetPaymentHandler : IRequestHandler<GetPaymentQuery, PaymentDetailR
 
     public async Task<PaymentDetailResponse> Handle(GetPaymentQuery request, CancellationToken cancellationToken)
     {
-        var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(request.Id);
+        var payment = await _unitOfWork.PaymentRepository
+                .Get(payment => payment.Id == request.Id)
+                .Include(payment => payment.Customer)
+                .FirstOrDefaultAsync(cancellationToken);
 
         if (payment == null)
         {
