@@ -1,3 +1,5 @@
+using LockerService.Application.Features.Accounts.Models;
+
 namespace LockerService.Application.Features.Payments.Models;
 
 public class PaymentResponse : BaseAuditableEntityResponse
@@ -27,4 +29,6 @@ public class PaymentResponse : BaseAuditableEntityResponse
     public PaymentStatus Status { get; set; }
     
     public string? Description { get; set; }
+    
+    public AccountResponse? Customer { get; set; }
 }

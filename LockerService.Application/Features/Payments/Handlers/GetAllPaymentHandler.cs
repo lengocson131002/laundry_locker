@@ -33,7 +33,7 @@ public class GetAllPaymentHandler : IRequestHandler<GetAllPaymentQuery, Paginati
         }
         
         
-        var orders = _unitOfWork.PaymentRepository
+        var payments = _unitOfWork.PaymentRepository
             .Get(
                 predicate: request.GetExpressions(),
                 orderBy: request.GetOrder(),
@@ -44,7 +44,7 @@ public class GetAllPaymentHandler : IRequestHandler<GetAllPaymentQuery, Paginati
                 disableTracking: true);
 
         return new PaginationResponse<Payment, PaymentResponse>(
-            orders,
+            payments,
             request.PageNumber,
             request.PageSize,
             payment => _mapper.Map<PaymentResponse>(payment));
