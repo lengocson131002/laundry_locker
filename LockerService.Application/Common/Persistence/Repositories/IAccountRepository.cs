@@ -11,4 +11,6 @@ public interface IAccountRepository : IBaseRepository<Account>
     public IQueryable<Account> GetCustomers(bool? isActive = null);
 
     public IQueryable<Account> GetByUsername(string username);
+
+    public IQueryable<Account> GetAdmins(bool? isActive = null);
 }

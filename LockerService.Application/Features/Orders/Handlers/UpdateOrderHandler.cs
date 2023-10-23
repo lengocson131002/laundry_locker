@@ -28,11 +28,6 @@ public class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, OrderRespo
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        if (!order.IsCollected)
-        {
-            throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
-        }
-
         order.Description = request.Description ??= order.Description;
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();

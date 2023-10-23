@@ -71,7 +71,21 @@ public class LockerDisconnectedConsumer : IConsumer<LockerDisconnectedEvent>
                 account: manager,
                 type: NotificationType.SystemLockerDisconnected,
                 entityType: EntityType.Locker,
-                data: locker
+                data: locker, 
+                saved: true
+            );
+            await _notifier.NotifyAsync(notification);
+        }
+
+        var admins = await _unitOfWork.AccountRepository.GetAdmins().ToListAsync();
+        foreach (var admin in admins)
+        {
+            var notification = new Notification(
+                account: admin,
+                type: NotificationType.SystemLockerDisconnected,
+                entityType: EntityType.Locker,
+                data: locker, 
+                saved: true
             );
             await _notifier.NotifyAsync(notification);
         }

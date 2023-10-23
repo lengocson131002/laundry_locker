@@ -82,7 +82,7 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
             ApiKey = _apiKeySettings.Key,
         });
         
-        // Push notification admins and store manager
+        // Push notification admins and store managers
         var managers = await _unitOfWork.AccountRepository
             .GetStaffs(
                 storeId: locker.StoreId, 

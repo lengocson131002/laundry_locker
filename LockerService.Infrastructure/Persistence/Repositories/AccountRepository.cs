@@ -56,4 +56,10 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
         return _dbContext.Accounts
             .Where(account => Equals(account.Username, username));
     }
+
+    public IQueryable<Account> GetAdmins(bool? isActive = null)
+    {
+        return _dbContext.Accounts
+            .Where(account => Equals(account.Role, Role.Admin) && (isActive == null || account.IsActive == isActive));
+    }
 }
