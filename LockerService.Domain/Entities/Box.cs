@@ -35,6 +35,8 @@ public class Box : BaseAuditableEntity
     [Projectable]
     public bool IsAvailable => IsActive && (LastOrder == null || !LastOrder.IsBusyOrder);
 
+    public string? Description { get; set; }
+    
     public Box()
     {
         IsActive = true;

@@ -43,17 +43,15 @@ public class OrderOvertimeConsumer : IConsumer<OrderOvertimeEvent>
             ));
         }
         
-        // Notify manager to handle this order
-        var laundryAttendants = await _unitOfWork.AccountRepository
-            .GetStaffs(
-                storeId: order.Locker.StoreId, 
-                role: Role.LaundryAttendant)
+        // Notify staffs to handle this order
+        var staffs = await _unitOfWork.AccountRepository
+            .GetStaffs(storeId: order.Locker.StoreId)
             .ToListAsync();;
         
-        foreach (var la in laundryAttendants)
+        foreach (var staff in staffs)
         {
             var notification = new Notification(
-                account: la,
+                account: staff,
                 type: NotificationType.SystemOrderOverTime,
                 entityType: EntityType.Locker,
                 data: order

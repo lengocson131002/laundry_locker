@@ -57,10 +57,15 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
         
-        var previousStatus = order.Status;
+        // Generate pin code if order has been just initialized, else not
+        if (order.IsInitialized)
+        {
+            order.PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode();
+        }        
         
+        var previousStatus = order.Status;
+
         order.Status = OrderStatus.Waiting;
-        order.PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode();
         order.PinCodeIssuedAt = DateTimeOffset.UtcNow;
         order.CreatedAt = DateTimeOffset.UtcNow;
         
@@ -72,7 +77,7 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
         {
             Order = order,
             PreviousStatus = previousStatus,
-            Time = DateTimeOffset.UtcNow
+            Time = DateTimeOffset.UtcNow,
         }, cancellationToken);
 
         _logger.LogInformation("Update order status to {0}", order.Status);

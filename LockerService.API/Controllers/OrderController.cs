@@ -89,6 +89,13 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(command);
     }
     
+    [HttpPut("{id:long}/add-more")]
+    public async Task<ActionResult<OrderResponse>> AddMoreItems([FromRoute] long id)
+    {
+        var request = new AddMoreItemsCommand(id);
+        return await Mediator.Send(request);
+    }
+    
     [HttpGet("{id:long}")]
     [Authorize]
     public async Task<ActionResult<OrderDetailResponse>> GetOrder([FromRoute] long id)
@@ -149,6 +156,15 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(command);
     }
     
+       
+    [HttpGet("{id:long}/details")]
+    [Authorize]
+    public async Task<ActionResult<ListResponse<OrderItemResponse>>> GetOrderDetails([FromRoute] long id)
+    {
+        var request = new GetOrderDetailsQuery(id);
+        return await Mediator.Send(request);
+    }
+    
     [HttpPost("{id:long}/details")]
     [Authorize]
     public async Task<ActionResult<StatusResponse>> AddOrderDetail([FromRoute] long id, [FromBody] AddOrderDetailCommand command)
@@ -179,4 +195,6 @@ public class OrderController : ApiControllerBase
         var command = new RemoveLaundryItemCommand(id, detailId, itemId);
         return await Mediator.Send(command);
     }
+    
+    
 }

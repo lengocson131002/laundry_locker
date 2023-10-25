@@ -150,17 +150,14 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         }
         
         // Notify manager to handle this order
-        var laundryAttendants = await _unitOfWork.AccountRepository
-            .GetStaffs(
-                storeId: order.Locker.StoreId, 
-                role: Role.LaundryAttendant, 
-                isActive: true)
+        var staffs = await _unitOfWork.AccountRepository
+            .GetStaffs(storeId: order.Locker.StoreId)
             .ToListAsync();;
         
-        foreach (var la in laundryAttendants)
+        foreach (var staff in staffs)
         {
             var notification = new Notification(
-                account: la,
+                account: staff,
                 type: NotificationType.SystemOrderOverTime,
                 entityType: EntityType.Locker,
                 data: order
@@ -309,20 +306,17 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
                 ));
         }
         
-        // Notify for shippers to collect when order type is laundry
+        // Notify for staff to collect when order type is laundry
         if (order.IsLaundry)
         {
-            var laundryAttendants = await _unitOfWork.AccountRepository
-                .GetStaffs(
-                    storeId: order.Locker.StoreId, 
-                    role: Role.LaundryAttendant,
-                    isActive: true)
+            var staffs = await _unitOfWork.AccountRepository
+                .GetStaffs(storeId: order.Locker.StoreId)
                 .ToListAsync();
             
-            foreach (var la in laundryAttendants)
+            foreach (var staff in staffs)
             {
                 var notification = new Notification(
-                    account: la,
+                    account: staff,
                     type: NotificationType.SystemOrderCreated,
                     entityType: EntityType.Order,
                     data: order
@@ -345,10 +339,7 @@ public class OrderUpdatedStatusConsumer : IConsumer<OrderUpdatedStatusEvent>
         if (availableBoxes.Count <= lockerSettings.AvailableBoxCountWarning)
         {
             var laundryAttendants =await _unitOfWork.AccountRepository
-                .GetStaffs(
-                    storeId: locker.StoreId, 
-                    role: Role.LaundryAttendant,
-                    isActive: true)
+                .GetStaffs(storeId: locker.StoreId)
                 .ToListAsync();
             
             foreach (var la in laundryAttendants)

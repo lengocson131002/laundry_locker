@@ -32,5 +32,10 @@ public enum OrderStatus
     Reserved,
 
     [Description("Quá hạn")]
-    Overtime
+    Overtime,
+    
+    [Description("Đang bỏ thêm đồ")]
+    Updating
+    
+    
 }

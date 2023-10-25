@@ -7,5 +7,5 @@ public class OrderConfirmedEvent : RabbitMqBaseEvent
     public OrderStatus PreviousStatus { get; set; }
     
     public DateTimeOffset Time { get; set; }
-    
+
 }

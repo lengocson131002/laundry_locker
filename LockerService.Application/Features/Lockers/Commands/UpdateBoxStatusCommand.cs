@@ -8,4 +8,7 @@ public class UpdateBoxStatusCommand : IRequest<StatusResponse>
     public int BoxNumber { get; set; }
     
     public bool IsActive { get; set; }
+    
+    [TrimString(true)]
+    public string? Description { get; set; }
 }

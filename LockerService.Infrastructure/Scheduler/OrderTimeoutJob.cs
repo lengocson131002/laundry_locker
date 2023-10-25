@@ -33,7 +33,7 @@ public class OrderTimeoutJob : IJob
         }
         
         var order = await _unitOfWork.OrderRepository
-            .Get(order => order.Id == orderId && (order.IsInitialized || order.IsReserved))
+            .Get(order => order.Id == orderId && (order.IsInitialized || order.IsReserved || order.IsUpdating))
             .Include(order => order.Locker)
             .Include(order => order.SendBox)
             .Include(order => order.ReceiveBox)

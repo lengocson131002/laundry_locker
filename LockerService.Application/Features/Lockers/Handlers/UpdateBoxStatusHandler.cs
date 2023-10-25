@@ -37,6 +37,7 @@ public class UpdateBoxStatusHandler: IRequestHandler<UpdateBoxStatusCommand, Sta
         }
 
         box.IsActive = request.IsActive;
+        box.Description = request.Description;
         await _unitOfWork.BoxRepository.UpdateAsync(box);
         await _unitOfWork.SaveChangesAsync();
         _logger.LogInformation("Update locker's box {0} status to {1}", lockerId, request.IsActive);

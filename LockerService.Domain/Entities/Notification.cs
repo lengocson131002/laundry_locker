@@ -69,8 +69,15 @@ public class Notification : BaseAuditableEntity
 
             case NotificationType.SystemStaffCreated:
             {
-                Title = "Tài khoản mới";
-                Content = "Tài khoản nhân viên mới được khởi tạo";
+                if (data == null)
+                {
+                    throw new Exception($"[Notification] Data is required. Type: {Type}");
+                }
+
+                var staff = (Account) data;
+
+                Title = "Tài khoản nhân viên mới";
+                Content = $"Tài khoản nhân viên {staff.FullName} mới được khởi tạo";
                 Level = NotificationLevel.Information;
                 break;
             }
@@ -84,7 +91,7 @@ public class Notification : BaseAuditableEntity
                 
                 var locker = (Locker) data;
                 Title = "Locker kết nối đến hệ thống";
-                Content = $"Locker {locker.Code} đã được kết nối đến hệ thống.";
+                Content = $"Locker {locker.Code} - {locker.Name} đã được kết nối đến hệ thống.";
                 ReferenceId = locker.Id.ToString();
                 Level = NotificationLevel.Information;
                 break;
@@ -99,7 +106,7 @@ public class Notification : BaseAuditableEntity
                 
                 var locker = (Locker) data;
                 Title = "Locker đã bị ngắt kết nối khỏi hệ thống";
-                Content = $"Locker {locker.Code} đã ngắt kết nối khỏi hệ thống.";
+                Content = $"Locker {locker.Code} - {locker.Name} đã ngắt kết nối khỏi hệ thống.";
                 ReferenceId = locker.Id.ToString();
                 Level = NotificationLevel.Critical;
                 break;
@@ -115,7 +122,7 @@ public class Notification : BaseAuditableEntity
                 var locker = (Locker) data;
                 
                 Title = "Locker sắp quá tải";
-                Content = "Locker sắp quá tải. Vui long đến nhận đồ";
+                Content = $"Locker {locker.Code} - {locker.Name} sắp quá tải. Nhân viên vui lòng đến nhận đồ";
                 ReferenceId = locker.Id.ToString();
                 Level = NotificationLevel.Warning;
                 break;
@@ -131,7 +138,7 @@ public class Notification : BaseAuditableEntity
                 var locker = (Locker) data;
                 
                 Title = "Locker đã bị quá tải";
-                Content = "Locker đã bị quá tải";
+                Content = $"Locker {locker.Code} - {locker.Name} đang hết chỗ. Nhân viên vui lòng đến nhận đồ";
                 ReferenceId = locker.Id.ToString();
                 Level = NotificationLevel.Critical;
                 break;
@@ -147,7 +154,7 @@ public class Notification : BaseAuditableEntity
                 var order = (Order) data;
                 
                 Title = "Đơn hàng mới vừa được khởi tạo";
-                Content = "Đơn hàng mới vừa được khởi tạo";
+                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} mới vừa được khởi tạo. Loại đơn hàng: {order.Type.GetDescription()}";
                 ReferenceId = order.Id.ToString();
                 Level = NotificationLevel.Information;
                 break;
@@ -162,7 +169,7 @@ public class Notification : BaseAuditableEntity
                 
                 var order = (Order) data;
                 Title = "Đơn hàng quá hạn";
-                Content = "Đơn hàng tại Locker đã quá hạn. Vui lòng liên hệ khách hàng hoặc đến xử lý";
+                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã quá hạn tại locker. Vui lòng liên hệ khách hàng hoặc đến xử lý";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -177,7 +184,7 @@ public class Notification : BaseAuditableEntity
 
                 var order = (Order)data;
                 Title = "Đơn hàng mới được khởi tạo";
-                Content = $"Đơn hàng mới được khởi tạo. Pin code: {order.PinCode}";
+                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} mới được khởi tạo tại locker {order.Locker.Code} - {order.Locker.Name}";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -193,7 +200,7 @@ public class Notification : BaseAuditableEntity
                 var order = (Order)data;
                 
                 Title = "Đơn hàng đã được xử lý";
-                Content = $"Đơn hàng của bạn đã được xử lý. Vui lòng đến Locker để nhận. Pin Code: {order.PinCode}";
+                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã được xử lý";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -212,7 +219,7 @@ public class Notification : BaseAuditableEntity
                     : string.Empty;
                 
                 Title = "Đơn hàng đã hủy";
-                Content = $"Đơn hàng của bạn đã bị hủy. Lý do hủy: {cancelReason}";
+                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã bị hủy. Lý do hủy: {cancelReason}";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -227,7 +234,7 @@ public class Notification : BaseAuditableEntity
                 var order = (Order)data;
                 
                 Title = "Đơn hàng đã hoàn thành";
-                Content = "Đơn hàng đã hoàn thành. Xin cảm ơn";
+                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã hoàn thành. Xin cảm ơn";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 
@@ -243,7 +250,7 @@ public class Notification : BaseAuditableEntity
 
                 var order = (Order)data;
                 Title = "Đơn hàng quá hạn";
-                Content = "Đơn hàng quá hạn. Vui lòng đến nhận";
+                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã quá hạn. Vui lòng đến nhận";
                 Level = NotificationLevel.Critical;
                 ReferenceId = order.Id.ToString();
                 break;

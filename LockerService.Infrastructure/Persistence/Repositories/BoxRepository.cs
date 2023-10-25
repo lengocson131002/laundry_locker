@@ -56,7 +56,8 @@ public class BoxRepository : BaseRepository<Box>, IBoxRepository
                     CreatedAt = box.CreatedAt,
                     UpdatedAt = box.UpdatedAt,
                     LockerId = box.LockerId,
-                    LastOrder = orders.OrderByDescending(or => or.CreatedAt).First()
+                    Description = box.Description,
+                    LastOrder = orders.OrderByDescending(or => or.CreatedAt).First(),
                 });
     }
     

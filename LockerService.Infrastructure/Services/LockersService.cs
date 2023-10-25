@@ -29,17 +29,14 @@ public class LockersService : ILockersService
 
         if (availableBoxes.Count <= lockerSettings.AvailableBoxCountWarning)
         {
-            var laundryAttendants =await _unitOfWork.AccountRepository
-                .GetStaffs(
-                    storeId: locker.StoreId, 
-                    role: Role.LaundryAttendant,
-                    isActive: true)
+            var staffs =await _unitOfWork.AccountRepository
+                .GetStaffs(storeId: locker.StoreId)
                 .ToListAsync();
             
-            foreach (var la in laundryAttendants)
+            foreach (var staff in staffs)
             {
                 var notification = new Notification(
-                    account: la,
+                    account: staff,
                     type: NotificationType.SystemLockerBoxWarning,
                     entityType: EntityType.Locker,
                     data: locker

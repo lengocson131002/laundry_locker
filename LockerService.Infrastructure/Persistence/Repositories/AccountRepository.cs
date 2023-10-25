@@ -29,18 +29,17 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
         return accountQuery.FirstOrDefault();
     }
 
-    public IQueryable<Account> GetStaffs(long? storeId, Role? role = null, bool? isActive = null)
+    public IQueryable<Account> GetStaffs(long? storeId = null, List<Role>? roles = null, bool? isActive = null)
     {
         var staffQuery = _dbContext.Accounts
             .Where(account => (storeId == null || account.StoreId == storeId) 
                               && (isActive == null || account.IsActive == isActive) 
                               && account.IsStaff);
 
-        if (role != null)
+        if (roles != null && roles.Count > 0)
         {
-            return staffQuery.Where(acc => acc.Role == role);
+            return staffQuery.Where(acc => roles.Any(role => acc.Role == role));
         }
- 
 
         return staffQuery;
     }
@@ -57,9 +56,4 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
             .Where(account => Equals(account.Username, username));
     }
 
-    public IQueryable<Account> GetAdmins(bool? isActive = null)
-    {
-        return _dbContext.Accounts
-            .Where(account => Equals(account.Role, Role.Admin) && (isActive == null || account.IsActive == isActive));
-    }
 }

@@ -82,18 +82,15 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
             ApiKey = _apiKeySettings.Key,
         });
         
-        // Push notification admins and store managers
-        var managers = await _unitOfWork.AccountRepository
-            .GetStaffs(
-                storeId: locker.StoreId, 
-                role: Role.Manager, 
-                isActive: true)
+        // Push notification admins and store's staff
+        var staffs = await _unitOfWork.AccountRepository
+            .GetStaffs(storeId: locker.StoreId)
             .ToListAsync();
         
-        foreach (var manager in managers)
+        foreach (var staff in staffs)
         {
             var notification = new Notification(
-                account: manager,
+                account: staff,
                 type: NotificationType.SystemLockerConnected,
                 entityType: EntityType.Locker,
                 data: locker, 
@@ -104,7 +101,7 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
         }
 
         var admins = await _unitOfWork.AccountRepository
-            .Get(acc => Equals(acc.Role, Role.Admin))
+            .GetStaffs(roles: new List<Role>() { Role.Admin })
             .ToListAsync();
         
         foreach (var admin in admins)

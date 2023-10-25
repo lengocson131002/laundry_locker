@@ -33,46 +33,47 @@ public class OrderConfirmedConsumer : IConsumer<OrderConfirmedEvent>
         
         var order = eventMessage.Order;
 
-        await _notifier.NotifyAsync(
-            new Notification(
-                account: order.Sender,
-                type: NotificationType.CustomerOrderCreated,
-                entityType: EntityType.Order,
-                data: order
-            ));
-
-        if (order.ReceiverId != null && order.Receiver != null)
+        // Push notification whenever order initialized
+        if (Equals(eventMessage.PreviousStatus, OrderStatus.Initialized))
         {
             await _notifier.NotifyAsync(
                 new Notification(
-                    account: order.Receiver,
+                    account: order.Sender,
                     type: NotificationType.CustomerOrderCreated,
                     entityType: EntityType.Order,
                     data: order
                 ));
-        }
 
-
-        // Notify for staffs to collect when order type is laundry
-        if (order.IsLaundry)
-        {
-            var laundryAttendants = await _unitOfWork.AccountRepository
-                .GetStaffs(
-                    order.Locker.StoreId,
-                    Role.LaundryAttendant,
-                    true)
-                .ToListAsync();
-
-            foreach (var la in laundryAttendants)
+            if (order.ReceiverId != null && order.Receiver != null)
             {
-                var notification = new Notification(
-                    account: la,
-                    type: NotificationType.SystemOrderCreated,
-                    entityType: EntityType.Order,
-                    data: order
-                );
+                await _notifier.NotifyAsync(
+                    new Notification(
+                        account: order.Receiver,
+                        type: NotificationType.CustomerOrderCreated,
+                        entityType: EntityType.Order,
+                        data: order
+                    ));
+            }
 
-                await _notifier.NotifyAsync(notification);
+
+            // Notify for staffs to collect when order type is laundry
+            if (order.IsLaundry)
+            {
+                var staffs = await _unitOfWork.AccountRepository
+                    .GetStaffs(storeId: order.Locker.StoreId)
+                    .ToListAsync();
+
+                foreach (var staff in staffs)
+                {
+                    var notification = new Notification(
+                        account: staff,
+                        type: NotificationType.SystemOrderCreated,
+                        entityType: EntityType.Order,
+                        data: order
+                    );
+
+                    await _notifier.NotifyAsync(notification);
+                }
             }
         }
 

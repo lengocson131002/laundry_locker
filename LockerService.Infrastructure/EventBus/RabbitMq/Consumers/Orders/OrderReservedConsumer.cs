@@ -44,6 +44,7 @@ public class OrderReservedConsumer : IConsumer<OrderReservedEvent>
             OrderId = order.Id,
             Status = order.Status
         };
+        
 
         await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
         await _unitOfWork.SaveChangesAsync();

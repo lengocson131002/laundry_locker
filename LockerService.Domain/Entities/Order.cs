@@ -1,7 +1,5 @@
-using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
@@ -168,24 +166,9 @@ public class Order : BaseAuditableEntity
     [Projectable]
     public bool IsProcessed => OrderStatus.Processed.Equals(Status);
     
-    /**
-     * Order status, at which staff can process laundry order 
-     * WAITING || RETURNED
-     */
     [Projectable]
-    public bool CanProcess => OrderType.Laundry.Equals(Type) && IsWaiting;
-
-    /**
-     * Order status, at which customer can checkout 
-     * OVERTIME
-     * WAITING for Storage
-     * RETURNED for Laundry
-     */
-    [Projectable]
-    public bool CanCheckout => (OrderType.Storage.Equals(Type) && IsWaiting)
-                               || (OrderType.Laundry.Equals(Type) && IsReturned)
-                               || IsOvertime;
-
+    public bool IsUpdating => OrderStatus.Updating.Equals(Status);
+    
     public bool UpdatedInfo => OrderType.Storage.Equals(Type) || (Details.Any() && Details.All(detail => detail.Quantity != null));
 
     /**
@@ -207,6 +190,10 @@ public class Order : BaseAuditableEntity
     [Projectable]
     public bool IsLaundry => Equals(OrderType.Laundry, Type);
 
+    [Projectable]
+    public bool NotifyStaff => Equals(OrderType.Laundry, Type);
+    
+
     [NotMapped] 
     [Projectable]
     public bool IsStorage => Equals(OrderType.Storage, Type);
@@ -221,7 +208,7 @@ public class Order : BaseAuditableEntity
         switch (status)
         {
             case OrderStatus.Waiting:
-                return IsInitialized;
+                return IsInitialized || IsUpdating;
         
             case OrderStatus.Collected:
                 return IsLaundry && IsWaiting;
@@ -239,8 +226,12 @@ public class Order : BaseAuditableEntity
                 return (OrderType.Storage.Equals(Type) && IsWaiting)
                        || (OrderType.Laundry.Equals(Type) && IsReturned)
                        || IsOvertime;
+            
             case OrderStatus.Canceled:
                 return IsReserved;
+            
+            case OrderStatus.Updating:
+                return IsWaiting;
             
             default:
                 return false;
