@@ -7,4 +7,5 @@ public class OrderCanceledEvent : RabbitMqBaseEvent
     public DateTimeOffset Time { get; set; }
     
     public OrderStatus PreviousStatus { get; set; }
+    
 }

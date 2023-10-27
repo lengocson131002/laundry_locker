@@ -39,7 +39,7 @@ public class OrderCanceledConsumer : IConsumer<OrderCanceledEvent>
             PreviousStatus = message.PreviousStatus,
             Status = order.Status,
         };
-
+        
         await _unitOfWork.OrderTimelineRepository.AddAsync(timeline);
         await _unitOfWork.SaveChangesAsync();
         

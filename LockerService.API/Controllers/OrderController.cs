@@ -89,6 +89,13 @@ public class OrderController : ApiControllerBase
         return await Mediator.Send(command);
     }
     
+    [HttpPut("{id:long}/cancel")]
+    public async Task<ActionResult<OrderResponse>> CancelReservedOrder([FromRoute] long id)
+    {
+        var cancelRequest = new CancelOrderCommand(id);
+        return await Mediator.Send(cancelRequest);
+    }
+    
     [HttpPut("{id:long}/add-more")]
     public async Task<ActionResult<OrderResponse>> AddMoreItems([FromRoute] long id)
     {
