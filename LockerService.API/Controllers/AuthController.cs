@@ -5,8 +5,6 @@ using LockerService.Application.Features.Auth.Commands;
 using LockerService.Application.Features.Auth.Models;
 using LockerService.Application.Features.Auth.Queries;
 using LockerService.Domain.Enums;
-using LockerService.Infrastructure.Common.Constants;
-using LockerService.Infrastructure.Settings;
 
 namespace LockerService.API.Controllers;
 
@@ -15,12 +13,6 @@ namespace LockerService.API.Controllers;
 [ApiKey]
 public class AuthController : ApiControllerBase
 {
-    private readonly JwtSettings _jwtSettings;
-
-    public AuthController(JwtSettings jwtSettings)
-    {
-        _jwtSettings = jwtSettings;
-    }
 
     /**
      * STAFF AUTH CONTROLLERS
@@ -98,46 +90,6 @@ public class AuthController : ApiControllerBase
     public async Task<ActionResult<StatusResponse>> ResetPassword([FromBody] ResetPasswordCommand request)
     {
         return await Mediator.Send(request);
-    }
-
-    
-    [HttpPost("logout")]
-    public ActionResult Logout()
-    {
-        Response.Cookies.Delete(TokenCookieConstants.AccessTokenCookie);
-        Response.Cookies.Delete(TokenCookieConstants.RefreshTokenCookie);
-        return Ok();
-    }
-
-    private Task SetHttpCookieToken(AccessTokenResponse token)
-    {
-        var tokenExpireInMinutes = _jwtSettings.TokenExpire;
-        var refreshTokenExpireInMinutes = _jwtSettings.RefreshTokenExpire;
-        
-        HttpContext.Response.Cookies.Append(
-            TokenCookieConstants.AccessTokenCookie, 
-            token.AccessToken, 
-            new CookieOptions()
-            {
-                Expires = DateTimeOffset.UtcNow.AddMinutes(tokenExpireInMinutes),
-                HttpOnly = true,
-                Secure = true,
-                IsEssential = true,
-                SameSite = SameSiteMode.None
-            });
-        
-        HttpContext.Response.Cookies.Append(
-            TokenCookieConstants.RefreshTokenCookie, 
-            token.RefreshToken, 
-            new CookieOptions()
-            {
-                Expires = DateTimeOffset.UtcNow.AddMinutes(refreshTokenExpireInMinutes),
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None
-            });
-
-        return Task.CompletedTask;
     }
 
     [HttpPost("device-token")]

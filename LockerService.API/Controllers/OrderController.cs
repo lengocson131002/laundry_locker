@@ -90,6 +90,7 @@ public class OrderController : ApiControllerBase
     }
     
     [HttpPut("{id:long}/cancel")]
+    [Authorize]
     public async Task<ActionResult<OrderResponse>> CancelReservedOrder([FromRoute] long id)
     {
         var cancelRequest = new CancelOrderCommand(id);

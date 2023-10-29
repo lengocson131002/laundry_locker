@@ -8,7 +8,7 @@ namespace LockerService.API.Controllers;
 
 [ApiController]
 [Route("/api/v1/dashboard")]
-[AuthorizeRoles(Role.Admin, Role.Manager)]
+[Authorize]
 [ApiKey]
 public class DashboardController : ApiControllerBase
 {

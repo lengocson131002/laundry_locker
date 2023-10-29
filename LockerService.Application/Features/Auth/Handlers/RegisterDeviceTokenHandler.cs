@@ -23,8 +23,7 @@ public class RegisterDeviceTokenHandler : IRequestHandler<RegisterDeviceTokenCom
     {
         var currentAccount = await _currentAccountService.GetRequiredCurrentAccount();
         var existedToken = await _unitOfWork.TokenRepository
-            .Get(to => to.AccountId == currentAccount.Id 
-                       && to.Value == request.DeviceToken 
+            .Get(to => to.Value == request.DeviceToken 
                        && to.Type == TokenType.DeviceToken
                        && !to.IsExpired)
             
@@ -32,8 +31,8 @@ public class RegisterDeviceTokenHandler : IRequestHandler<RegisterDeviceTokenCom
 
         if (existedToken != null)
         {
-            _logger.LogInformation("Device token existed");
-            return _mapper.Map<TokenResponse>(existedToken);
+            // delete existed device token id
+            await _unitOfWork.TokenRepository.DeleteAsync(existedToken);
         }
         
         var token = new Token()
