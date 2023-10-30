@@ -45,7 +45,6 @@ builder.Services.AddSwaggerGen(opt =>
 
     // Filter security requirement
     opt.OperationFilter<AuthorizationOperationFilter>();
-    opt.OperationFilter<ApiKeyOperationFilter>();
 });
 
 

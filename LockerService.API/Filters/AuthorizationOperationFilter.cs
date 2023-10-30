@@ -1,3 +1,4 @@
+using LockerService.API.Attributes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -8,6 +9,48 @@ public class AuthorizationOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
+        var securitySchemes = new List<OpenApiSecurityRequirement>();
+        
+        securitySchemes.AddRange(GetXApiKeySchemes(operation, context));
+        securitySchemes.AddRange(GetJwtKeySchemes(operation, context));
+        
+        operation.Security = securitySchemes;
+    }
+
+    private List<OpenApiSecurityRequirement> GetXApiKeySchemes(OpenApiOperation operation, OperationFilterContext context)
+    {
+        var attributes = context.MethodInfo?.DeclaringType?.GetCustomAttributes(true)
+            .Union(context.MethodInfo.GetCustomAttributes(true))
+            .OfType<ApiKeyAttribute>()
+            .ToList();
+
+        if (attributes == null || !attributes.Any())
+        {
+            return new List<OpenApiSecurityRequirement>();
+        }
+
+       return new List<OpenApiSecurityRequirement>
+        {
+            new()
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "X-API-KEY"
+                        },
+                        In = ParameterLocation.Header
+                    },
+                    new string[] { }
+                }
+            }
+        };
+    }
+    
+    private List<OpenApiSecurityRequirement> GetJwtKeySchemes(OpenApiOperation operation, OperationFilterContext context)
+    {
         var attributes = context.MethodInfo?.DeclaringType?.GetCustomAttributes(true)
             .Union(context.MethodInfo.GetCustomAttributes(true))
             .OfType<AuthorizeAttribute>()
@@ -16,7 +59,7 @@ public class AuthorizationOperationFilter : IOperationFilter
         if (attributes == null || !attributes.Any())
         {
             // operation.Security.Clear();
-            return;
+            return new List<OpenApiSecurityRequirement>();
         }
 
         var attr = attributes[0];
@@ -29,7 +72,7 @@ public class AuthorizationOperationFilter : IOperationFilter
         {
             case JwtBearerDefaults.AuthenticationScheme:
             default:
-                operation.Security = new List<OpenApiSecurityRequirement>
+                return new List<OpenApiSecurityRequirement>
                 {
                     new()
                     {
@@ -47,7 +90,6 @@ public class AuthorizationOperationFilter : IOperationFilter
                         },
                     }
                 };
-                break;
         }
     }
 }
