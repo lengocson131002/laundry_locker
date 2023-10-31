@@ -70,4 +70,6 @@ public class Payment : BaseAuditableEntity
             _ => string.Empty
         };
     }
+
+    public bool Completed => Equals(Status, PaymentStatus.Completed);
 }

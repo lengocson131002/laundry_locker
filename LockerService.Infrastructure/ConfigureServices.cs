@@ -19,6 +19,7 @@ using LockerService.Infrastructure.Services.Notifications;
 using LockerService.Infrastructure.Services.Notifications.Mobile.Firebase;
 using LockerService.Infrastructure.Services.Notifications.Sms.ZaloZns;
 using LockerService.Infrastructure.Services.Notifications.Website.SignalR;
+using LockerService.Infrastructure.Services.Payments;
 using LockerService.Infrastructure.Services.Payments.Momo;
 using LockerService.Infrastructure.Services.Payments.VnPay;
 using LockerService.Infrastructure.Settings;
@@ -274,6 +275,7 @@ public static class ConfigureServices
 
         services.AddScoped<IMomoPaymentService, MomoPaymentService>();
         services.AddScoped<IVnPayPaymentService, VnPayPaymentService>();
+        services.AddScoped<IPaymentService, PaymentService>();
         
         // Notification
         services.AddOptions<FcmSettings>()
