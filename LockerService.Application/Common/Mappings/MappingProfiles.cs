@@ -19,6 +19,7 @@ using LockerService.Application.Features.Settings.Commands;
 using LockerService.Application.Features.Staffs.Models;
 using LockerService.Application.Features.Stores.Commands;
 using LockerService.Application.Features.Stores.Models;
+using LockerService.Application.Features.Tokens.Models;
 using LockerService.Domain;
 using LockerService.Domain.Entities.Settings;
 

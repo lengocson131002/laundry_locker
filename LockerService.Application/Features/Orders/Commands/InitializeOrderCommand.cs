@@ -72,4 +72,6 @@ public class InitializeOrderCommand : IRequest<OrderResponse>
     public DateTimeOffset? IntendedReceiveAt { get; set; }
 
     public bool IsReserving { get; set; } = false;
+    
+    public string? CustomerNote { get; set; }
 }

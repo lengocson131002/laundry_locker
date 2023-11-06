@@ -28,4 +28,6 @@ public class LockerResponse : BaseAuditableEntityResponse
     public int BoxCount { get; set; }
 
     public IList<OrderType> OrderTypes { get; set; } = new List<OrderType>();
+    
+    public bool IsActive { get; set; }
 }

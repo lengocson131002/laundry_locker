@@ -1,11 +1,11 @@
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Infrastructure.Persistence.Contexts;
+using LockerService.Shared.Utils;
 
 namespace LockerService.Infrastructure.Persistence.Repositories;
 
 public class OrderRepository : BaseRepository<Order>, IOrderRepository
 {
-    private const string AllowedCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private readonly ApplicationDbContext _dbContext;
 
     public OrderRepository(ApplicationDbContext dbContext) : base(dbContext)
@@ -17,9 +17,12 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         while (true)
         {
-            var pinCode = GeneratePinCode(length);
+            var pinCode = TokenUtils.GeneratePinCode(length);
             var order = await GetOrderByPinCode(pinCode).FirstOrDefaultAsync();
-            if (order == null) return pinCode;
+            if (order == null)
+            {
+                return pinCode;
+            }
         }
     }
 
@@ -83,15 +86,5 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
         return _dbContext.Orders
             .Where(order => (order.IsWaiting || order.IsReturned) && now >= order.IntendedOvertime);
     }
-
-    private string GeneratePinCode(int length)
-    {
-        var rand = new Random();
-
-        var otp = string.Empty;
-
-        for (var i = 0; i < length; i++) otp += AllowedCharacters[rand.Next(0, AllowedCharacters.Length)];
-
-        return otp;
-    }
+    
 }

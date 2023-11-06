@@ -1,6 +1,6 @@
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Application.Features.Auth.Commands;
-using LockerService.Application.Features.Auth.Models;
+using LockerService.Application.Features.Tokens.Models;
 
 namespace LockerService.Application.Features.Auth.Handlers;
 

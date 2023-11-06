@@ -56,4 +56,8 @@ public class OrderResponse : BaseAuditableEntityResponse
     public DateTimeOffset? IntendedOvertime { get; set; }
 
     public OrderCancelReason? CancelReason { get; set; }
+    
+    public string? CustomerNote { get; set; }
+    
+    public string? StaffNote { get; set; }
 }

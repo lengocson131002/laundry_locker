@@ -8,7 +8,8 @@ namespace LockerService.Domain.Entities;
 [Table("Order")]
 public class Order : BaseAuditableEntity
 {
-    [Key] public long Id { get; set; }
+    [Key] 
+    public long Id { get; set; }
 
     public string? ReferenceId { get; set; }
 
@@ -120,6 +121,10 @@ public class Order : BaseAuditableEntity
     
     public decimal TotalPrice { get; set; }
 
+    public string? CustomerNote { get; set; }
+    
+    public string? StaffNote { get; set; }
+    
     public string? Description { get; set; }
 
     public long? DeliveryAddressId { get; set; }

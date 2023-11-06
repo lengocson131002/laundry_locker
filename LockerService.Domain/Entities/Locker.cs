@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -63,4 +64,7 @@ public class Locker : BaseAuditableEntity
     {
         return OrderTypes.Any(lockerOrderType => Equals(lockerOrderType.OrderType, orderType));
     }
+
+    [Projectable]
+    public bool IsActive => Equals(Status, LockerStatus.Active);
 }

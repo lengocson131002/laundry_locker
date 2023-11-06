@@ -17,4 +17,6 @@ public class StoreResponse : BaseAuditableEntityResponse
     public string? Image { get; set; }
     
     public string? Description { get; set; }
+    
+    public string? IsActive { get; set; }
 }

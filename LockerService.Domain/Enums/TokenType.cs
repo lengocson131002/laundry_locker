@@ -4,5 +4,6 @@ public enum TokenType
 {
     Otp,
     DeviceToken,
-    ResetPassword
+    ResetPassword,
+    Other
 }

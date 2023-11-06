@@ -28,7 +28,7 @@ public class UpdateOrderHandler : IRequestHandler<UpdateOrderCommand, OrderRespo
             throw new ApiException(ResponseCode.OrderErrorNotFound);
         }
 
-        order.Description = request.Description ??= order.Description;
+        order.StaffNote = request.StaffNote ??= order.StaffNote;
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
         

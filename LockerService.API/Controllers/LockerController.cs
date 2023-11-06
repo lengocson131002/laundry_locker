@@ -1,18 +1,20 @@
 using LockerService.API.Attributes;
 using LockerService.API.Common;
 using LockerService.Application.Common.Enums;
+using LockerService.Application.Features.Auth.Models;
 using LockerService.Application.Features.Lockers.Commands;
 using LockerService.Application.Features.Lockers.Models;
 using LockerService.Application.Features.Lockers.Queries;
 using LockerService.Application.Features.Services.Models;
 using LockerService.Application.Features.Services.Queries;
+using LockerService.Application.Features.Tokens.Models;
 using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
-[ApiController]
 [Route("/api/v1/lockers")]
 [ApiKey]
+[ApiController]
 public class LockerController : ApiControllerBase
 {
     [HttpPost]
@@ -126,6 +128,28 @@ public class LockerController : ApiControllerBase
         command.LockerId = id;
         return await Mediator.Send(command);
     }
+
+    /**
+     * Generate token to open box
+     */
+    [HttpPost("{id:long}/boxes/token")]
+    [AuthorizeRoles(Role.Admin, Role.Manager, Role.Admin)]
+    public async Task<ActionResult<TokenResponse>> GenerateOpenBoxToken([FromRoute] long id)
+    {
+        var command = new GenerateOpenBoxTokenCommand(id);
+        return await Mediator.Send(command);
+    }
+
+    /**
+     * Open box using gernated token
+     */
+    [HttpPost("{id:long}/boxes/open")]
+    public async Task<ActionResult<StatusResponse>> OpenBox([FromRoute] long id, [FromBody] OpenBoxCommand command)
+    {
+        command.LockerId = id;
+        return await Mediator.Send(command);
+    }
+
 
     [HttpGet("{id:long}/timelines")]
     public async Task<ActionResult<PaginationResponse<LockerTimeline, LockerTimelineResponse>>> GetLockerTimeLines(

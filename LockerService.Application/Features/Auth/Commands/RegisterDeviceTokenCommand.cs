@@ -1,4 +1,5 @@
 using LockerService.Application.Features.Auth.Models;
+using LockerService.Application.Features.Tokens.Models;
 
 namespace LockerService.Application.Features.Auth.Commands;
 

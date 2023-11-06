@@ -31,5 +31,6 @@ public class Token : BaseAuditableEntity
     public Token()
     {
         Status = TokenStatus.Valid;
+        Type = TokenType.Other;
     }
 }

@@ -16,4 +16,6 @@ public class AccountResponse : BaseAuditableEntityResponse
     
     public string? Avatar { get; set; }
     
+    public string? IsActive { get; set; }
+
 }

@@ -16,4 +16,7 @@ public class UpdateOrderCommand : IRequest<OrderResponse>
     
     [TrimString(true)]
     public string? Description { get; set; }
+    
+    public string? StaffNote { get; set; }
+    
 }

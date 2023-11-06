@@ -4,6 +4,7 @@ using LockerService.Application.Features.Accounts.Models;
 using LockerService.Application.Features.Auth.Commands;
 using LockerService.Application.Features.Auth.Models;
 using LockerService.Application.Features.Auth.Queries;
+using LockerService.Application.Features.Tokens.Models;
 using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;

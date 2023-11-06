@@ -1,10 +1,10 @@
-namespace LockerService.Application.Features.Auth.Models;
+namespace LockerService.Application.Features.Tokens.Models;
 
 public class TokenResponse
 {
     public long Id { get; set; }
 
-    public long AccountId { get; set; }
+    public long? AccountId { get; set; }
     
     public TokenType Type { get; set; }
 

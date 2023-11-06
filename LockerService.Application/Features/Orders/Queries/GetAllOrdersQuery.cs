@@ -26,6 +26,8 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
     public long? ServiceId { get; set; }
     
     public long? StaffId { get; set; }
+    
+    public bool? DeliverySupported { get; set; }
         
     public override Expression<Func<Order, bool>> GetExpressions()
     {
@@ -71,6 +73,11 @@ public class GetAllOrdersQuery : PaginationRequest<Order>, IRequest<PaginationRe
         if (StaffId != null)
         {
             Expression = Expression.And(order => order.Timelines.Any(timeline => timeline.StaffId == StaffId));
+        }
+
+        if (DeliverySupported != null)
+        {
+            Expression = Expression.And(order => order.DeliverySupported == DeliverySupported);
         }
         
         return Expression;

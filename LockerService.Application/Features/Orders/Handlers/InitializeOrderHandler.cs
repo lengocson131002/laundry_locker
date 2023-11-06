@@ -34,6 +34,7 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         var locker = await _unitOfWork.LockerRepository
             .Get(lo => lo.Id == command.LockerId)
             .Include(lo => lo.OrderTypes)
+            .Include(lo => lo.Store)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (locker == null)
@@ -47,10 +48,16 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             throw new ApiException(ResponseCode.LockerErrorUnsupportedOrderType);
         }
         
-        // Check Locker status
-        if (!LockerStatus.Active.Equals(locker.Status))
+        // Check Store status
+        if (!locker.Store.IsActive)
         {
-            throw new ApiException(ResponseCode.LockerErrorUnsupportedOrderType);
+            throw new ApiException(ResponseCode.StoreErrorInvalidStatus);
+        }
+        
+        // Check Locker status
+        if (!locker.IsActive)
+        {
+            throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
         }
 
         // Check available boxes
@@ -77,7 +84,9 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             {
                 var service = await _unitOfWork.ServiceRepository.GetStoreService(locker.StoreId, serviceId);
                 if (service == null || !service.IsActive)
+                {
                     throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
+                }
 
                 var orderDetail = new OrderDetail
                 {
@@ -197,7 +206,8 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             SendBox = availableBox,
             ReceiveBox = Equals(command.Type, OrderType.Storage) ? availableBox : null,
             DeliveryAddress = deliveryAddress,
-            IntendedReceiveAt = command.IntendedReceiveAt?.ToUniversalTime()
+            IntendedReceiveAt = command.IntendedReceiveAt?.ToUniversalTime(),
+            CustomerNote = command.CustomerNote
         };
         
         

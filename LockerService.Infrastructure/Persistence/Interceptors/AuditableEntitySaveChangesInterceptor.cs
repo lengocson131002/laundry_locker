@@ -1,4 +1,5 @@
 using LockerService.Domain.Enums;
+using LockerService.Infrastructure.Common.Constants;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -75,7 +76,10 @@ public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 
     private AuditEntry? GetAuditEntry(EntityEntry entry)
     {
-        if (entry.Entity is Audit || entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
+        if (entry.Entity is Audit 
+            || entry.State == EntityState.Detached 
+            || entry.State == EntityState.Unchanged 
+            || !AuditConstants.TrackedEntities.Any(e => Equals(e, entry.Entity.GetType().Name)))
         {
             return null;
         }
