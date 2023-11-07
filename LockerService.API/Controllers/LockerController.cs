@@ -133,7 +133,7 @@ public class LockerController : ApiControllerBase
      * Generate token to open box
      */
     [HttpPost("{id:long}/boxes/token")]
-    [AuthorizeRoles(Role.Admin, Role.Manager, Role.Admin)]
+    [AuthorizeRoles(Role.Admin, Role.Manager, Role.LaundryAttendant)]
     public async Task<ActionResult<TokenResponse>> GenerateOpenBoxToken([FromRoute] long id)
     {
         var command = new GenerateOpenBoxTokenCommand(id);
@@ -144,6 +144,7 @@ public class LockerController : ApiControllerBase
      * Open box using gernated token
      */
     [HttpPost("{id:long}/boxes/open")]
+    [AuthorizeRoles(Role.Admin, Role.Manager, Role.LaundryAttendant)]
     public async Task<ActionResult<StatusResponse>> OpenBox([FromRoute] long id, [FromBody] OpenBoxCommand command)
     {
         command.LockerId = id;

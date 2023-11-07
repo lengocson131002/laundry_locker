@@ -8,6 +8,19 @@ public class GetDashboardOrderHandler : IRequestHandler<DashboardOrderQuery, Das
 {
     private readonly IUnitOfWork _unitOfWork;
 
+    private readonly List<OrderStatus> ShowedOrderStatus = new List<OrderStatus>()
+    {
+        OrderStatus.Reserved,
+        OrderStatus.Waiting,
+        OrderStatus.Collected,
+        OrderStatus.Processing,
+        OrderStatus.Processed,
+        OrderStatus.Canceled,
+        OrderStatus.Returned,
+        OrderStatus.Overtime,
+        OrderStatus.Completed
+    };
+
     public GetDashboardOrderHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
@@ -63,10 +76,12 @@ public class GetDashboardOrderHandler : IRequestHandler<DashboardOrderQuery, Das
                 Status = groupItem.Key,
                 Count = groupItem.Count()
             }).ToListAsync(cancellationToken);
-        foreach (var status in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+        foreach (var status in ShowedOrderStatus)
         {
             if (!orderStatuses.Any(item => Equals(item.Status, status)))
+            {
                 orderStatuses.Add(new OrderStatusCount(status));
+            }
         }
 
         // Type count

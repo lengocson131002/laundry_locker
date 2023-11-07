@@ -41,6 +41,10 @@ public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<Paginati
         {
             Expression = Expression.And(service => Equals(service.StoreId, StoreId));
         }
+        else
+        {
+            Expression = Expression.And(service => Equals(service.StoreId, null));
+        }
 
         return Expression;
     }

@@ -24,7 +24,10 @@ public class Service : BaseAuditableEntity
     
     public bool IsActive => ServiceStatus.Active.Equals(Status);
     
-    public long StoreId { get; set; }
+    // Service without StoreId is global
+    // Created by System Administrator
+    // Used for created other stores' services by clone data from this service
+    public long? StoreId { get; set; }
 
-    public Store Store { get; set; } = default!;
+    public Store? Store { get; set; } = default!;
 }
