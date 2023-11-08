@@ -22,8 +22,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     
     IOrderDetailRepository OrderDetailRepository { get; }
     
-    IBillRepository BillRepository { get; }
-    
     IStoreRepository StoreRepository { get; }
     
     IStaffLockerRepository StaffLockerRepository { get; }
@@ -41,4 +39,6 @@ public interface IUnitOfWork : IBaseUnitOfWork
     IAuditRepository AuditRepository { get; }
     
     IPaymentRepository PaymentRepository { get;  }
+    
+    IStoreServiceRepository StoreServiceRepository { get; }
 }

@@ -15,5 +15,8 @@ public class ServiceResponse : BaseAuditableEntityResponse
     public string? Unit { get; set; }
     
     public ServiceStatus Status { get; set; }
+ 
+    public long? StoreId { get; set; }
     
+    public bool IsStandard { get; set; }
 }

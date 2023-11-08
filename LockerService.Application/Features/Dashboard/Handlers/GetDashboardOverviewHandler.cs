@@ -40,7 +40,7 @@ public class GetDashboardOverviewHandler : IRequestHandler<DashboardOverviewQuer
         var serviceCount = await _unitOfWork.ServiceRepository
             .Get(service => (request.From == null || service.CreatedAt >= request.From)
                             && (request.To == null || service.CreatedAt <= request.To)
-                            && (request.StoreId == null || service.StoreId == request.StoreId))
+                            && (service.StoreId == request.StoreId))
             
             .CountAsync(cancellationToken);
 

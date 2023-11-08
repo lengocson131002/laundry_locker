@@ -12,14 +12,6 @@ public class StaffLockerRepository : BaseRepository<StaffLocker>, IStaffLockerRe
         _dbContext = dbContext;
     }
 
-    public async Task<bool> IsManaging(long staffId, long lockerId)
-    {
-        var staffLocker = await _dbContext.StaffLockers
-            .Where(item => Equals(item.StaffId, staffId) && Equals(item.LockerId, lockerId))
-            .FirstOrDefaultAsync();
-        return staffLocker != null;
-    }
-
     public async Task<IList<Account>> GetStaffs(long lockerId)
     {
         return await _dbContext.StaffLockers
@@ -28,11 +20,4 @@ public class StaffLockerRepository : BaseRepository<StaffLocker>, IStaffLockerRe
             .ToListAsync();
     }
 
-    public async Task<IList<Locker>> GetLocker(long staffId)
-    {
-        return await _dbContext.StaffLockers
-            .Where(item => Equals(item.LockerId, staffId))
-            .Select(item => item.Locker)
-            .ToListAsync();
-    }
 }

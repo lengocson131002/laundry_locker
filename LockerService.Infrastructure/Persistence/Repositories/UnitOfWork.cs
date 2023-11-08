@@ -26,8 +26,6 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     private IOrderDetailRepository? _orderDetailRepository;
 
-    private IBillRepository? _billRepository;
-    
     private IStoreRepository? _storeRepository;
 
     private IStaffLockerRepository? _staffLockerRepository;
@@ -44,12 +42,13 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     private IAuditRepository? _auditRepository;
     
-    private readonly IPaymentRepository? _paymentRepository;
+    private IPaymentRepository? _paymentRepository;
+
+    private IStoreServiceRepository? _storeServiceRepository;
     
     private readonly ApplicationDbContext _dbContext;
 
     private readonly IServiceScopeFactory _scopeFactory;
-
     public UnitOfWork(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory) : base(dbContext)
     {
         _dbContext = dbContext;
@@ -80,8 +79,6 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     public IOrderDetailRepository OrderDetailRepository =>
         _orderDetailRepository ??= new OrderDetailRepository(_dbContext);
 
-    public IBillRepository BillRepository => _billRepository ??= new BillRepository(_dbContext);
-        
     public IStoreRepository StoreRepository => _storeRepository ??= new StoreRepository(_dbContext);
     
     public IStaffLockerRepository StaffLockerRepository => _staffLockerRepository ??= new StaffLockerRepository(_dbContext);
@@ -99,5 +96,8 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     public IAuditRepository AuditRepository => _auditRepository ??= new AuditRepository(_dbContext);
 
-    public IPaymentRepository PaymentRepository => _paymentRepository ?? new PaymentRepository(_dbContext);
+    public IPaymentRepository PaymentRepository => _paymentRepository ??= new PaymentRepository(_dbContext);
+
+    public IStoreServiceRepository StoreServiceRepository =>
+        _storeServiceRepository ??= new StoreLockerRepository(_dbContext);
 }

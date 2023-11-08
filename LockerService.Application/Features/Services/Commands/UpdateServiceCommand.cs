@@ -22,9 +22,6 @@ public class UpdateServiceCommandValidator : AbstractValidator<UpdateServiceComm
 
 public class UpdateServiceCommand : IRequest
 {
-    [JsonIgnore]
-    public long StoreId { get; set; }
-    
     [JsonIgnore] 
     public long ServiceId { get; set; }
     

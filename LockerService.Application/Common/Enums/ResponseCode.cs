@@ -11,6 +11,8 @@ public enum ResponseCode
     [Description("Mapping Error")] MappingError = 3,
     
     [Description("Unauthorized")] Unauthorized = 4,
+    
+    [Description("Current account can't access this resource")] Forbidden = 5,
 
     // File 
     
@@ -171,5 +173,10 @@ public enum ResponseCode
     
     [Description("Unsupported payment method")] PaymentErrorUnsupportedPaymentMethod = 1702,
     
+    // Store service configuration
+    [Description("Store has been configed this service before")] StoreServiceErrorExisted = 1801,
+    
+    [Description("Store has not been configed this service before")] StoreServiceErrorNotGFound = 1802,
+
 
 }

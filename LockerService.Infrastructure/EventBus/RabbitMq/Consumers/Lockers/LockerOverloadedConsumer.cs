@@ -56,8 +56,10 @@ public class LockerOverloadedConsumer : IConsumer<LockerOverloadedEvent>
         await _unitOfWork.LockerTimelineRepository.AddAsync(@event);
         await _unitOfWork.SaveChangesAsync();
 
-        // Notify staffs managing this locker
-        var staffs = await _unitOfWork.StaffLockerRepository.GetStaffs(locker.Id);
+        var staffs = await _unitOfWork.AccountRepository
+            .GetStaffs(locker.StoreId)
+            .ToListAsync();
+        
         foreach (var staff in staffs)
         {
             var notification = new Notification(

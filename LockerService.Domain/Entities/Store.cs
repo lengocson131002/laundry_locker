@@ -30,15 +30,15 @@ public class Store : BaseAuditableEntity
     [JsonIgnore]
     public IList<Locker> Lockers { get; set; }
     
-    [JsonIgnore]
-    public IList<Service> Services { get; set; }
 
+    public IList<StoreService> StoreServices { get; set; }
+    
     public string? Description { get; set; }
     
     public Store()
     {
         Staffs = new List<Account>();
         Lockers = new List<Locker>();
-        Services = new List<Service>();
+        StoreServices = new List<StoreService>();
     }
 }

@@ -4,12 +4,8 @@ namespace LockerService.Application.Features.Services.Queries;
 
 public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<PaginationResponse<Service, ServiceResponse>>
 {
-    [JsonIgnore]
-    [BindNever]
     public long? StoreId { get; set; }
     
-    [JsonIgnore]
-    [BindNever]
     public long? LockerId { get; set; }
 
     public string? Search { get; set; }
@@ -37,10 +33,13 @@ public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<Paginati
             Expression = Expression.And(service => ExcludedIds.All(id => service.Id != id));
         }
 
+        // If storeId passed, query all configured service for this store
         if (StoreId != null)
         {
-            Expression = Expression.And(service => Equals(service.StoreId, StoreId));
+            Expression = Expression.And(service => service.StoreServices.Any(item => item.StoreId == StoreId));
         }
+        
+        // else get all global services
         else
         {
             Expression = Expression.And(service => Equals(service.StoreId, null));

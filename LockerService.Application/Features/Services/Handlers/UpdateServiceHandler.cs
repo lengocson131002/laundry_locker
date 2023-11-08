@@ -6,49 +6,59 @@ namespace LockerService.Application.Features.Services.Handlers;
 public class UpdateServiceHandler : IRequestHandler<UpdateServiceCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateServiceHandler(IUnitOfWork unitOfWork)
+    private readonly IResourceAuthorizeService _resourceAuthorizeService;
+    private readonly ICurrentAccountService _currentAccountService;
+    
+    public UpdateServiceHandler(
+        IUnitOfWork unitOfWork, 
+        ICurrentAccountService currentAccountService, 
+        IResourceAuthorizeService resourceAuthorizeService)
     {
         _unitOfWork = unitOfWork;
+        _currentAccountService = currentAccountService;
+        _resourceAuthorizeService = resourceAuthorizeService;
     }
 
 
     public async Task Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
     {
-        var service = await _unitOfWork.ServiceRepository
-            .GetStoreService(request.StoreId, request.ServiceId);
+        var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
         
         if (service is null)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);
         }
-
-        if (request.Name != null)
+        
+        // Check if current account can access this services
+        var currentAccount = await _currentAccountService.GetRequiredCurrentAccount();
+        var authorized = await _resourceAuthorizeService.AuthorizeService(currentAccount, service);
+        if (!authorized)
         {
-            service.Name = request.Name;
+            throw new ApiException(ResponseCode.Forbidden);
         }
 
-        if (request.Price != null)
-        {
-            service.Price = request.Price.Value;
-        }
-
-        if (request.Description != null)
-        {
-            service.Description = request.Description;
-        }
-
-        if (request.Image != null)
-        {
-            service.Image = request.Image;
-        }
-
-        if (request.Unit != null)
-        {
-            service.Unit = request.Unit;
-        }
+        service.Name = request.Name ?? service.Name;
+        service.Price = request.Price ?? service.Price;
+        service.Description = request.Description ?? service.Description;
+        service.Image = request.Image ?? service.Image;
+        service.Unit = request.Unit ?? service.Unit;
         
         await _unitOfWork.ServiceRepository.UpdateAsync(service);
+
+        // Update store service price configuration if this service is belong to specific store
+        if (!service.IsStandard)
+        {
+            // Check if this store has been configured this service before
+            var storeService = await _unitOfWork.StoreServiceRepository
+                .Get(item => Equals(item.StoreId, service.StoreId) && Equals(item.ServiceId, service.Id))
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (storeService != null)
+            {
+                storeService.Price = service.Price;
+                await _unitOfWork.StoreServiceRepository.UpdateAsync(storeService);
+            }
+        }
         
         // Save changes
         await _unitOfWork.SaveChangesAsync();

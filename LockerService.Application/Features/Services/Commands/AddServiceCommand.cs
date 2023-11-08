@@ -23,8 +23,7 @@ public class AddServiceCommandValidator : AbstractValidator<AddServiceCommand>
 
 public class AddServiceCommand : IRequest<ServiceResponse>
 {
-    [JsonIgnore]
-    public long StoreId { get; set; }
+    public long? StoreId { get; set; }
     
     [TrimString(true)]
     public string Name { get; set; } = default!;

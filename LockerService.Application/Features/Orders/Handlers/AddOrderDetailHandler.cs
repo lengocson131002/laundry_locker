@@ -31,12 +31,20 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Stat
         // Get service
         foreach (var detail in request.Details)
         {
-            var service = await _unitOfWork.ServiceRepository.GetStoreService(order.Locker.StoreId, detail.ServiceId);
-            if (service == null || !service.IsActive)
+            var storeService = await _unitOfWork.StoreServiceRepository.GetStoreService(order.Locker.StoreId, detail.ServiceId);
+         
+            // Check store support this service or not
+            if (storeService == null)
             {
-                throw new ApiException(ResponseCode.ServiceErrorNotFound);
+                throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
             }
-
+                
+            // Check service status
+            if (!storeService.Service.IsActive)
+            {
+                throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
+            }
+            
             var existed = await _unitOfWork.OrderDetailRepository
                 .Get(d => d.ServiceId == detail.ServiceId && d.OrderId == request.OrderId)
                 .AnyAsync(cancellationToken);
@@ -47,10 +55,10 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Stat
 
             var orderDetail = new OrderDetail()
             {
-                Service = service,
-                Order = order,
-                Quantity = detail.Quantity,
-                Price = service.Price
+                ServiceId = storeService.ServiceId,
+                Price = storeService.Price,
+                OrderId = order.Id,
+                Quantity = detail.Quantity
             };
             await _unitOfWork.OrderDetailRepository.AddAsync(orderDetail);
         }

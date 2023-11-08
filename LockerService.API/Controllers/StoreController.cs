@@ -59,65 +59,58 @@ public class StoreController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    // Services
+
+    ///<summary>
+    /// Config service created by System Administrator for specific store, update price only
+    /// </summary>
     [HttpPost("{id:long}/services")]
     [AuthorizeRoles(Role.Admin, Role.Manager)]
-    public async Task<ActionResult<ServiceResponse>> AddService(
+    public async Task<ActionResult<StatusResponse>> AddServiceToStore(
         [FromRoute] long id,
-        [FromBody] AddServiceCommand command)
+        [FromBody] ConfigStoreServiceCommand command)
     {
         command.StoreId = id;
         return await Mediator.Send(command);
     }
+    
+    /// <summary>
+    /// Remove specific service from specific store, which configured from above
+    /// </summary>
 
-    [HttpGet("{id:long}/services")]
-    public async Task<ActionResult<PaginationResponse<Service, ServiceResponse>>> GetAllServices(
+    [HttpDelete("{id:long}/services/{serviceId:long}")]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
+    public async Task<ActionResult<StatusResponse>> RemoveServiceFromStore(
         [FromRoute] long id,
-        [FromQuery] GetAllServicesQuery query)
+        [FromRoute] long serviceId)
     {
-        query.StoreId = id;
-
-        if (string.IsNullOrWhiteSpace(query.SortColumn))
-        {
-            query.SortColumn = "UpdatedAt";
-            query.SortDir = SortDirection.Desc;
-        }
-
-        return await Mediator.Send(query);
+        var command = new RemoveStoreServiceCommand(id, serviceId);
+        return await Mediator.Send(command);
     }
-
+    
+    /// <summary>
+    /// Update specific service's price which configured from standard service for specific store
+    /// </summary>
+    
     [HttpPut("{id:long}/services/{serviceId:long}")]
     [AuthorizeRoles(Role.Admin, Role.Manager)]
-    public async Task<ActionResult<StatusResponse>> UpdateService(
-        [FromRoute] long id, 
-        [FromRoute] long serviceId, 
-        [FromBody] UpdateServiceCommand command)
-    {
-        command.StoreId = id;
-        command.ServiceId = serviceId;
-        
-        await Mediator.Send(command);
-        return new StatusResponse(true);
-    }
-
-    [HttpGet("{id:long}/services/{serviceId:long}")]
-    public async Task<ActionResult<ServiceDetailResponse>> GetService([FromRoute] long id, [FromRoute] long serviceId)
-    {
-        var query = new GetServiceQuery(id, serviceId);
-        return await Mediator.Send(query);
-    }
-
-    [HttpPut("{id:long}/services/{serviceId:long}/status")]
-    [AuthorizeRoles(Role.Admin, Role.Manager)]
-    public async Task<ActionResult<StatusResponse>> UpdateServiceStatus(
-        [FromRoute] long id, 
+    public async Task<ActionResult<StatusResponse>> UpdateServicePriceForStore(
+        [FromRoute] long id,
         [FromRoute] long serviceId,
-        [FromBody] UpdateServiceStatusCommand command)
+        [FromBody] UpdateStoreServiceCommand command)
     {
         command.StoreId = id;
         command.ServiceId = serviceId;
-        
-        await Mediator.Send(command);
-        return new StatusResponse(true);
+        return await Mediator.Send(command);
+    }
+    
+    /// <summary>
+    /// Get specific store's service, don't use /api/v1/service/{id} before the price is configured for specific store
+    /// </summary>
+    
+    [HttpGet("{id:long}/services/{serviceId:long}")]
+    public async Task<ActionResult<ServiceDetailResponse>> GetStoreServiceDetail([FromRoute] long id, [FromRoute] long serviceId)
+    {
+        var query = new GetStoreServiceQuery(id, serviceId);
+        return await Mediator.Send(query);
     }
 }

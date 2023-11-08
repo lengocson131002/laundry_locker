@@ -1,3 +1,4 @@
+using System.Reflection;
 using LockerService.API;
 using LockerService.API.Filters;
 using LockerService.API.Middlewares;
@@ -45,6 +46,7 @@ builder.Services.AddSwaggerGen(opt =>
 
     // Filter security requirement
     opt.OperationFilter<AuthorizationOperationFilter>();
+    
 });
 
 

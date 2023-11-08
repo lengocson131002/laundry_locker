@@ -3,6 +3,7 @@ using System;
 using LockerService.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LockerService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231107115146_FixStoreIdNullableInServiceTable")]
+    partial class FixStoreIdNullableInServiceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1193,59 +1196,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.ToTable("Store");
                 });
 
-            modelBuilder.Entity("LockerService.Domain.Entities.StoreService", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CreatedByUsername")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("DeletedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("DeletedByUsername")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<long>("ServiceId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("StoreId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long?>("UpdatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUsername")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceId");
-
-                    b.HasIndex("StoreId");
-
-                    b.ToTable("StoreService");
-                });
-
             modelBuilder.Entity("LockerService.Domain.Entities.Token", b =>
                 {
                     b.Property<long>("Id")
@@ -1607,7 +1557,7 @@ namespace LockerService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("LockerService.Domain.Entities.Service", b =>
                 {
                     b.HasOne("LockerService.Domain.Entities.Store", "Store")
-                        .WithMany()
+                        .WithMany("Services")
                         .HasForeignKey("StoreId");
 
                     b.Navigation("Store");
@@ -1641,25 +1591,6 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Location");
-                });
-
-            modelBuilder.Entity("LockerService.Domain.Entities.StoreService", b =>
-                {
-                    b.HasOne("LockerService.Domain.Entities.Service", "Service")
-                        .WithMany("StoreServices")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LockerService.Domain.Entities.Store", "Store")
-                        .WithMany("StoreServices")
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Service");
-
-                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("LockerService.Domain.Entities.Token", b =>
@@ -1736,18 +1667,13 @@ namespace LockerService.Infrastructure.Persistence.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("LockerService.Domain.Entities.Service", b =>
-                {
-                    b.Navigation("StoreServices");
-                });
-
             modelBuilder.Entity("LockerService.Domain.Entities.Store", b =>
                 {
                     b.Navigation("Lockers");
 
-                    b.Navigation("Staffs");
+                    b.Navigation("Services");
 
-                    b.Navigation("StoreServices");
+                    b.Navigation("Staffs");
                 });
 #pragma warning restore 612, 618
         }

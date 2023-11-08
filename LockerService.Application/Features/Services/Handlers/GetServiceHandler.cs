@@ -7,6 +7,7 @@ namespace LockerService.Application.Features.Services.Handlers;
 public class GetServiceHandler : IRequestHandler<GetServiceQuery, ServiceDetailResponse>
 {
     private readonly IMapper _mapper;
+    
     private readonly IUnitOfWork _unitOfWork;
 
     public GetServiceHandler(IMapper mapper, IUnitOfWork unitOfWork)
@@ -17,8 +18,7 @@ public class GetServiceHandler : IRequestHandler<GetServiceQuery, ServiceDetailR
 
     public async Task<ServiceDetailResponse> Handle(GetServiceQuery request, CancellationToken cancellationToken)
     {
-        var service = await _unitOfWork.ServiceRepository
-            .GetStoreService(request.StoreId, request.ServiceId);
+        var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
         
         if (service is null)
         {

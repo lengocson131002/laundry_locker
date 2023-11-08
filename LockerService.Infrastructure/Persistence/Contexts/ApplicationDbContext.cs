@@ -76,4 +76,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Audit> Audits => Set<Audit>();
 
     public DbSet<Payment> Payments => Set<Payment>();
+
+    public DbSet<StoreService> StoreServices => Set<StoreService>();
 }

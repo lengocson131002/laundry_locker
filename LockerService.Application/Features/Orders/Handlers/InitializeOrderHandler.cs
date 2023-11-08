@@ -82,16 +82,24 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         {
             foreach (var serviceId in command.ServiceIds)
             {
-                var service = await _unitOfWork.ServiceRepository.GetStoreService(locker.StoreId, serviceId);
-                if (service == null || !service.IsActive)
+                var storeService = await _unitOfWork.StoreServiceRepository.GetStoreService(locker.StoreId, serviceId);
+                
+                // Check store support this service or not
+                if (storeService == null)
+                {
+                    throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
+                }
+                
+                // Check service status
+                if (!storeService.Service.IsActive)
                 {
                     throw new ApiException(ResponseCode.OrderErrorServiceIsNotAvailable);
                 }
 
                 var orderDetail = new OrderDetail
                 {
-                    Service = service,
-                    Price = service.Price
+                    ServiceId = storeService.ServiceId,
+                    Price = storeService.Price
                 };
 
                 details.Add(orderDetail);

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Enums;
 
 namespace LockerService.Domain.Entities;
@@ -24,10 +25,16 @@ public class Service : BaseAuditableEntity
     
     public bool IsActive => ServiceStatus.Active.Equals(Status);
     
-    // Service without StoreId is global
-    // Created by System Administrator
-    // Used for created other stores' services by clone data from this service
+    // Service without StoreId is standard service
+    // which created by System Administrator
+    // used for other stores' usage and config price (if needed)
     public long? StoreId { get; set; }
 
-    public Store? Store { get; set; } = default!;
+    public Store? Store { get; set; } = default!;       
+
+    [Projectable] 
+    public bool IsStandard => StoreId == null;
+    
+    public IList<StoreService> StoreServices { get; set; } = new List<StoreService>();
+    
 }

@@ -336,6 +336,9 @@ public static class ConfigureServices
         // LockerService
         services.AddScoped<ILockersService, LockersService>();
         
+        // Resource authorization
+        services.AddScoped<IResourceAuthorizeService, ResourceAuthorizeService>();
+        
         return services;
     }
 
