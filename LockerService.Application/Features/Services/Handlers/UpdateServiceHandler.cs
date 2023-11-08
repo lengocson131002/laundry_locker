@@ -42,6 +42,7 @@ public class UpdateServiceHandler : IRequestHandler<UpdateServiceCommand>
         service.Description = request.Description ?? service.Description;
         service.Image = request.Image ?? service.Image;
         service.Unit = request.Unit ?? service.Unit;
+        service.Status = request.Status ?? service.Status;
         
         await _unitOfWork.ServiceRepository.UpdateAsync(service);
 

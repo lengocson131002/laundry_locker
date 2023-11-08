@@ -3,32 +3,36 @@ using LockerService.Application.Features.Customers.Commands;
 
 namespace LockerService.Application.Features.Customers.Handlers;
 
-public class UpdateCustomerStatusHandler : IRequestHandler<UpdateCustomerStatusCommand>
+public class UpdateCustomerHandler : IRequestHandler<UpdateCustomerCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    public UpdateCustomerStatusHandler(IUnitOfWork unitOfWork)
+    public UpdateCustomerHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(UpdateCustomerStatusCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
         var customer = await _unitOfWork.AccountRepository
             .Get(predicate: cus => cus.Id == request.Id && Equals(cus.Role, Role.Customer))
             .FirstOrDefaultAsync(cancellationToken);
         
-        if (customer is null)
+        if (customer == null)
         {
             throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
         }
 
-        if (Equals(customer.Status, request.Status) || Equals(request.Status, AccountStatus.Verifying))
+        if (request.Status != null)
         {
-            throw new ApiException(ResponseCode.AccountErrorInvalidStatus);
-        }
+            if (!customer.CanUpdateStatus(request.Status.Value))
+            {
+                throw new ApiException(ResponseCode.AccountErrorInvalidStatus);
+            }
 
-        customer.Status = request.Status;
+            customer.Status = request.Status.Value;
+        }
+        
         await _unitOfWork.AccountRepository.UpdateAsync(customer);
 
         // Save changes

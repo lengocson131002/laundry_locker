@@ -24,13 +24,16 @@ public class UpdateLockerStatusHandler :
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
 
-        if (!locker.CanUpdateStatus || Equals(request.Status, locker.Status))
+        if (!locker.CanUpdateStatus(request.Status))
         {
             throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
         }
 
         var currentStatus = locker.Status;
-        if (request.Status.Equals(currentStatus)) return;
+        if (request.Status.Equals(currentStatus))
+        {
+            return;
+        }
 
         locker.Status = request.Status;
         await _unitOfWork.LockerRepository.UpdateAsync(locker);

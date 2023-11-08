@@ -50,15 +50,5 @@ public class ServiceController : ApiControllerBase
         var query = new GetServiceQuery(serviceId);
         return await Mediator.Send(query);
     }
-
-    [HttpPut("{serviceId:long}/status")]
-    [AuthorizeRoles(Role.Admin, Role.Manager)]
-    public async Task<ActionResult<StatusResponse>> UpdateServiceStatus([FromRoute] long serviceId, [FromBody] UpdateServiceStatusCommand command)
-    {
-        command.ServiceId = serviceId;
-        
-        await Mediator.Send(command);
-        return new StatusResponse();
-    }
     
 }

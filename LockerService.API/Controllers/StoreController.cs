@@ -49,17 +49,6 @@ public class StoreController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("{id:long}/status")]
-    [AuthorizeRoles(Role.Admin)]
-    public async Task<ActionResult<StoreResponse>> UpdateStoreStatus(
-        [FromRoute] long id,
-        UpdateStoreStatusCommand command)
-    {
-        command.StoreId = id;
-        return await Mediator.Send(command);
-    }
-
-
     ///<summary>
     /// Config service created by System Administrator for specific store, update price only
     /// </summary>

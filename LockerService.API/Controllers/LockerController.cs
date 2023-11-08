@@ -62,38 +62,28 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
-    [HttpPost("{id:long}/staffs")]
-    [AuthorizeRoles(Role.Admin, Role.Manager)]
-    public async Task<ActionResult<StatusResponse>> AssignStaffs([FromRoute] long id,
-        [FromBody] AssignStaffCommand command)
-    {
-        command.LockerId = id;
-        return await Mediator.Send(command);
-    }
-
-    [HttpDelete("{id:long}/staffs")]
-    [AuthorizeRoles(Role.Admin, Role.Manager)]
-    public async Task<ActionResult<StatusResponse>> UnAssignStaffs([FromRoute] long id,
-        [FromBody] RevokeStaffCommand command)
-    {
-        command.LockerId = id;
-        return await Mediator.Send(command);
-    }
+    // [HttpPost("{id:long}/staffs")]
+    // [AuthorizeRoles(Role.Admin, Role.Manager)]
+    // public async Task<ActionResult<StatusResponse>> AssignStaffs([FromRoute] long id,
+    //     [FromBody] AssignStaffCommand command)
+    // {
+    //     command.LockerId = id;
+    //     return await Mediator.Send(command);
+    // }
+    //
+    // [HttpDelete("{id:long}/staffs")]
+    // [AuthorizeRoles(Role.Admin, Role.Manager)]
+    // public async Task<ActionResult<StatusResponse>> UnAssignStaffs([FromRoute] long id,
+    //     [FromBody] RevokeStaffCommand command)
+    // {
+    //     command.LockerId = id;
+    //     return await Mediator.Send(command);
+    // }
 
     [HttpPut("{id:long}")]
     [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StatusResponse>> UpdateLocker([FromRoute] long id,
         [FromBody] UpdateLockerCommand command)
-    {
-        command.LockerId = id;
-        await Mediator.Send(command);
-        return new StatusResponse();
-    }
-
-    [HttpPut("{id:long}/status")]
-    [AuthorizeRoles(Role.Admin, Role.Manager)]
-    public async Task<ActionResult<StatusResponse>> UpdateLockerStatus([FromRoute] long id,
-        [FromBody] UpdateLockerStatusCommand command)
     {
         command.LockerId = id;
         await Mediator.Send(command);

@@ -46,4 +46,6 @@ public class UpdateStoreCommand : IRequest<StoreResponse>
     
     [TrimString]
     public string? Description { get; set; }
+    
+    public StoreStatus? Status { get; set; }
 }

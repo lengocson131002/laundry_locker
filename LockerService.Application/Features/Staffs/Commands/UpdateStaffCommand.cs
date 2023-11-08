@@ -43,4 +43,6 @@ public class UpdateStaffCommand : IRequest<StaffDetailResponse>
     public long? StoreId { get; set; }
     
     public Role? Role { get; set; }
+
+    public AccountStatus? Status { get; set; }
 }

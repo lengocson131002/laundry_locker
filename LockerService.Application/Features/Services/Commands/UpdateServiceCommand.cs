@@ -38,4 +38,6 @@ public class UpdateServiceCommand : IRequest
     
     [TrimString]
     public string? Description { get; set; }
+    
+    public ServiceStatus? Status { get; set; }
 }

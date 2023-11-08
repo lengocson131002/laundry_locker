@@ -76,6 +76,8 @@ public class UpdateStoreHandler : IRequestHandler<UpdateStoreCommand, StoreRespo
         store.Image = request.Image ?? store.Image;
         store.Description = request.Description ?? store.Description;
         store.ContactPhone = request.ContactPhone ?? store.ContactPhone;
+        store.Status = request.Status ?? store.Status;
+        
         await _unitOfWork.StoreRepository.UpdateAsync(store);
 
         // Save changes

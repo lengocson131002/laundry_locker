@@ -114,6 +114,16 @@ public class UpdateLockerHandler : IRequestHandler<UpdateLockerCommand>
             }
         }
 
+        if (request.Status != null)
+        {
+            if (!locker.CanUpdateStatus(request.Status.Value))
+            {
+                throw new ApiException(ResponseCode.LockerErrorInvalidStatus);
+            }
+
+            locker.Status = request.Status.Value;
+        }
+
         await _unitOfWork.LockerRepository.UpdateAsync(locker);
         await _unitOfWork.LocationRepository.UpdateAsync(locker.Location);
 

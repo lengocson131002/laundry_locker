@@ -57,8 +57,27 @@ public class Locker : BaseAuditableEntity
     [JsonIgnore]
     public IList<LockerOrderType> OrderTypes { get; set; } = new List<LockerOrderType>();
     
-    public bool CanUpdateStatus => !Equals(LockerStatus.Initialized, Status) 
-                                   && !Equals(LockerStatus.Disconnected, Status);
+    public bool CanUpdateStatus(LockerStatus status)
+    {
+        if (Equals(Status, status))
+        {
+            return true;
+        }
+        
+        switch (status)
+        {
+            case LockerStatus.Active:
+                return Equals(Status, LockerStatus.Maintaining) || Equals(Status, LockerStatus.Inactive);
+            
+            case LockerStatus.Maintaining:
+                case LockerStatus.Inactive:
+                return Equals(Status, LockerStatus.Active);
+            
+            default:
+                return false;
+        }
+    }
+
 
     public bool CanSupportOrderType(OrderType orderType)
     {

@@ -40,9 +40,9 @@ public class CustomerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
-    [HttpPut("{id:long}/status")]
+    [HttpPut("{id:long}")]
     [AuthorizeRoles(Role.Admin)]
-    public async Task<ActionResult<StatusResponse>> UpdateCustomerStatus([FromRoute] long id, [FromBody] UpdateCustomerStatusCommand command)
+    public async Task<ActionResult<StatusResponse>> UpdateCustomerStatus([FromRoute] long id, [FromBody] UpdateCustomerCommand command)
     {
         command.Id = id;
         await Mediator.Send(command);

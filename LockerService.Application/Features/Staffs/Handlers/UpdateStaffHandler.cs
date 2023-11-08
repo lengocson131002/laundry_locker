@@ -77,6 +77,17 @@ public class UpdateStaffHandler : IRequestHandler<UpdateStaffCommand, StaffDetai
         staff.Description = request.Description ?? staff.Description;
         staff.PhoneNumber = request.PhoneNumber ?? staff.PhoneNumber;
         staff.Role = request.Role ?? staff.Role;
+
+        // check status
+        if (request.Status != null)
+        {
+            if (!staff.CanUpdateStatus(request.Status.Value))
+            {
+                throw new ApiException(ResponseCode.StaffErrorInvalidStatus);
+            }
+
+            staff.Status = request.Status.Value;
+        }
         
         await _unitOfWork.AccountRepository.UpdateAsync(staff);
 

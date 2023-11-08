@@ -63,4 +63,6 @@ public class UpdateLockerCommand : IRequest
     public long? StoreId { get; set; }
     
     public IList<OrderType>? OrderTypes { get; set; }
+    
+    public LockerStatus? Status { get; set; }
 }

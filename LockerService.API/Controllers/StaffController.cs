@@ -45,12 +45,4 @@ public class StaffController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPut("{id:long}/status")]
-    public async Task<ActionResult<StaffDetailResponse>> UpdateStaffStatus(
-        [FromRoute] long id,
-        UpdateStaffStatusCommand command)
-    {
-        command.Id = id;
-        return await Mediator.Send(command);
-    }
 }
