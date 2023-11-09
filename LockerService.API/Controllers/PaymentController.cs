@@ -44,13 +44,13 @@ public class PaymentController : ApiControllerBase
         await Mediator.Send(callback);
     }
     
-    [HttpGet("callback/momo/{referenceId}")]
-    public async Task MomoPaymentCallbackGet([FromRoute] string referenceId, [FromQuery] MomoPaymentCallback callback)
-    {
-        _logger.LogInformation("PaymentRefId: {0}, Response: {1}", referenceId, JsonSerializerUtils.Serialize(callback));
-        callback.PaymentReferenceId = referenceId;
-        await Mediator.Send(callback);
-    }
+    // [HttpGet("callback/momo/{referenceId}")]
+    // public async Task MomoPaymentCallbackGet([FromRoute] string referenceId, [FromQuery] MomoPaymentCallback callback)
+    // {
+    //     _logger.LogInformation("PaymentRefId: {0}, Response: {1}", referenceId, JsonSerializerUtils.Serialize(callback));
+    //     callback.PaymentReferenceId = referenceId;
+    //     await Mediator.Send(callback);
+    // }
     
     [HttpGet("callback/vnpay/{referenceId}")]
     public async Task VnPayPaymentCallbackGet([FromRoute] string referenceId, [FromQuery] VnPayPaymentCallback callback)
@@ -60,10 +60,4 @@ public class PaymentController : ApiControllerBase
         await Mediator.Send(callback);
     }
 
-
-    [HttpPost]
-    public async Task<ActionResult<StatusResponse>> TestPayment([FromBody] TestPaymentCommand command)
-    {
-        return await Mediator.Send(command);
-    } 
 }
