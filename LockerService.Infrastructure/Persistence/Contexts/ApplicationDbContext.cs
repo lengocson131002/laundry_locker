@@ -78,4 +78,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Payment> Payments => Set<Payment>();
 
     public DbSet<StoreService> StoreServices => Set<StoreService>();
+
+    public DbSet<ShippingPrice> ShippingPrices => Set<ShippingPrice>();
 }

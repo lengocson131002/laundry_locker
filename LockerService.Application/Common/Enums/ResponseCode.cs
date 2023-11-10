@@ -178,5 +178,9 @@ public enum ResponseCode
     
     [Description("Store has not been configed this service before")] StoreServiceErrorNotGFound = 1802,
 
+    // Shipping price
+    [Description("Existed shipping price's from length")] ShippingPriceErrorExisted = 1901,
+    
+    [Description("Shipping price not found")] ShippingPriceErrorNotFound = 1902
 
 }

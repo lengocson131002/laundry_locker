@@ -32,6 +32,7 @@ public class AddStoreCommandValidator : AbstractValidator<AddStoreCommand>
             .When(model => model.Image is not null)
             .WithMessage("Invalid image url");
     }
+    
 }
 
 public class AddStoreCommand : IRequest<StoreResponse>

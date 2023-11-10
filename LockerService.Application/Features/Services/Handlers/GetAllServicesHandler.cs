@@ -50,7 +50,7 @@ public class GetAllServicesHandler : IRequestHandler<GetAllServicesQuery, Pagina
         if (request.StoreId != null)
         {
             /*
-             * Join between StoreService and Service table to get service's prices
+             * Join between StoreService and Service table to get store service's prices
             */
 
             var storeServices = await _unitOfWork.StoreServiceRepository.GetAsync();

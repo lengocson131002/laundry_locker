@@ -16,6 +16,7 @@ using LockerService.Application.Features.Payments.Models;
 using LockerService.Application.Features.Services.Commands;
 using LockerService.Application.Features.Services.Models;
 using LockerService.Application.Features.Settings.Commands;
+using LockerService.Application.Features.ShippingPrices.Models;
 using LockerService.Application.Features.Staffs.Models;
 using LockerService.Application.Features.Stores.Commands;
 using LockerService.Application.Features.Stores.Models;
@@ -117,6 +118,10 @@ public class MappingProfiles : Profile
         CreateMap<Payment, PaymentDetailResponse>();
 
         CreateMap<Token, TokenResponse>();
+        
+        // ShippingPrice
+        CreateMap<ShippingPrice, ShippingPriceResponse>();
+        
     }
 
 }

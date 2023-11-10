@@ -45,6 +45,8 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
     private IPaymentRepository? _paymentRepository;
 
     private IStoreServiceRepository? _storeServiceRepository;
+
+    private IShippingPriceRepository? _shippingPriceRepository;
     
     private readonly ApplicationDbContext _dbContext;
 
@@ -100,4 +102,7 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     public IStoreServiceRepository StoreServiceRepository =>
         _storeServiceRepository ??= new StoreLockerRepository(_dbContext);
+
+    public IShippingPriceRepository ShippingPriceRepository =>
+        _shippingPriceRepository ??= new ShippingPriceRepository(_dbContext);
 }
