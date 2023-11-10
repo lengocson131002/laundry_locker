@@ -30,4 +30,6 @@ public class LockerResponse : BaseAuditableEntityResponse
     public IList<OrderType> OrderTypes { get; set; } = new List<OrderType>();
     
     public bool IsActive { get; set; }
+    
+    public long StoreId { get; set; }
 }
