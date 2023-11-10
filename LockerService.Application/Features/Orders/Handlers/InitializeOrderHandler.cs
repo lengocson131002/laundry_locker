@@ -45,6 +45,7 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
                     locker => locker.Store.Location.Province,
                     locker => locker.Store.Location.District,
                     locker => locker.Store.Location.Ward,
+                    locker => locker.OrderTypes
                 })
             .FirstOrDefaultAsync(cancellationToken);
 
