@@ -14,6 +14,7 @@ namespace LockerService.API.Controllers;
 public class CustomerController : ApiControllerBase
 {
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<PaginationResponse<Account, CustomerResponse>>> GetAllCustomers(
         [FromQuery] GetAllCustomersQuery query)
     {
@@ -27,6 +28,7 @@ public class CustomerController : ApiControllerBase
     }
 
     [HttpGet("{id:long}")]
+    [Authorize]
     public async Task<ActionResult<CustomerDetailResponse>> GetCustomerDetail([FromRoute] long id)
     {
         var query = new GetCustomerDetailQuery(id);

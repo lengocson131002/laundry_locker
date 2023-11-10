@@ -30,9 +30,23 @@ public class Account : BaseAuditableEntity
     
     public string? Avatar { get; set; }
 
+    /**
+     * For staff only
+     */
     public long? StoreId { get; set; }
     
     public Store? Store { get; set; }
+    
+    /**
+     * For customer only
+     */
+    [JsonIgnore]
+    [InverseProperty(nameof(Order.Sender))]
+    public IList<Order> SendOrders { get; set; } = new List<Order>();
+
+    [JsonIgnore]
+    [InverseProperty(nameof(Order.Receiver))]
+    public IList<Order> ReceiveOrders { get; set; } = new List<Order>();
     
     [Projectable]
     public bool IsActive => Equals(AccountStatus.Active, Status);

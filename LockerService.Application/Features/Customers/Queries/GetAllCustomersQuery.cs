@@ -9,6 +9,9 @@ public class GetAllCustomersQuery : PaginationRequest<Account>, IRequest<Paginat
     public AccountStatus? Status { get; set; }
     
     public IList<long>? ExcludedIds { get; set; }
+    
+    // Query all customer has created order in specific store
+    public long? StoreId { get; set; }
 
     public override Expression<Func<Account, bool>> GetExpressions()
     {
@@ -33,6 +36,13 @@ public class GetAllCustomersQuery : PaginationRequest<Account>, IRequest<Paginat
             Expression = Expression.And(cus => ExcludedIds.All(id => cus.Id != id));
         }
 
+        if (StoreId != null)
+        {
+            Expression = Expression.And(cus =>
+                cus.SendOrders.Any(o => o.Locker.StoreId == StoreId) ||
+                cus.ReceiveOrders.Any(o => o.Locker.StoreId == StoreId));
+        }
+        
         Expression = Expression.And(acc => Role.Customer.Equals(acc.Role));
 
         return Expression;

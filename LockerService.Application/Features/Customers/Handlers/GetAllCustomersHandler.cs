@@ -8,15 +8,27 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, Pagi
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-
-    public GetAllCustomersHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    private readonly ICurrentAccountService _currentAccountService;
+    
+    public GetAllCustomersHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentAccountService currentAccountService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _currentAccountService = currentAccountService;
     }
 
     public async Task<PaginationResponse<Account, CustomerResponse>> Handle(GetAllCustomersQuery request, CancellationToken cancellationToken)
     {
+        /*
+       * Check current logged in user
+       * if Store Staff, get only their store's locker
+       */
+        var currentLoggedInAccount = await _currentAccountService.GetCurrentAccount();
+        if (currentLoggedInAccount != null && currentLoggedInAccount.IsStoreStaff)
+        {
+            request.StoreId = currentLoggedInAccount.StoreId;
+        }
+        
         var query = await _unitOfWork.AccountRepository.GetAsync(
             predicate: request.GetExpressions(),
             orderBy: request.GetOrder(),
