@@ -43,6 +43,7 @@ public class GetAllOrdersHandler : IRequestHandler<GetAllOrdersQuery, Pagination
             orderBy: request.GetOrder(),
             includes: new List<Expression<Func<Order, object>>>() {
                 order => order.Locker,
+                order => order.Locker.Store,
                 order => order.Staff,
                 order => order.SendBox,
                 order => order.ReceiveBox,
