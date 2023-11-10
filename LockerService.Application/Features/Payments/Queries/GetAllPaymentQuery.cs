@@ -63,7 +63,7 @@ public class GetAllPaymentQuery : PaginationRequest<Payment>, IRequest<Paginatio
 
         if (StoreId != null)
         {
-            Expression = Expression.And(payment => payment.StoreId == StoreId);
+            Expression = Expression.And(payment => payment.Order.Locker.StoreId == StoreId);
         }
         
         return Expression;
