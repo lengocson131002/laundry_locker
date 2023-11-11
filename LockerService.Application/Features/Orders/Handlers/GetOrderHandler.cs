@@ -23,6 +23,7 @@ public class GetOrderHandler : IRequestHandler<GetOrderQuery, OrderDetailRespons
             disableTracking: true);
         var order = await orderQuery
             .Include(order => order.Locker)
+            .Include((order => order.Locker.Store))
             .Include(order => order.SendBox)
             .Include(order => order.ReceiveBox)
             .Include(order => order.Sender)
