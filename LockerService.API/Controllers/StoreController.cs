@@ -40,7 +40,7 @@ public class StoreController : ApiControllerBase
     }
 
     [HttpPut("{id:long}")]
-    [AuthorizeRoles(Role.Admin)]
+    [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StoreResponse>> UpdateStore(
         [FromRoute] long id,
         [FromBody] UpdateStoreCommand command)
