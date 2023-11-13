@@ -20,7 +20,7 @@ public class StaffCreatedConsumer : IConsumer<StaffCreatedEvent>
         {
             Id = eventMessage.AccountId,
             PhoneNumber = eventMessage.PhoneNumber,
-            Username = eventMessage.PhoneNumber,
+            Username = eventMessage.Username,
             Password = eventMessage.Password,
             Role = eventMessage.Role,
             FullName = eventMessage.FullName,
