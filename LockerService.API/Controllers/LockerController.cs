@@ -12,11 +12,19 @@ using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
+/// <summary>
+/// 
+/// </summary>
 [Route("/api/v1/lockers")]
 [ApiKey]
 [ApiController]
 public class LockerController : ApiControllerBase
 {
+    /// <summary>
+    /// Add new locker
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPost]
     [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<LockerResponse>> AddLocker([FromBody] AddLockerCommand command)
@@ -24,6 +32,11 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
+    /// <summary>
+    /// Get all lockers
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<ActionResult<PaginationResponse<Locker, LockerResponse>>> GetAllLockers(
         [FromQuery] GetAllLockersQuery query)
@@ -37,6 +50,11 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    /// <summary>
+    /// Get a locker detail
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id:long}")]
     public async Task<ActionResult<LockerDetailResponse>> GetLocker([FromRoute] long id)
     {
@@ -47,6 +65,12 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    /// <summary>
+    /// Get all service in a locker
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="query"></param>
+    /// <returns></returns>
     [HttpGet("{id:long}/services")]
     public async Task<ActionResult<PaginationResponse<Service, ServiceResponse>>> GetLockerServices([FromRoute] long id,
         [FromQuery] GetAllServicesQuery query)
@@ -80,6 +104,12 @@ public class LockerController : ApiControllerBase
     //     return await Mediator.Send(command);
     // }
 
+    /// <summary>
+    /// Update a locker detail
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPut("{id:long}")]
     [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StatusResponse>> UpdateLocker([FromRoute] long id,
@@ -90,12 +120,23 @@ public class LockerController : ApiControllerBase
         return new StatusResponse();
     }
 
+    /// <summary>
+    /// [TEST] Connect a locker to system 
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPost("connect")]
     public async Task<ActionResult<LockerResponse>> ConnectLocker([FromBody] ConnectLockerCommand command)
     {
         return await Mediator.Send(command);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPost("{id:long}/boxes")]
     [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StatusResponse>> AddBox([FromRoute] long id, [FromBody] AddBoxCommand command)
@@ -104,12 +145,23 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
+    /// <summary>
+    /// Get a locker's boxes
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id:long}/boxes")]
     public async Task<ActionResult<ListResponse<BoxResponse>>> GetAllBoxes([FromRoute] long id)
     {
         return await Mediator.Send(new GetAllBoxesQuery(id));
     }
 
+    /// <summary>
+    /// Update a box status (inactive / active a box in case that box has problem)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPut("{id:long}/boxes")]
     [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<StatusResponse>> UpdateBoxStatus([FromRoute] long id,
@@ -119,9 +171,12 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    /**
-     * Generate token to open box
-     */
+
+    /// <summary>
+    /// Generate token to open box 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpPost("{id:long}/boxes/token")]
     [AuthorizeRoles(Role.Admin, Role.Manager, Role.LaundryAttendant)]
     public async Task<ActionResult<TokenResponse>> GenerateOpenBoxToken([FromRoute] long id)
@@ -129,10 +184,13 @@ public class LockerController : ApiControllerBase
         var command = new GenerateOpenBoxTokenCommand(id);
         return await Mediator.Send(command);
     }
-
-    /**
-     * Open box using gernated token
-     */
+    
+    /// <summary>
+    /// Open box using token
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPost("{id:long}/boxes/open")]
     [AuthorizeRoles(Role.Admin, Role.Manager, Role.LaundryAttendant)]
     public async Task<ActionResult<StatusResponse>> OpenBox([FromRoute] long id, [FromBody] OpenBoxCommand command)
@@ -142,6 +200,12 @@ public class LockerController : ApiControllerBase
     }
 
 
+    /// <summary>
+    /// Get a locker's events
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="query"></param>
+    /// <returns></returns>
     [HttpGet("{id:long}/timelines")]
     public async Task<ActionResult<PaginationResponse<LockerTimeline, LockerTimelineResponse>>> GetLockerTimeLines(
         [FromRoute] long id,
@@ -157,6 +221,12 @@ public class LockerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    /// <summary>
+    /// Get a locker's event statistic
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="query"></param>
+    /// <returns></returns>
     [HttpGet("{id:long}/statistics")]
     [AuthorizeRoles(Role.Admin, Role.Manager)]
     public async Task<ActionResult<ListResponse<LockerEventStatisticItem>>> GetLockerEventStatistic(

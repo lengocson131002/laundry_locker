@@ -6,6 +6,8 @@ public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<Paginati
 {
     public long? StoreId { get; set; }
     
+    public long? ExcludedStoreId { get; set; }
+    
     public long? LockerId { get; set; }
 
     public string? Search { get; set; }
@@ -45,6 +47,12 @@ public class GetAllServicesQuery : PaginationRequest<Service>, IRequest<Paginati
             Expression = Expression.And(service => Equals(service.StoreId, null));
         }
 
+        // Get all service that a store not configured
+        if (ExcludedStoreId != null)
+        {
+            Expression = Expression.And(service => service.StoreServices.All(item => item.StoreId != ExcludedStoreId));
+        }
+        
         return Expression;
     }
 }

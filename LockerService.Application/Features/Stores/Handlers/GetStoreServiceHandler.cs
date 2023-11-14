@@ -34,6 +34,8 @@ public class GetStoreServiceHandler : IRequestHandler<GetStoreServiceQuery, Serv
         }
 
         var response = _mapper.Map<ServiceDetailResponse>(storeService.Service);
+        
+        // get the price store configured
         response.Price = storeService.Price;
 
         return response;

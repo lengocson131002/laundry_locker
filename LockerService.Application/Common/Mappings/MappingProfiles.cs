@@ -51,6 +51,7 @@ public class MappingProfiles : Profile
         CreateMap<AddServiceCommand, Service>();
         CreateMap<Service, ServiceResponse>();
         CreateMap<Service, ServiceDetailResponse>();
+        CreateMap<AddStoreServiceCommand, Service>();
         
         // Hardware
         CreateMap<AddHardwareCommand, Hardware>();

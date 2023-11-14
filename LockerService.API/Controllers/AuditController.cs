@@ -6,12 +6,20 @@ using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
+/// <summary>
+/// AUDIT API
+/// </summary>
 [ApiController]
 [Route("/api/v1/audits")]
 [AuthorizeRoles(Role.Admin)]
 [ApiKey]
 public class AuditController: ApiControllerBase
 {
+    /// <summary>
+    /// Get all audits
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<PaginationResponse<Audit, AuditResponse>> GetApiAudits([FromQuery] GetAuditsQuery request)
     {

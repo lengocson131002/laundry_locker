@@ -3,8 +3,17 @@ using LockerService.API.Filters;
 
 namespace LockerService.API;
 
+/// <summary>
+/// 
+/// </summary>
 public static class ConfigureServices
 {
+    /// <summary>
+    /// Configure services
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
     public static IServiceCollection ConfigureApiServices(this IServiceCollection services,
         IConfiguration configuration)
     {

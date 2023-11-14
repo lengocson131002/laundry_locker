@@ -25,16 +25,6 @@ public class GetAllServicesHandler : IRequestHandler<GetAllServicesQuery, Pagina
 
     public async Task<PaginationResponse<Service, ServiceResponse>> Handle(GetAllServicesQuery request, CancellationToken cancellationToken)
     {
-        /*
-         * Check current logged in user
-         * if Store Staff, get only their store's service
-         */
-        var currentLoggedInAccount = await _currentAccountService.GetCurrentAccount();
-        if (currentLoggedInAccount != null && currentLoggedInAccount.IsStoreStaff)
-        {
-            request.StoreId = currentLoggedInAccount.StoreId;
-        }
-
         var lockerId = request.LockerId;
         if (lockerId != null)
         {

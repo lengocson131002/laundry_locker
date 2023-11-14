@@ -8,11 +8,19 @@ using LockerService.Domain.Enums;
 
 namespace LockerService.API.Controllers;
 
+/// <summary>
+/// CUSTOMER API
+/// </summary>
 [ApiController]
 [Route("/api/v1/customers")]
 [ApiKey]
 public class CustomerController : ApiControllerBase
 {
+    /// <summary>
+    /// get all customer
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
     [HttpGet]
     [Authorize]
     public async Task<ActionResult<PaginationResponse<Account, CustomerResponse>>> GetAllCustomers(
@@ -27,6 +35,11 @@ public class CustomerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    /// <summary>
+    /// Get a customer details
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id:long}")]
     [Authorize]
     public async Task<ActionResult<CustomerDetailResponse>> GetCustomerDetail([FromRoute] long id)
@@ -35,6 +48,11 @@ public class CustomerController : ApiControllerBase
         return await Mediator.Send(query);
     }
     
+    /// <summary>
+    /// Query a customer by phone number
+    /// </summary>
+    /// <param name="phone"></param>
+    /// <returns></returns>
     [HttpGet("by-phone")]
     public async Task<ActionResult<CustomerDetailResponse>> GetCustomerDetail([FromQuery] string phone)
     {
@@ -42,6 +60,12 @@ public class CustomerController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    /// <summary>
+    /// Update customer status
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPut("{id:long}")]
     [AuthorizeRoles(Role.Admin)]
     public async Task<ActionResult<StatusResponse>> UpdateCustomerStatus([FromRoute] long id, [FromBody] UpdateCustomerCommand command)

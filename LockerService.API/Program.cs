@@ -46,7 +46,13 @@ builder.Services.AddSwaggerGen(opt =>
 
     // Filter security requirement
     opt.OperationFilter<AuthorizationOperationFilter>();
+
+    // Set the comments path for the Swagger JSON and UI.
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     
+    // pick comments from classes, including controller summary comments
+    opt.IncludeXmlComments(xmlPath, includeControllerXmlComments: true); 
 });
 
 

@@ -7,19 +7,31 @@ using LockerService.Application.Features.Services.Queries;
 using LockerService.Domain.Enums;
 namespace LockerService.API.Controllers;
 
+/// <summary>
+/// API For System Services
+/// </summary>
 [ApiController]
 [Route("/api/v1/services")]
 [ApiKey]
 public class ServiceController : ApiControllerBase
 {
-    // Services
+    /// <summary>
+    /// Create global service
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPost]
-    [AuthorizeRoles(Role.Admin, Role.Manager)]
+    [AuthorizeRoles(Role.Admin)]
     public async Task<ActionResult<ServiceResponse>> AddService([FromBody] AddServiceCommand command)
     {
         return await Mediator.Send(command);
     }
 
+    /// <summary>
+    /// Get all global services
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<ActionResult<PaginationResponse<Service, ServiceResponse>>> GetAllServices([FromQuery] GetAllServicesQuery query)
     {
@@ -32,8 +44,14 @@ public class ServiceController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    /// <summary>
+    /// Update global service
+    /// </summary>
+    /// <param name="serviceId"></param>
+    /// <param name="command"></param>
+    /// <returns></returns>
     [HttpPut("{serviceId:long}")]
-    [AuthorizeRoles(Role.Admin, Role.Manager)]
+    [AuthorizeRoles(Role.Admin)]
     public async Task<ActionResult<StatusResponse>> UpdateService(
         [FromRoute] long serviceId, 
         [FromBody] UpdateServiceCommand command)
@@ -41,9 +59,15 @@ public class ServiceController : ApiControllerBase
         command.ServiceId = serviceId;
         
         await Mediator.Send(command);
+
         return new StatusResponse();
     }
 
+    /// <summary>
+    /// Get a global service detail
+    /// </summary>
+    /// <param name="serviceId"></param>
+    /// <returns></returns>
     [HttpGet("{serviceId:long}")]
     public async Task<ActionResult<ServiceDetailResponse>> GetService([FromRoute] long serviceId)
     {

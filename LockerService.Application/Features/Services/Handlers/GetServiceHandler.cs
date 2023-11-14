@@ -20,7 +20,7 @@ public class GetServiceHandler : IRequestHandler<GetServiceQuery, ServiceDetailR
     {
         var service = await _unitOfWork.ServiceRepository.GetByIdAsync(request.ServiceId);
         
-        if (service is null)
+        if (service == null || !service.IsStandard)
         {
             throw new ApiException(ResponseCode.ServiceErrorNotFound);
         }

@@ -1,11 +1,11 @@
 using LockerService.Application.Features.Services.Models;
 using LockerService.Shared.Extensions;
 
-namespace LockerService.Application.Features.Services.Commands;
+namespace LockerService.Application.Features.Stores.Commands;
 
-public class AddServiceCommandValidator : AbstractValidator<AddServiceCommand>
+public class AddStoreServiceCommandValidator : AbstractValidator<AddStoreServiceCommand>
 {
-    public AddServiceCommandValidator()
+    public AddStoreServiceCommandValidator()
     {
         RuleFor(model => model.Name)
             .MaximumLength(200)
@@ -21,8 +21,10 @@ public class AddServiceCommandValidator : AbstractValidator<AddServiceCommand>
     }
 }
 
-public class AddServiceCommand : IRequest<ServiceResponse>
+public class AddStoreServiceCommand : IRequest<ServiceResponse>
 {
+    [JsonIgnore]
+    public long StoreId { get; set; }
     
     [TrimString(true)]
     public string Name { get; set; } = default!;
@@ -37,5 +39,4 @@ public class AddServiceCommand : IRequest<ServiceResponse>
 
     [TrimString(true)]
     public string? Description { get; set; }
-    
 }

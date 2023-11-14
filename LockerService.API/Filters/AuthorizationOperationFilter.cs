@@ -5,8 +5,14 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace LockerService.API.Filters;
 
+/// <summary>
+/// </summary>
 public class AuthorizationOperationFilter : IOperationFilter
 {
+    /// <summary>
+    /// </summary>
+    /// <param name="operation"></param>
+    /// <param name="context"></param>
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         var securitySchemes = new List<OpenApiSecurityRequirement>();
