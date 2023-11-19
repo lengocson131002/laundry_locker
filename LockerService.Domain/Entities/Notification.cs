@@ -154,7 +154,7 @@ public class Notification : BaseAuditableEntity
                 var order = (Order) data;
                 
                 Title = "Đơn hàng mới vừa được khởi tạo";
-                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} mới vừa được khởi tạo. Loại đơn hàng: {order.Type.GetDescription()}";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} mới vừa được khởi tạo. Loại đơn hàng: {order.Type.GetDescription()}";
                 ReferenceId = order.Id.ToString();
                 Level = NotificationLevel.Information;
                 break;
@@ -169,7 +169,7 @@ public class Notification : BaseAuditableEntity
                 
                 var order = (Order) data;
                 Title = "Đơn hàng quá hạn";
-                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã quá hạn tại locker. Vui lòng liên hệ khách hàng hoặc đến xử lý";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã quá hạn tại locker. Vui lòng liên hệ khách hàng hoặc đến xử lý";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -184,7 +184,7 @@ public class Notification : BaseAuditableEntity
 
                 var order = (Order)data;
                 Title = "Đơn hàng mới được khởi tạo";
-                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} mới được khởi tạo tại locker {order.Locker.Code} - {order.Locker.Name}";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} mới được khởi tạo tại locker {order.Locker.Code} - {order.Locker.Name}";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -200,7 +200,7 @@ public class Notification : BaseAuditableEntity
                 var order = (Order)data;
                 
                 Title = "Đơn hàng đã được xử lý";
-                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã được xử lý";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã được xử lý";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -219,7 +219,7 @@ public class Notification : BaseAuditableEntity
                     : string.Empty;
                 
                 Title = "Đơn hàng đã hủy";
-                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã bị hủy. Lý do hủy: {cancelReason}";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã bị hủy. Lý do hủy: {cancelReason}";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -234,7 +234,7 @@ public class Notification : BaseAuditableEntity
                 var order = (Order)data;
                 
                 Title = "Đơn hàng đã hoàn thành";
-                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã hoàn thành. Xin cảm ơn";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã hoàn thành. Xin cảm ơn";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 
@@ -250,7 +250,7 @@ public class Notification : BaseAuditableEntity
 
                 var order = (Order)data;
                 Title = "Đơn hàng quá hạn";
-                Content = $"Đơn hàng #{order.Id} - ${order.PinCode} đã quá hạn. Vui lòng đến nhận";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã quá hạn. Vui lòng đến nhận";
                 Level = NotificationLevel.Critical;
                 ReferenceId = order.Id.ToString();
                 break;
