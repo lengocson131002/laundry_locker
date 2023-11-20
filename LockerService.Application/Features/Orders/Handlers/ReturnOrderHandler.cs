@@ -35,7 +35,6 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
         var order = await _unitOfWork.OrderRepository.Get(order => order.Id == request.OrderId)
             .Include(order => order.Locker)
             .Include(order => order.SendBox)
-            .Include(order => order.ReceiveBox)
             .Include(order => order.Sender)
             .Include(order => order.Receiver)
             .Include(order => order.Locker.Location)
