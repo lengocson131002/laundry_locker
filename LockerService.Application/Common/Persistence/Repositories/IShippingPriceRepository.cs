@@ -7,4 +7,6 @@ public interface IShippingPriceRepository : IBaseRepository<ShippingPrice>
     Task<decimal> CalculateShippingPrice(double distance);
 
     Task<decimal> CalculateShippingPrice(Location from, Location to);
+
+    public double CalculateDistance(double lat1, double long1, double lat2, double long2);
 }

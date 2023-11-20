@@ -229,6 +229,15 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
                 order.DeliveryAddress = deliveryAddress;
                 
                 // Calculate shipping fee from locker's location => delivery location
+                // Calculate shipping distance
+                var distances = _unitOfWork.ShippingPriceRepository.CalculateDistance(
+                    locker.Location.Latitude ?? 0, 
+                    locker.Location.Longitude ?? 0,
+                    deliveryAddress.Latitude ?? 0, 
+                    deliveryAddress.Longitude ?? 0);
+                
+                _logger.LogInformation($"Shipping distances: {distances}");
+                
                 var shippingFee = await _unitOfWork.ShippingPriceRepository.CalculateShippingPrice(locker.Location, deliveryAddress);
                 order.ShippingFee = shippingFee;
             }
