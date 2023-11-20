@@ -77,10 +77,12 @@ public class ReturnOrderHandler : IRequestHandler<ReturnOrderCommand, OrderRespo
                 throw exception;
             }
 
+            order.ReceiveBoxId = availableBox.Id;
             order.ReceiveBox = availableBox;
         }
 
         order.Status = OrderStatus.Returned;
+        
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
         
