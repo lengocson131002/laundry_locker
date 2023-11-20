@@ -19,6 +19,8 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
     public IList<long>? ExcludedIds { get; set; }
 
     public long? ForStaffId { get; set; }
+
+    public IList<long>? SupportedServiceIds { get; set; }
     
     public override Expression<Func<Locker, bool>> GetExpressions()
     {

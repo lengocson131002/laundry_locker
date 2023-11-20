@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LockerService.Domain.Entities;
@@ -10,6 +11,7 @@ namespace LockerService.Domain.Entities;
 [Table("StoreService")]
 public class StoreService : BaseAuditableEntity
 {
+    [Key]
     public long Id { get; set; }
     
     public long ServiceId { get; set; }

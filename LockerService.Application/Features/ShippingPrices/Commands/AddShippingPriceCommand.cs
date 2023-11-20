@@ -6,7 +6,11 @@ public class AddShippingPriceCommandValidator : AbstractValidator<AddShippingPri
 {
     public AddShippingPriceCommandValidator()
     {
-    
+        RuleFor(model => model.FromDistance)
+            .GreaterThanOrEqualTo(0);
+
+        RuleFor(model => model.Price)
+            .GreaterThanOrEqualTo(0);
     }
 }
 
