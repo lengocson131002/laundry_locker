@@ -7,9 +7,12 @@ public class ShippingPriceRepository : BaseRepository<ShippingPrice>, IShippingP
 {
     private readonly ApplicationDbContext _dbContext;
 
-    public ShippingPriceRepository(ApplicationDbContext dbContext) : base(dbContext)
+    private readonly ILogger<ShippingPriceRepository> _logger;
+
+    public ShippingPriceRepository(ApplicationDbContext dbContext, ILogger<ShippingPriceRepository> logger) : base(dbContext)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     public async Task<ShippingPrice?> GetByFromDistance(double from)
@@ -36,7 +39,9 @@ public class ShippingPriceRepository : BaseRepository<ShippingPrice>, IShippingP
             from.Longitude ?? 0,
             to.Latitude ?? 0, 
             to.Longitude ?? 0);
-
+        
+        _logger.LogInformation($"Shipping distance: {distances}");
+        
         return await CalculateShippingPrice(distances);
         
     }
