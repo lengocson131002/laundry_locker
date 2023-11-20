@@ -3,6 +3,7 @@ using LockerService.Application.Common.Services.Payments;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using LockerService.Application.Features.Orders.Commands;
 using LockerService.Application.Features.Payments.Models;
+using LockerService.Shared.Constants;
 
 namespace LockerService.Application.Features.Orders.Handlers;
 
@@ -67,11 +68,15 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, Paymen
                 Time = DateTimeOffset.UtcNow
             }, cancellationToken);
         }
-        
 
         // Save changes
         await _unitOfWork.PaymentRepository.AddAsync(payment);
         await _unitOfWork.SaveChangesAsync();
+
+        if (payment.Created)
+        {
+            await _paymentService.SetPaymentTimeOut(payment, DateTimeOffset.UtcNow.AddMinutes(PaymentConstants.PaymentTimeoutInMinutes));
+        }
         
         return _mapper.Map<PaymentResponse>(payment);
     }

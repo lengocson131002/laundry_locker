@@ -1,6 +1,8 @@
 using LockerService.Application.Common.Services.Payments;
 using LockerService.Domain;
 using LockerService.Domain.Enums;
+using LockerService.Infrastructure.Scheduler;
+using Quartz;
 
 namespace LockerService.Infrastructure.Services.Payments;
 
@@ -10,10 +12,16 @@ public class PaymentService : IPaymentService
     
     private readonly IVnPayPaymentService _vnPayPaymentService;
 
-    public PaymentService(IMomoPaymentService momoPaymentService, IVnPayPaymentService vnPayPaymentService)
+    private readonly ILogger<PaymentService> _logger;
+
+    private readonly ISchedulerFactory _schedulerFactory;
+    
+    public PaymentService(IMomoPaymentService momoPaymentService, IVnPayPaymentService vnPayPaymentService, ILogger<PaymentService> logger, ISchedulerFactory schedulerFactory)
     {
         _momoPaymentService = momoPaymentService;
         _vnPayPaymentService = vnPayPaymentService;
+        _logger = logger;
+        _schedulerFactory = schedulerFactory;
     }
 
     public async Task<Payment> Checkout(Order order, PaymentMethod method, CancellationToken cancellationToken)
@@ -26,7 +34,7 @@ public class PaymentService : IPaymentService
             _ => throw new Exception("Invalid payment method")
         };
     }
-    
+
     private async Task<Payment> HandleVnPayCheckout(Order order, CancellationToken cancellationToken)
     {
         var amount = (long)(order.CalculateTotalPrice() - order.ReservationFee);
@@ -69,5 +77,29 @@ public class PaymentService : IPaymentService
     {
         var payment = new Payment(order, PaymentMethod.Cash, PaymentStatus.Completed);
         return await Task.FromResult(payment);
+    }
+    
+    public async Task SetPaymentTimeOut(Payment payment, DateTimeOffset time)
+    {
+        try
+        {
+            _logger.LogInformation("Payment {paymentId} will be expired at {time}", payment.Id, time);
+            var scheduler = await _schedulerFactory.GetScheduler();
+            await scheduler.Start();
+
+            var job = JobBuilder.Create<PaymentTimeoutJob>()
+                .UsingJobData(PaymentTimeoutJob.PaymentIdKey, payment.Id)
+                .Build();
+
+            var trigger = TriggerBuilder.Create()
+                .StartAt(time)
+                .Build();
+
+            await scheduler.ScheduleJob(job, trigger);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Schedule to clear expired payment error {error}", ex.Message);
+        }
     }
 }

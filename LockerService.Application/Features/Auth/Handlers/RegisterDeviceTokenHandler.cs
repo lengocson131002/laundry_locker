@@ -21,20 +21,18 @@ public class RegisterDeviceTokenHandler : IRequestHandler<RegisterDeviceTokenCom
 
     public async Task<TokenResponse> Handle(RegisterDeviceTokenCommand request, CancellationToken cancellationToken)
     {
-        var currentAccount = await _currentAccountService.GetRequiredCurrentAccount();
-        var existedToken = await _unitOfWork.TokenRepository
+        var existedTokens = await _unitOfWork.TokenRepository
             .Get(to => to.Value == request.DeviceToken 
-                       && to.Type == TokenType.DeviceToken
-                       && !to.IsExpired)
-            
-            .FirstOrDefaultAsync(cancellationToken);
+                       && to.Type == TokenType.DeviceToken)
+            .ToListAsync(cancellationToken);
 
-        if (existedToken != null)
+        if (existedTokens.Any())
         {
-            // delete existed device token id
-            await _unitOfWork.TokenRepository.DeleteAsync(existedToken);
+            // delete existed device tokens
+            await _unitOfWork.TokenRepository.DeleteRange(existedTokens);
         }
         
+        var currentAccount = await _currentAccountService.GetRequiredCurrentAccount();
         var token = new Token()
         {
             AccountId = currentAccount.Id,

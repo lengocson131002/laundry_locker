@@ -153,4 +153,16 @@ public class AuthController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
+    /// <summary>
+    /// Logout API. If mobile app, pass device token to remove current device token from system to prevent receive notifications after logout
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<ActionResult<StatusResponse>> Logout([FromBody] LogoutCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
 }

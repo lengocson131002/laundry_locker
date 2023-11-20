@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EntityFrameworkCore.Projectables;
 using LockerService.Domain.Entities;
 using LockerService.Domain.Enums;
 
@@ -71,5 +72,9 @@ public class Payment : BaseAuditableEntity
         };
     }
 
+    [Projectable]
     public bool Completed => Equals(Status, PaymentStatus.Completed);
+
+    [Projectable]
+    public bool Created => Equals(Status, PaymentStatus.Created);
 }

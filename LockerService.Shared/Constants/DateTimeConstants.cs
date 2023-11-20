@@ -1,6 +1,6 @@
 namespace LockerService.Shared.Constants;
 
-public class DateTimeConstants
+public sealed class DateTimeConstants
 {
     public const string DateFormat = "dd/MM/yyyy";
 
