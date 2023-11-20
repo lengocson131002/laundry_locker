@@ -29,7 +29,12 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
         if (Search != null)
         {
             Search = Search.Trim().ToLower();
-            Expression = Expression.And(locker => locker.Name.ToLower().Contains(Search) || locker.Code.ToLower().Contains(Search));
+            Expression = Expression.And(locker => locker.Name.ToLower().Contains(Search) 
+                                                  || locker.Code.ToLower().Contains(Search)
+                                                  || locker.Location.Address.ToLower().Contains(Search)
+                                                  || locker.Location.Ward.Name.ToLower().Contains(Search)
+                                                  || locker.Location.District.Name.ToLower().Contains(Search)
+                                                  || locker.Location.Province.Name.ToLower().Contains(Search));
         }
 
         if (Status != null)
