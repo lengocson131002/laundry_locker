@@ -37,12 +37,24 @@ public class GetDashboardOverviewHandler : IRequestHandler<DashboardOverviewQuer
                                && (request.To == null || customer.CreatedAt <= request.To))
             .CountAsync(cancellationToken);
 
-        var serviceCount = await _unitOfWork.ServiceRepository
-            .Get(service => (request.From == null || service.CreatedAt >= request.From)
-                            && (request.To == null || service.CreatedAt <= request.To)
-                            && (service.StoreId == request.StoreId))
-            
-            .CountAsync(cancellationToken);
+        var serviceCount = 0;
+        
+        if (request.StoreId == null)
+        {
+            serviceCount = await _unitOfWork.ServiceRepository
+                .Get(service => (request.From == null || service.CreatedAt >= request.From)
+                                && (request.To == null || service.CreatedAt <= request.To)
+                                && service.IsStandard)
+                .CountAsync(cancellationToken);   
+        }
+        else
+        {
+            serviceCount = await _unitOfWork.StoreServiceRepository
+                .Get(sService => (request.From == null || sService.CreatedAt >= request.From)
+                                && (request.To == null || sService.CreatedAt <= request.To)
+                                && sService.StoreId == request.StoreId)
+                .CountAsync(cancellationToken);
+        }
 
         return new DashboardOverviewResponse
         {

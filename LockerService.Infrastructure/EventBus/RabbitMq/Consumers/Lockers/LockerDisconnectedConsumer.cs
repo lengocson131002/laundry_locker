@@ -82,8 +82,7 @@ public class LockerDisconnectedConsumer : IConsumer<LockerDisconnectedEvent>
                 admin,
                 NotificationType.SystemLockerDisconnected,
                 EntityType.Locker,
-                locker,
-                true
+                locker
             );
             await _notifier.NotifyAsync(notification);
         }
