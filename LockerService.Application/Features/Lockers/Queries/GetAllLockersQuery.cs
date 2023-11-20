@@ -17,6 +17,8 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
     public string? WardCode { get; set; }
 
     public IList<long>? ExcludedIds { get; set; }
+    
+    public IList<long>? IncludedIds { get; set; }
 
     public long? ForStaffId { get; set; }
 
@@ -59,12 +61,21 @@ public class GetAllLockersQuery : PaginationRequest<Locker>, IRequest<Pagination
         {
             Expression = Expression.And(locker => ExcludedIds.All(id => locker.Id != id));
         }
+        
+        if (IncludedIds != null)
+        {
+            Expression = Expression.And(locker => IncludedIds.Any(id => locker.Id == id));
+        }
 
         if (ForStaffId != null)
         {
             Expression = Expression.And(locker => locker.StaffLockers.All(item => item.StaffId != ForStaffId));
         }
-            
+
+        if (SupportedServiceIds != null && SupportedServiceIds.Any())
+        {
+            Expression = Expression.And(locker => SupportedServiceIds.All(serId => locker.Id != serId));
+        }
         return Expression;
     }
 }

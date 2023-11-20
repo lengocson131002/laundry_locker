@@ -34,7 +34,7 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
         }
 
         var boxes = _unitOfWork.BoxRepository.Get();
-        
+
         var lockersQuery = _unitOfWork.LockerRepository.Get(
                 predicate: request.GetExpressions(),
                 orderBy: request.GetOrder(),
@@ -48,8 +48,7 @@ public class GetAllLockersHandler : IRequestHandler<GetAllLockersQuery, Paginati
                     locker => locker.OrderTypes
                 },
                 disableTracking: true
-            )
-            .GroupJoin(boxes, 
+            ).GroupJoin(boxes, 
             locker => locker.Id, 
             box => box.LockerId, 
             (locker, boxGroup) => new

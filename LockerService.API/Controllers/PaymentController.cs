@@ -66,13 +66,13 @@ public class PaymentController : ApiControllerBase
         await Mediator.Send(callback);
     }
     
-    // [HttpGet("callback/momo/{referenceId}")]
-    // public async Task MomoPaymentCallbackGet([FromRoute] string referenceId, [FromQuery] MomoPaymentCallback callback)
-    // {
-    //     _logger.LogInformation("PaymentRefId: {0}, Response: {1}", referenceId, JsonSerializerUtils.Serialize(callback));
-    //     callback.PaymentReferenceId = referenceId;
-    //     await Mediator.Send(callback);
-    // }
+    [HttpGet("callback/momo/{referenceId}")]
+    public async Task MomoPaymentCallbackGet([FromRoute] string referenceId, [FromQuery] MomoPaymentCallback callback)
+    {
+        _logger.LogInformation("PaymentRefId: {0}, Response: {1}", referenceId, JsonSerializerUtils.Serialize(callback));
+        callback.PaymentReferenceId = referenceId;
+        await Mediator.Send(callback);
+    }
     
     /// <summary>
     /// Return URL callback for VnPAY payment
