@@ -57,12 +57,6 @@ public class ConfirmOrderHandler : IRequestHandler<ConfirmOrderCommand, OrderRes
             throw new ApiException(ResponseCode.OrderErrorInvalidStatus);
         }
         
-        // Generate pin code if order has been just initialized, else not
-        if (order.IsInitialized)
-        {
-            order.PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode();
-        }        
-        
         var previousStatus = order.Status;
 
         order.Status = OrderStatus.Waiting;

@@ -147,14 +147,14 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             LockerId = command.LockerId,
             Type = command.Type,
             Status = command.IsReserving ? OrderStatus.Reserved : OrderStatus.Initialized,
-            PinCode = command.IsReserving ? await _unitOfWork.OrderRepository.GenerateOrderPinCode() : null,
             PinCodeIssuedAt = command.IsReserving ? DateTimeOffset.UtcNow : null,
             Sender = sender,
             Receiver = receiver,
             SendBox = availableBox,
             ReceiveBox = Equals(command.Type, OrderType.Storage) ? availableBox : null,
             IntendedReceiveAt = command.IntendedReceiveAt?.ToUniversalTime(),
-            CustomerNote = command.CustomerNote
+            CustomerNote = command.CustomerNote,
+            PinCode = await _unitOfWork.OrderRepository.GenerateOrderPinCode()
         };
         
         if (Equals(command.Type, OrderType.Laundry))
