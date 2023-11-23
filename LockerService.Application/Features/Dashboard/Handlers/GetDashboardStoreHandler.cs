@@ -26,7 +26,7 @@ public class GetDashboardStoreHandler : IRequestHandler<DashboardStoreQuery, Pag
         var orders = await _unitOfWork.OrderRepository
             .GetAsync(order => order.IsCompleted && (request.From == null || order.CreatedAt >= request.From) && (request.To == null || order.CreatedAt <= request.To));
         
-        var services = await _unitOfWork.ServiceRepository
+        var services = await _unitOfWork.StoreServiceRepository
             .GetAsync(service => (request.From == null || service.CreatedAt >= request.From) && (request.To == null || service.CreatedAt <= request.To));
 
         var stores = _unitOfWork.StoreRepository.Get();
