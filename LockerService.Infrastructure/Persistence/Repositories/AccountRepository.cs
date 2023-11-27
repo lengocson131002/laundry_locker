@@ -38,7 +38,7 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
 
         if (roles != null && roles.Count > 0)
         {
-            return staffQuery.Where(acc => roles.Any(role => acc.Role == role));
+            return staffQuery.Where(acc => roles.Contains(acc.Role));
         }
 
         return staffQuery;

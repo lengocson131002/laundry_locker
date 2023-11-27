@@ -46,7 +46,7 @@ public class OrderOvertimeConsumer : IConsumer<OrderOvertimeEvent>
         // Notify staffs to handle this order
         var staffs = await _unitOfWork.AccountRepository
             .GetStaffs(storeId: order.Locker.StoreId)
-            .ToListAsync();;
+            .ToListAsync();
         
         foreach (var staff in staffs)
         {
