@@ -4,6 +4,7 @@ using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using LockerService.Application.Features.Orders.Commands;
 using LockerService.Application.Features.Orders.Models;
 using LockerService.Domain.Entities.Settings;
+using LockerService.Shared.Extensions;
 
 namespace LockerService.Application.Features.Orders.Handlers;
 
@@ -73,73 +74,31 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         }
 
         // Check available boxes
-        var availableBox = await _unitOfWork.BoxRepository.FindAvailableBox(locker.Id);
-        if (availableBox == null)
-        {
-            var exception = new ApiException(ResponseCode.LockerErrorNoAvailableBox);
-            await _rabbitMqBus.PublishAsync(new LockerOverloadedEvent
-            {
-                LockerId = locker.Id,
-                Time = DateTimeOffset.UtcNow,
-                ErrorCode = exception.ErrorCode,
-                Error = exception.ErrorMessage
-            }, cancellationToken);
-
-            throw exception;
-        }
+        var availableBox = await FindAvailableBox(locker.Id);
 
         // Check sender and receiver
         var orderSettings = await _settingService.GetSettings<OrderSettings>(cancellationToken);
 
-        var senderPhone = command.SenderPhone;
-        var sender = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(senderPhone);
-        if (sender != null)
-        {
-            if (!sender.IsActive)
-            {
-                throw new ApiException(ResponseCode.OrderErrorInactiveAccount);
-            }
-
-            var currentActiveOrdersCount = await _unitOfWork.OrderRepository.CountActiveOrders(sender.Id);
-            if (currentActiveOrdersCount >= orderSettings.MaxActiveOrderCount)
-            {
-                throw new ApiException(ResponseCode.OrderErrorExceedAllowOrderCount, $"Can't create order because your account has currently had over allowed active order count: {orderSettings.MaxActiveOrderCount}");
-            }
-        }
-
-        if (sender == null)
-        {
-            sender = new Account
-            {
-                Role = Role.Customer,
-                PhoneNumber = senderPhone
-            };
-            await _unitOfWork.AccountRepository.AddAsync(sender);
-        }
-
-        var receiverPhone = command.ReceiverPhone;
-        Account? receiver = null;
-        if (!string.IsNullOrEmpty(receiverPhone) && !Equals(senderPhone, receiverPhone))
-        {
-            receiver = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(receiverPhone);
-            if (receiver == null)
-            {
-                receiver = new Account
-                {
-                    Role = Role.Customer,
-                    PhoneNumber = receiverPhone
-                };
-                await _unitOfWork.AccountRepository.AddAsync(receiver);
-            }
-        }
+        var sender = await GetOrCreateCustomer(command.SenderPhone, orderSettings);
         
+        var receiverPhone = command.ReceiverPhone;
+        var receiver = !string.IsNullOrEmpty(receiverPhone) && !Equals(sender.PhoneNumber, receiverPhone)
+            ? await GetOrCreateCustomer(receiverPhone, orderSettings)
+            : null;
+
         var order = new Order
         {
             LockerId = command.LockerId,
             Type = command.Type,
-            Status = command.IsReserving ? OrderStatus.Reserved : OrderStatus.Initialized,
-            PinCode = command.IsReserving ? await _unitOfWork.OrderRepository.GenerateOrderPinCode() : null,
-            PinCodeIssuedAt = command.IsReserving ? DateTimeOffset.UtcNow : null,
+            Status = command.IsReserving 
+                ? OrderStatus.Reserved 
+                : OrderStatus.Initialized,
+            PinCode = command.IsReserving 
+                ? await _unitOfWork.OrderRepository.GenerateOrderPinCode() 
+                : null,
+            PinCodeIssuedAt = command.IsReserving 
+                ? DateTimeOffset.UtcNow 
+                : null,
             Sender = sender,
             Receiver = receiver,
             SendBox = availableBox,
@@ -274,5 +233,59 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
 
         return _mapper.Map<OrderDetailResponse>(order);
 
+    }
+
+    private async Task<Box> FindAvailableBox(long lockerId)
+    {
+        var availableBox =  await _unitOfWork.BoxRepository.FindAvailableBox(lockerId);
+        if (availableBox == null)
+        {
+            var exception = new ApiException(ResponseCode.LockerErrorNoAvailableBox);
+            await _rabbitMqBus.PublishAsync(new LockerOverloadedEvent
+            {
+                LockerId = lockerId,
+                Time = DateTimeOffset.UtcNow,
+                ErrorCode = exception.ErrorCode,
+                Error = exception.ErrorMessage
+            });
+
+            throw exception;
+        }
+
+        return availableBox;
+    }
+
+    private async Task<Account> GetOrCreateCustomer(string phoneNumber, OrderSettings orderSettings)
+    {
+        var customer = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(phoneNumber);
+        if (customer != null)
+        {
+            // Validate customer status
+            if (!customer.IsActive)
+            {
+                throw new ApiException(ResponseCode.OrderErrorInactiveAccount);
+            }
+
+            // Validate customer current active order count
+            var currentActiveOrdersCount = await _unitOfWork.OrderRepository.CountActiveOrders(customer.Id);
+            if (currentActiveOrdersCount >= orderSettings.MaxActiveOrderCount)
+            {
+                throw new ApiException(
+                    ResponseCode.OrderErrorExceedAllowOrderCount, 
+                    string.Format(ResponseCode.OrderErrorExceedAllowOrderCount.GetDescription(), phoneNumber, orderSettings.MaxActiveOrderCount));
+            }
+        }
+
+        if (customer == null)
+        {
+            customer = new Account
+            {
+                Role = Role.Customer,
+                PhoneNumber = phoneNumber
+            };
+            await _unitOfWork.AccountRepository.AddAsync(customer);
+        }
+
+        return customer;
     }
 }

@@ -36,7 +36,7 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
     public Task<int> CountActiveOrders(long customerId)
     {
         return _dbContext.Orders
-            .Where(order => order.SenderId == customerId)
+            .Where(order => order.SenderId == customerId || order.ReceiverId == customerId)
             .Where(order => order.IsActive)
             .CountAsync();
     }

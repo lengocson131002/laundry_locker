@@ -95,7 +95,7 @@ public enum ResponseCode
     
     [Description("Inactive account is not allowed to create order")] OrderErrorInactiveAccount = 410,
     
-    [Description("Can't create order because your account has currently had over allowed active order count")] OrderErrorExceedAllowOrderCount = 411,
+    [Description("Phone number {0} can't create order because it has currently had over allowed active order count is {1}")] OrderErrorExceedAllowOrderCount = 411,
 
     [Description("Invalid receive time")] OrderErrorInvalidReceiveTime = 412,
 
