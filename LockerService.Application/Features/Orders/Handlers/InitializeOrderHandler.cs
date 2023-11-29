@@ -132,16 +132,7 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
                 await _unitOfWork.AccountRepository.AddAsync(receiver);
             }
         }
-
-        // check receive at
-        var intendedReceiveAt = command.IntendedReceiveAt;
-        if (intendedReceiveAt != null 
-            && intendedReceiveAt <= DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours)
-            && Equals(OrderType.Laundry, command.Type))
-        {
-            throw new ApiException(ResponseCode.OrderErrorInvalidReceiveTime);
-        }
-
+        
         var order = new Order
         {
             LockerId = command.LockerId,
@@ -153,14 +144,27 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             Receiver = receiver,
             SendBox = availableBox,
             ReceiveBox = Equals(command.Type, OrderType.Storage) ? availableBox : null,
-            IntendedReceiveAt = command.IntendedReceiveAt != null 
-                ? command.IntendedReceiveAt?.ToUniversalTime()
-                : DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours),
+            IntendedReceiveAt = command.IntendedReceiveAt,
             CustomerNote = command.CustomerNote
         };
         
         if (Equals(command.Type, OrderType.Laundry))
         {
+            // check receive at
+            if (order.IntendedReceiveAt != null && order.IntendedReceiveAt <= DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours))
+            {
+                throw new ApiException(ResponseCode.OrderErrorInvalidReceiveTime);
+            }
+            
+            if (order.IntendedReceiveAt != null)
+            {
+                // Thời gian quá hạn dự kiên được tính như sau:
+                // Nếu người dùng chọn giờ nhận thì thời gian quá hạn dự kiến = thời gian nhận + thời gian chờ tối đa
+                // Ngược lại thời gian quá hạn dự kiến = thời gian xử lý 1 đơn hàn giặt sấy + thời gian chờ tối đa 
+                order.IntendedOvertime = order.IntendedReceiveAt.Value.AddHours(orderSettings.MaxTimeInHours);
+                order.ExtraFee = orderSettings.ExtraFee;
+            }
+            
             // Check services
             var details = new List<OrderDetail>();
             foreach (var orderDetailItem in command.Details)
@@ -243,15 +247,6 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         if (order.IsStorage)
         {
             order.StoragePrice = orderSettings.StoragePrice;
-        }
-
-        if (order.IsLaundry && order.IntendedReceiveAt != null)
-        {
-            // Thời gian quá hạn dự kiên được tính như sau:
-            // Nếu người dùng chọn giờ nhận thì thời gian quá hạn dự kiến = thời gian nhận + thời gian chờ tối đa
-            // Ngược lại thời gian quá hạn dự kiến = thời gian xử lý 1 đơn hàn giặt sấy + thời gian chờ tối đa 
-            order.IntendedOvertime = order.IntendedReceiveAt.Value.AddHours(orderSettings.MaxTimeInHours);
-            order.ExtraFee = orderSettings.ExtraFee;
         }
 
         await _unitOfWork.OrderRepository.AddAsync(order);

@@ -25,6 +25,7 @@ public class InitializeOrderCommandValidation : AbstractValidator<InitializeOrde
         RuleFor(model => model.Details)
             .NotEmpty()
             .Must(details => details.ContainsUniqueElements(d => new {d.ServiceId}))
+            .When(model => Equals(model.Type, OrderType.Laundry))
             .WithMessage("Details should not empty and contains unique service");
 
         RuleFor(model => model.DeliveryAddress)
