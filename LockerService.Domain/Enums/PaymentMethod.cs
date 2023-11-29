@@ -2,7 +2,7 @@ namespace LockerService.Domain.Enums;
 
 public enum PaymentMethod
 {
-    VnPay,
-    Momo,
-    Cash
+    VnPay = 0,
+    Momo = 1,
+    Cash = 2
 }

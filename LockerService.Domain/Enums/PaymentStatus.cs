@@ -2,7 +2,7 @@ namespace LockerService.Domain.Enums;
 
 public enum PaymentStatus
 {
-    Created,
-    Failed,
-    Completed,
+    Created = 0,
+    Failed = 1,
+    Completed = 2,
 }

@@ -5,11 +5,11 @@ namespace LockerService.Domain.Enums;
 public enum AccountStatus
 {
     [Description("Đang hoạt động")]
-    Active,
+    Active = 0,
     
     [Description("Ngưng hoạt động")]
-    Inactive,
+    Inactive = 1,
     
     [Description("Mới khởi tạo")]
-    Verifying
+    Verifying = 2
 }

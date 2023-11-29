@@ -5,8 +5,8 @@ namespace LockerService.Domain.Enums;
 public enum OrderType
 {
     [Description("Giặt sấy")] 
-    Laundry,
+    Laundry = 0,
     
     [Description("Giữ đồ")] 
-    Storage
+    Storage = 1
 }

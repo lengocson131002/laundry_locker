@@ -2,19 +2,6 @@ using LockerService.Shared.Utils;
 
 namespace LockerService.Application.Features.Orders.Commands;
 
-public class OrderDetailCommandItemValidator : AbstractValidator<OrderDetailCommandItem>
-{
-    public OrderDetailCommandItemValidator()
-    {
-        RuleFor(model => model.ServiceId)
-            .NotNull();
-        
-        RuleFor(model => model.Quantity)
-            .NotNull()
-            .GreaterThan(0);
-    }
-}
-
 public class AddOrderDetailCommandValidator : AbstractValidator<AddOrderDetailCommand>
 {
     public AddOrderDetailCommandValidator()
@@ -35,12 +22,5 @@ public class AddOrderDetailCommand : IRequest<StatusResponse>
     [JsonIgnore]
     public long OrderId { get; set; }
 
-    public IList<OrderDetailCommandItem> Details { get; set; } = new List<OrderDetailCommandItem>();
-}
-
-public class OrderDetailCommandItem
-{
-    public long ServiceId { get; set; }
-    
-    public float Quantity { get; set; }
+    public IList<OrderDetailItemCommand> Details { get; set; } = new List<OrderDetailItemCommand>();
 }

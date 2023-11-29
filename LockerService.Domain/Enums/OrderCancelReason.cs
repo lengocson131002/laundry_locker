@@ -5,14 +5,14 @@ namespace LockerService.Domain.Enums;
 public enum OrderCancelReason
 {
     [Description("Hết thời gian chờ")] 
-    Timeout,
+    Timeout = 0,
     
     [Description("Khách hàng hủy")] 
-    CustomerCancel,
+    CustomerCancel = 1,
     
     [Description("Nhân viên hủy")] 
-    StaffCancel,
+    StaffCancel = 2,
     
     [Description("Hủy cọc")] 
-    ReservationCancel
+    ReservationCancel = 3
 }

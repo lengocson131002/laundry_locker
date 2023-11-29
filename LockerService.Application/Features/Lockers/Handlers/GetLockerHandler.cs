@@ -21,9 +21,7 @@ public class GetLockerHandler :
 
     public async Task<LockerDetailResponse> Handle(GetLockerQuery request, CancellationToken cancellationToken)
     {
-        var boxes = _unitOfWork.BoxRepository.Get();
-        
-        var query = _unitOfWork.LockerRepository.Get(
+        var locker = await _unitOfWork.LockerRepository.Get(
             predicate: locker => locker.Id == request.LockerId,
             includes: new List<Expression<Func<Locker, object>>>()
             {
@@ -39,24 +37,17 @@ public class GetLockerHandler :
                 locker => locker.OrderTypes,
             },
             disableTracking: true
-        ).GroupJoin(boxes, 
-            locker => locker.Id, 
-            box => box.LockerId, 
-            (locker, boxGroup) => new
-            {
-                Locker = locker,
-                BoxCount = boxGroup.Count(box => !box.Deleted)
-            });;
+        ).FirstOrDefaultAsync(cancellationToken);
         
-
-        var result = await query.FirstOrDefaultAsync(cancellationToken);
-        if (result == null || result.Locker == null)
+        if (locker == null)
         {
             throw new ApiException(ResponseCode.LockerErrorNotFound);
         }
-
-        var response = _mapper.Map<LockerDetailResponse>(result.Locker);
-        response.BoxCount = result.BoxCount;
+        
+        var boxes = await _unitOfWork.BoxRepository.GetAllBoxes(request.LockerId);
+        var response = _mapper.Map<LockerDetailResponse>(locker);
+        response.BoxCount = boxes.Count;
+        response.AvailableBoxCount = boxes.Count(box => box.IsAvailable);
 
         return response;
         

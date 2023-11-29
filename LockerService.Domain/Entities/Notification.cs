@@ -255,6 +255,21 @@ public class Notification : BaseAuditableEntity
                 ReferenceId = order.Id.ToString();
                 break;
             }
+
+            case NotificationType.CustomerOrderOverTimeProcessing:
+            {
+                if (data == null)
+                {
+                    throw new Exception($"[Notification] Data is required. Type: {Type}");
+                }
+
+                var order = (Order) data;
+                Title = "Đơn hàng quá hạn đã được thu về cửa hàng";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã được đưa về cửa hàng vì lý do quá hạn. Vui lòng liên hệ cửa hàng để nhận để nhận";
+                Level = NotificationLevel.Critical;
+                ReferenceId = order.Id.ToString();
+                break;
+            }
             
             default:
                 Title = type.ToString();

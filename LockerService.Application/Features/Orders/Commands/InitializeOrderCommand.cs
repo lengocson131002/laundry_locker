@@ -1,6 +1,7 @@
 using LockerService.Application.Features.Locations.Commands;
 using LockerService.Application.Features.Orders.Models;
 using LockerService.Shared.Extensions;
+using LockerService.Shared.Utils;
 
 namespace LockerService.Application.Features.Orders.Commands;
 
@@ -21,13 +22,10 @@ public class InitializeOrderCommandValidation : AbstractValidator<InitializeOrde
             .Must(x => x == null || x.IsValidPhoneNumber())
             .WithMessage("Invalid receiver phone number");
 
-        RuleFor(model => model.ServiceIds)
-            .Must(serviceIds => serviceIds.Any())
-            .When(order => OrderType.Laundry.Equals(order.Type))
-            .WithMessage("Services is required for laundry order")
-            .Must(UniqueServices)
-            .When(order => OrderType.Laundry.Equals(order.Type))
-            .WithMessage("ServiceIds must contains unique ids");
+        RuleFor(model => model.Details)
+            .NotEmpty()
+            .Must(details => details.ContainsUniqueElements(d => new {d.ServiceId}))
+            .WithMessage("Details should not empty and contains unique service");
 
         RuleFor(model => model.DeliveryAddress)
             .SetInheritanceValidator(v => v.Add(new AddLocationCommandValidator()))
@@ -53,7 +51,7 @@ public class InitializeOrderCommandValidation : AbstractValidator<InitializeOrde
     }
 }
 
-public class InitializeOrderCommand : IRequest<OrderResponse>
+public class InitializeOrderCommand : IRequest<OrderDetailResponse>
 {
     public long LockerId { get; set; }
     
@@ -65,7 +63,7 @@ public class InitializeOrderCommand : IRequest<OrderResponse>
     [NormalizePhone(true)]
     public string? ReceiverPhone { get; set; }
 
-    public IList<long> ServiceIds { get; set; } = new List<long>();
+    public IList<OrderDetailItemCommand> Details { get; set; } = new List<OrderDetailItemCommand>();
     
     public LocationCommand? DeliveryAddress { get; set; }
     

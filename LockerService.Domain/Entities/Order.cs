@@ -173,6 +173,9 @@ public class Order : BaseAuditableEntity
     
     [Projectable]
     public bool IsUpdating => OrderStatus.Updating.Equals(Status);
+
+    [Projectable]
+    public bool IsOvertimeProcessing => OrderStatus.OvertimeProcessing.Equals(Status);
     
     public bool UpdatedInfo => OrderType.Storage.Equals(Type) || (Details.Any() && Details.All(detail => detail.Quantity != null));
 
@@ -222,7 +225,7 @@ public class Order : BaseAuditableEntity
                 return IsLaundry && IsCollected;
             
             case OrderStatus.Processed:
-                return IsLaundry && IsProcessing && UpdatedInfo;
+                return IsLaundry && (IsProcessing || IsCollected) && UpdatedInfo;
         
             case OrderStatus.Returned:
                 return IsLaundry && IsProcessed;
@@ -230,13 +233,17 @@ public class Order : BaseAuditableEntity
             case OrderStatus.Completed:
                 return (OrderType.Storage.Equals(Type) && IsWaiting)
                        || (OrderType.Laundry.Equals(Type) && IsReturned)
-                       || IsOvertime;
+                       || IsOvertime
+                       || IsOvertimeProcessing;
             
             case OrderStatus.Canceled:
                 return IsReserved;
             
             case OrderStatus.Updating:
                 return IsWaiting;
+            
+            case OrderStatus.OvertimeProcessing:
+                return IsOvertime;
             
             default:
                 return false;

@@ -5,37 +5,40 @@ namespace LockerService.Domain.Enums;
 public enum OrderStatus
 {
     [Description("Mới khởi tạo")] 
-    Initialized,
+    Initialized = 0,
     
     [Description("Đang chờ")] 
-    Waiting,
+    Waiting = 1,
     
     [Description("Đã đưa về cửa hàng")]
-    Collected,
+    Collected = 2,
 
     [Description("Đang xử lý")]
-    Processing,
+    Processing = 3,
     
     [Description("Đã xử lý")]
-    Processed,
+    Processed = 4,
     
     [Description("Đã giao")]
-    Returned,
+    Returned = 5,
     
     [Description("Đã thanh toán")]
-    Completed,
+    Completed = 6,
     
     [Description("Đã hủy")]
-    Canceled,
+    Canceled = 7,
     
     [Description("Đã đặt chỗ")]
-    Reserved,
+    Reserved = 8,
 
     [Description("Quá hạn")]
-    Overtime,
+    Overtime = 9,
     
     [Description("Đang bỏ thêm đồ")]
-    Updating
+    Updating = 10,
+    
+    [Description("Đang xử lý quá hạn")]
+    OvertimeProcessing = 11
     
     
 }

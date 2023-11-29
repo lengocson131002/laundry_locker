@@ -7,7 +7,7 @@ using LockerService.Domain.Entities.Settings;
 
 namespace LockerService.Application.Features.Orders.Handlers;
 
-public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, OrderResponse>
+public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, OrderDetailResponse>
 {
     private readonly ILogger<InitializeOrderHandler> _logger;
     private readonly IMapper _mapper;
@@ -29,7 +29,7 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         _settingService = settingService;
     }
 
-    public async Task<OrderResponse> Handle(InitializeOrderCommand command, CancellationToken cancellationToken)
+    public async Task<OrderDetailResponse> Handle(InitializeOrderCommand command, CancellationToken cancellationToken)
     {
         var locker = await _unitOfWork.LockerRepository
             .Get( 
@@ -153,7 +153,9 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             Receiver = receiver,
             SendBox = availableBox,
             ReceiveBox = Equals(command.Type, OrderType.Storage) ? availableBox : null,
-            IntendedReceiveAt = command.IntendedReceiveAt?.ToUniversalTime(),
+            IntendedReceiveAt = command.IntendedReceiveAt != null 
+                ? command.IntendedReceiveAt?.ToUniversalTime()
+                : DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours),
             CustomerNote = command.CustomerNote
         };
         
@@ -161,8 +163,11 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         {
             // Check services
             var details = new List<OrderDetail>();
-            foreach (var serviceId in command.ServiceIds)
+            foreach (var orderDetailItem in command.Details)
             {
+                var serviceId = orderDetailItem.ServiceId;
+                var quantity = orderDetailItem.Quantity;
+                
                 var storeService = await _unitOfWork.StoreServiceRepository.GetStoreService(locker.StoreId, serviceId);
             
                 // Check store support this service or not
@@ -179,7 +184,8 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
 
                 var orderDetail = new OrderDetail
                 {
-                    ServiceId = storeService.ServiceId,
+                    ServiceId = serviceId,
+                    Quantity = quantity,
                     Price = storeService.Price
                 };
 
@@ -228,16 +234,6 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
                 };
                 order.DeliveryAddress = deliveryAddress;
                 
-                // Calculate shipping fee from locker's location => delivery location
-                // Calculate shipping distance
-                var distances = _unitOfWork.ShippingPriceRepository.CalculateDistance(
-                    locker.Location.Latitude ?? 0, 
-                    locker.Location.Longitude ?? 0,
-                    deliveryAddress.Latitude ?? 0, 
-                    deliveryAddress.Longitude ?? 0);
-                
-                _logger.LogInformation($"Shipping distances: {distances}");
-                
                 var shippingFee = await _unitOfWork.ShippingPriceRepository.CalculateShippingPrice(locker.Location, deliveryAddress);
                 order.ShippingFee = shippingFee;
             }
@@ -249,20 +245,18 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             order.StoragePrice = orderSettings.StoragePrice;
         }
 
-        if (order.IsLaundry)
+        if (order.IsLaundry && order.IntendedReceiveAt != null)
         {
-            order.IntendedOvertime = intendedReceiveAt != null 
-                ? intendedReceiveAt.Value.AddHours(orderSettings.MaxTimeInHours)
-                : DateTimeOffset.UtcNow.AddHours(orderSettings.MinTimeProcessLaundryOrderInHours + orderSettings.MaxTimeInHours);
-
+            // Thời gian quá hạn dự kiên được tính như sau:
+            // Nếu người dùng chọn giờ nhận thì thời gian quá hạn dự kiến = thời gian nhận + thời gian chờ tối đa
+            // Ngược lại thời gian quá hạn dự kiến = thời gian xử lý 1 đơn hàn giặt sấy + thời gian chờ tối đa 
+            order.IntendedOvertime = order.IntendedReceiveAt.Value.AddHours(orderSettings.MaxTimeInHours);
             order.ExtraFee = orderSettings.ExtraFee;
         }
 
         await _unitOfWork.OrderRepository.AddAsync(order);
         await _unitOfWork.SaveChangesAsync();
         
-        _logger.LogInformation("Create new order: {0}", order.Id);
-
         // push event
         if (!command.IsReserving)
         {
@@ -280,8 +274,10 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
                 Time = DateTimeOffset.UtcNow,
             }, cancellationToken);
         }
-        
-        return _mapper.Map<OrderResponse>(order);
+
+        _logger.LogInformation("Create new order: {0}", order.Id);
+
+        return _mapper.Map<OrderDetailResponse>(order);
 
     }
 }

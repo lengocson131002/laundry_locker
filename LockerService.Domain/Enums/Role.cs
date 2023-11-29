@@ -5,14 +5,14 @@ namespace LockerService.Domain.Enums;
 public enum Role
 {
     [Description("Quản trị viên")]
-    Admin, 
+    Admin = 0, 
     
     [Description("Nhân viên giặt sấy")]
-    LaundryAttendant,
+    LaundryAttendant = 1,
     
     [Description("Quản lý cửa hàng")]
-    Manager,
+    Manager = 2,
     
     [Description("Khách hàng")]
-    Customer
+    Customer = 3
 }

@@ -23,7 +23,7 @@ public class OrderController : ApiControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ActionResult<OrderResponse>> CreateOrder([FromBody] InitializeOrderCommand command)
+    public async Task<ActionResult<OrderDetailResponse>> CreateOrder([FromBody] InitializeOrderCommand command)
     {
         return await Mediator.Send(command);
     }
@@ -158,7 +158,24 @@ public class OrderController : ApiControllerBase
         var request = new AddMoreItemsCommand(id);
         return await Mediator.Send(request);
     }
-    
+
+
+    /// <summary>
+    /// [Laundromat] Process when 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpPut("{id:long}/process-overtime")]
+    [Authorize]
+    public async Task<ActionResult<OrderDetailResponse>> ProcessOvertime([FromRoute] long id)
+    {
+        var command = new ProcessOvertimeOrderCommand()
+        {
+            OrderId = id
+        };
+        return await Mediator.Send(command);
+    }
+
     /// <summary>
     /// Get an order details
     /// </summary>

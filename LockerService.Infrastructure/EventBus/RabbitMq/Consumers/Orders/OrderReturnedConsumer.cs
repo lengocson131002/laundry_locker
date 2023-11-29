@@ -52,10 +52,13 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
             });
         }
         
-        // Push notification
+        // Push notification for receiver
         if (!order.DeliverySupported)
         {
-            var notiAccount = order.ReceiverId != null && order.Receiver != null ? order.Receiver : order.Sender;
+            var notiAccount = order.ReceiverId != null && order.Receiver != null 
+                ? order.Receiver 
+                : order.Sender;
+            
             await _notifier.NotifyAsync(
                 new Notification(
                     account: notiAccount,

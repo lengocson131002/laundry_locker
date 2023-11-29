@@ -2,8 +2,8 @@ namespace LockerService.Domain.Enums;
 
 public enum EntityType
 {
-    Order,
-    Account,
-    Locker,
-    Service
+    Order = 0,
+    Account = 1,
+    Locker = 2,
+    Service = 3
 }

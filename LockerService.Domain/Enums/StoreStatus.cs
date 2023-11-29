@@ -2,6 +2,6 @@ namespace LockerService.Domain.Enums;
 
 public enum StoreStatus
 {
-    Active,
-    Inactive
+    Active = 0,
+    Inactive = 1
 }

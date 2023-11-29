@@ -20,8 +20,11 @@ public class AddOrderDetailHandler : IRequestHandler<AddOrderDetailCommand, Stat
             .Get(order => Equals(order.Id, request.OrderId))
             .Include(order => order.Locker)
             .FirstOrDefaultAsync(cancellationToken);
-        
-        if (order == null) throw new ApiException(ResponseCode.OrderErrorNotFound);
+
+        if (order == null)
+        {
+            throw new ApiException(ResponseCode.OrderErrorNotFound);
+        }
 
         if (!order.IsCollected && !order.IsProcessing)
         {

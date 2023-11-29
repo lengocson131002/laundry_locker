@@ -2,6 +2,6 @@ namespace LockerService.Domain.Enums;
 
 public enum TokenStatus
 {
-    Valid,
-    Invalid
+    Valid = 0,
+    Invalid = 1
 }

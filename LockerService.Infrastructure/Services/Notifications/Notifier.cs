@@ -99,6 +99,11 @@ public class Notifier : INotifier
             mobileNotificationService,
             smsNotificationService
         });
+        
+        _provider.Attach(NotificationType.CustomerOrderOverTimeProcessing, new List<INotificationService>()
+        {
+            mobileNotificationService,
+        });
     }
     
     public async Task NotifyAsync(Notification notification)

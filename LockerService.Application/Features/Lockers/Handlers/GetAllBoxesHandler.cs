@@ -24,6 +24,13 @@ public class GetAllBoxesHandler : IRequestHandler<GetAllBoxesQuery, ListResponse
         }
 
         var boxes = await _unitOfWork.BoxRepository.GetAllBoxes(request.LockerId);
+        if (request.IsActive != null)
+        {
+            boxes = boxes
+                .Where(box => box.IsActive == request.IsActive.Value)
+                .ToList();
+        }
+        
         return new ListResponse<BoxResponse>(_mapper.Map<IList<Box>, IList<BoxResponse>>(boxes));
     }
 }
