@@ -19,6 +19,8 @@ public class GetCustomerDetailHandler : IRequestHandler<GetCustomerDetailQuery, 
     {
         var customer = await _unitOfWork.AccountRepository
             .Get(cus => cus.Id == request.Id && Equals(cus.Role, Role.Customer))
+            .Include(cus => cus.Wallet)
+            .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 
         if (customer == null)

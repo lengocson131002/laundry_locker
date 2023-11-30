@@ -62,16 +62,35 @@ public class PaymentController : ApiControllerBase
     public async Task MomoPaymentCallbackPost([FromRoute] string referenceId, [FromBody] MomoPaymentCallback callback)
     {
         _logger.LogInformation("PaymentRefId: {0}, Response: {1}", referenceId, JsonSerializerUtils.Serialize(callback));
-        callback.PaymentReferenceId = referenceId;
-        await Mediator.Send(callback);
+        var momoCallbackCommand = new PaymentCallbackCommand()
+        {
+            PaymentReferenceId = referenceId,
+            ReferenceTransactionId = callback.TransId,
+            Amount = callback.Amount,
+            IsSuccess = callback.IsSuccess
+        };
+        
+        await Mediator.Send(momoCallbackCommand);
     }
     
+    /// <summary>
+    /// Return URL callback for MOMO payment
+    /// </summary>
+    /// <param name="referenceId"></param>
+    /// <param name="callback"></param>
     [HttpGet("callback/momo/{referenceId}")]
     public async Task MomoPaymentCallbackGet([FromRoute] string referenceId, [FromQuery] MomoPaymentCallback callback)
     {
         _logger.LogInformation("PaymentRefId: {0}, Response: {1}", referenceId, JsonSerializerUtils.Serialize(callback));
-        callback.PaymentReferenceId = referenceId;
-        await Mediator.Send(callback);
+        var momoCallbackCommand = new PaymentCallbackCommand()
+        {
+            PaymentReferenceId = referenceId,
+            ReferenceTransactionId = callback.TransId,
+            Amount = callback.Amount,
+            IsSuccess = callback.IsSuccess
+        };
+        
+        await Mediator.Send(momoCallbackCommand);
     }
     
     /// <summary>
@@ -83,8 +102,15 @@ public class PaymentController : ApiControllerBase
     public async Task VnPayPaymentCallbackGet([FromRoute] string referenceId, [FromQuery] VnPayPaymentCallback callback)
     {
         _logger.LogInformation("PaymentRefId: {0}, Response: {1}", referenceId, JsonSerializerUtils.Serialize(callback));
-        callback.PaymentReferenceId = referenceId;
-        await Mediator.Send(callback);
+        var vnPayCallbackCommand = new PaymentCallbackCommand()
+        {
+            PaymentReferenceId = referenceId,
+            ReferenceTransactionId = callback.vnp_TransactionNo,
+            Amount = callback.vnp_Amount ?? 0,
+            IsSuccess = callback.IsSuccess
+        };
+        
+        await Mediator.Send(vnPayCallbackCommand);
     }
 
 }

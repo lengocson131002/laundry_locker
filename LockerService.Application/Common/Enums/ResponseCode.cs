@@ -172,7 +172,8 @@ public enum ResponseCode
     [Description("Payment not found")] PaymentErrorNotFound = 1701,
     
     [Description("Unsupported payment method")] PaymentErrorUnsupportedPaymentMethod = 1702,
-    
+
+
     // Store service configuration
     [Description("Store has been configed this service before")] StoreServiceErrorExisted = 1801,
     
@@ -181,6 +182,12 @@ public enum ResponseCode
     // Shipping price
     [Description("Existed shipping price's from length")] ShippingPriceErrorExisted = 1901,
     
-    [Description("Shipping price not found")] ShippingPriceErrorNotFound = 1902
+    [Description("Shipping price not found")] ShippingPriceErrorNotFound = 1902,
+
+    // Wallet
+    [Description("Customer's balance is not enough")] WalletErrorInvalidBalance= 2001,
+    
+    [Description("Customer's wallet is not found")] WalletErrorNotFound= 2002,
+
 
 }

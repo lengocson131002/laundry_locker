@@ -38,10 +38,9 @@ public class PaymentService : IPaymentService
     private async Task<Payment> HandleVnPayCheckout(Order order, CancellationToken cancellationToken)
     {
         var amount = (long)(order.CalculateTotalPrice() - order.ReservationFee);
-        var payment = await _vnPayPaymentService.CreatePayment(new VnPayPayment()
+        var payment = await CreatePayment(new VnPayPayment()
         {
             Amount = amount,
-            OrderReferenceId = order.ReferenceId ?? throw new Exception("Order referenceId is required"),
             PaymentReferenceId = Guid.NewGuid().ToString(),
             Info = Payment.PaymentContent(order.Type),
             Time = DateTimeOffset.UtcNow
@@ -58,10 +57,9 @@ public class PaymentService : IPaymentService
     {
         var amount = (long) (order.CalculateTotalPrice() - order.ReservationFee);
         
-        var payment = await _momoPaymentService.CreatePayment(new MomoPayment()
+        var payment = await CreatePayment(new MomoPayment()
         {
             Amount = amount,
-            OrderReferenceId = order.ReferenceId ?? throw new Exception("Order referenceId is required"),
             PaymentReferenceId = Guid.NewGuid().ToString(),
             Info =  Payment.PaymentContent(order.Type)
         });
@@ -101,5 +99,15 @@ public class PaymentService : IPaymentService
         {
             _logger.LogError("Schedule to clear expired payment error {error}", ex.Message);
         }
+    }
+
+    public async Task<Payment> CreatePayment(MomoPayment momoPayment)
+    {
+        return await _momoPaymentService.CreatePayment(momoPayment);
+    }
+
+    public async Task<Payment> CreatePayment(VnPayPayment vnPayPayment)
+    {
+        return await _vnPayPaymentService.CreatePayment(vnPayPayment);
     }
 }

@@ -28,9 +28,9 @@ public class Payment : BaseAuditableEntity
     
     public string? Deeplink { get; set; }
     
-    public long OrderId { get; set; }
+    public long? OrderId { get; set; }
 
-    public Order Order { get; set; } = default!;
+    public Order? Order { get; set; } = default!;
     
     public long? StoreId { get; set; }
 
@@ -44,12 +44,14 @@ public class Payment : BaseAuditableEntity
     
     public PaymentStatus Status { get; set; }
 
+    public PaymentType Type { get; set; }
+    
     public Payment()
     {
         Status = PaymentStatus.Created;
         ReferenceId = Guid.NewGuid().ToString();
     }
-
+    
     public Payment(Order order, PaymentMethod method, PaymentStatus? status = PaymentStatus.Created)
     {
         Status = status ?? PaymentStatus.Created;

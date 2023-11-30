@@ -69,6 +69,9 @@ public class Account : BaseAuditableEntity
     [Projectable]
     public bool IsStoreStaff => StoreId != null && (IsManager || IsLaundryAttendant);
 
+    // Wallet
+    public Wallet? Wallet { get; set; }
+
     public bool CanUpdateStatus(AccountStatus status)
     {
         if (Equals(Status, status))

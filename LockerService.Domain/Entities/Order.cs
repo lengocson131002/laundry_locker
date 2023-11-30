@@ -46,9 +46,6 @@ public class Order : BaseAuditableEntity
     // Thời gian nhận thật sự
     public DateTimeOffset? ReceiveAt { get; set; }
     
-    // Thời gian nhận thật sự
-    public DateTimeOffset? CompletedAt { get; set; }
-
     public OrderStatus Status { get; set; } = OrderStatus.Initialized;
 
     public OrderCancelReason? CancelReason { get; set; }
@@ -79,7 +76,7 @@ public class Order : BaseAuditableEntity
         get
         {
             var calculateAt = IsFinished 
-                ? CompletedAt ?? DateTimeOffset.UtcNow 
+                ? ReceiveAt ?? DateTimeOffset.UtcNow 
                 : DateTimeOffset.UtcNow;
 
             if (IsStorage || calculateAt < IntendedOvertime || IntendedOvertime == null)
@@ -103,7 +100,7 @@ public class Order : BaseAuditableEntity
             if (IsStorage)
             {
                 var calculateAt = IsFinished 
-                    ? CompletedAt ?? DateTimeOffset.UtcNow 
+                    ? ReceiveAt ?? DateTimeOffset.UtcNow 
                     : DateTimeOffset.UtcNow;
                 
                 var orderDuration = calculateAt - CreatedAt;
@@ -258,7 +255,7 @@ public class Order : BaseAuditableEntity
     public decimal CalculateTotalPrice()
     {
         return Price
-               + (decimal)ExtraCount * ExtraFee
+               + (decimal) ExtraCount * ExtraFee
                + ShippingFee
                - Discount;
     }

@@ -36,7 +36,7 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
     public Task<int> CountActiveOrders(long customerId)
     {
         return _dbContext.Orders
-            .Where(order => order.SenderId == customerId || order.ReceiverId == customerId)
+            .Where(order => order.SenderId == customerId)
             .Where(order => order.IsActive)
             .CountAsync();
     }
@@ -51,9 +51,15 @@ public class OrderRepository : BaseRepository<Order>, IOrderRepository
         DateTimeOffset? to = null)
     {
         var query = GetOrders(from, to);
-        if (storeId != null) query = query.Where(order => order.Locker.StoreId == storeId);
+        if (storeId != null)
+        {
+            query = query.Where(order => order.Locker.StoreId == storeId);
+        }
 
-        if (lockerId != null) query = query.Where(order => order.LockerId == lockerId);
+        if (lockerId != null)
+        {
+            query = query.Where(order => order.LockerId == lockerId);
+        }
 
         return query;
     }

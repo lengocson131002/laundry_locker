@@ -37,6 +37,7 @@
         <Folder Include="Features\Accounts\Commands" />
         <Folder Include="Features\Accounts\Handlers" />
         <Folder Include="Features\Accounts\Queries" />
+        <Folder Include="Features\Wallets\Queries" />
     </ItemGroup>
 
     <ItemGroup>

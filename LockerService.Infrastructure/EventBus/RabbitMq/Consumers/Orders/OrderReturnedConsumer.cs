@@ -52,20 +52,27 @@ public class OrderReturnedConsumer : IConsumer<OrderReturnedEvent>
             });
         }
         
-        // Push notification for receiver
+        // Push notifications
         if (!order.DeliverySupported)
         {
-            var notiAccount = order.ReceiverId != null && order.Receiver != null 
-                ? order.Receiver 
-                : order.Sender;
-            
             await _notifier.NotifyAsync(
                 new Notification(
-                    account: notiAccount,
+                    account: order.Sender,
                     type: NotificationType.CustomerOrderReturned,
                     entityType: EntityType.Order,
                     data: order
                 ));
+        
+            if (order.Receiver != null)
+            {
+                await _notifier.NotifyAsync(new Notification(
+                    account : order.Receiver,
+                    type : NotificationType.CustomerOrderReturned,
+                    entityType : EntityType.Order,
+                    data : order
+                ));
+            }
+            
         }
         
         // Check locker box availability

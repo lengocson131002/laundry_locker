@@ -48,7 +48,7 @@ public class VnPayPaymentService : IVnPayPaymentService
         pay.AddRequestData("vnp_IpAddr", pay.GetIpAddress(context));
         pay.AddRequestData("vnp_Locale", Locale);
         pay.AddRequestData("vnp_OrderInfo", payment.Info ?? DefaultPaymentInfo);
-        pay.AddRequestData("vnp_OrderType", payment.OrderType.ToString());
+        pay.AddRequestData("vnp_OrderType", payment.OrderType ?? "Thanh toán VNPAY");
         pay.AddRequestData("vnp_ReturnUrl", urlCallBack);
         pay.AddRequestData("vnp_TxnRef", payment.PaymentReferenceId);
         pay.AddRequestData("vnp_BankCode", string.Empty);

@@ -9,27 +9,37 @@ public class GetCustomerProfileHandler : IRequestHandler<GetCustomerProfileQuery
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly ILogger<GetCustomerProfileHandler> _logger;
-    private readonly ICurrentAccountService _currentAccountService;
+    private readonly ICurrentPrincipalService _currentPrincipalService;
     private readonly IMapper _mapper;
 
-    public GetCustomerProfileHandler(IUnitOfWork unitOfWork, ILogger<GetCustomerProfileHandler> logger,
-        IJwtService jwtService, ICurrentAccountService currentAccountService, IMapper mapper)
+    public GetCustomerProfileHandler(
+        IUnitOfWork unitOfWork, 
+        ILogger<GetCustomerProfileHandler> logger,
+        IJwtService jwtService, 
+        ICurrentPrincipalService currentPrincipalService, 
+        IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _currentAccountService = currentAccountService;
+        _currentPrincipalService = currentPrincipalService;
         _jwtService = jwtService;
         _mapper = mapper;
     }
 
     public async Task<CustomerResponse> Handle(GetCustomerProfileQuery request, CancellationToken cancellationToken)
     {
-        var account = await _currentAccountService.GetCurrentAccount();
-        if (account is null)
+        var currentAccountId = _currentPrincipalService.CurrentSubjectId;
+        if (currentAccountId == null)
         {
-            throw new ApiException(ResponseCode.AuthErrorAccountNotFound);
+            throw new ApiException(ResponseCode.Unauthorized);
         }
 
-        return _mapper.Map<CustomerResponse>(account);
+        var customer = await _unitOfWork.AccountRepository
+            .Get(acc => acc.Id == currentAccountId)
+            .Include(acc => acc.Wallet)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        return _mapper.Map<CustomerResponse>(customer);
     }
 }

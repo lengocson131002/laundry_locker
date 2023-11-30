@@ -27,7 +27,7 @@ public class GetAllPaymentQuery : PaginationRequest<Payment>, IRequest<Paginatio
         {
             Search = Search.Trim().ToLower();
             Expression = Expression.And(payment =>
-                (payment.Order.PinCode != null && payment.Order.PinCode.ToLower().Contains(Search)) 
+                (payment.Order != null && payment.Order.PinCode != null && payment.Order.PinCode.ToLower().Contains(Search)) 
                 || payment.Customer.PhoneNumber.ToLower().Contains(Search));
         }
 
@@ -63,7 +63,7 @@ public class GetAllPaymentQuery : PaginationRequest<Payment>, IRequest<Paginatio
 
         if (StoreId != null)
         {
-            Expression = Expression.And(payment => payment.Order.Locker.StoreId == StoreId);
+            Expression = Expression.And(payment => payment.Order != null && payment.Order.Locker.StoreId == StoreId);
         }
         
         return Expression;

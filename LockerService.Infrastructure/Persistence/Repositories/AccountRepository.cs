@@ -23,10 +23,12 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
 
     public async Task<Account?> GetCustomerByPhoneNumber(string phoneNumber)
     {
-        var accountQuery = await GetAsync(account =>
-            Equals(account.PhoneNumber, phoneNumber)
-            && Equals(account.Role, Role.Customer));
-        return accountQuery.FirstOrDefault();
+        var accountQuery = await Get(account => Equals(account.PhoneNumber, phoneNumber) 
+                                                && Equals(account.Role, Role.Customer))
+            .Include(account => account.Wallet)
+            .FirstOrDefaultAsync();
+        
+        return accountQuery;
     }
 
     public IQueryable<Account> GetStaffs(long? storeId = null, List<Role>? roles = null, bool? isActive = null)

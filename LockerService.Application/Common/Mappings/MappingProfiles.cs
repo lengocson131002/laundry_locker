@@ -21,6 +21,7 @@ using LockerService.Application.Features.Staffs.Models;
 using LockerService.Application.Features.Stores.Commands;
 using LockerService.Application.Features.Stores.Models;
 using LockerService.Application.Features.Tokens.Models;
+using LockerService.Application.Features.Wallets.Models;
 using LockerService.Domain;
 using LockerService.Domain.Entities.Settings;
 
@@ -123,6 +124,8 @@ public class MappingProfiles : Profile
         // ShippingPrice
         CreateMap<ShippingPrice, ShippingPriceResponse>();
         
+        // Wallet
+        CreateMap<Wallet, WalletResponse>();
     }
 
 }

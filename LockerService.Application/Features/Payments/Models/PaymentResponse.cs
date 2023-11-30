@@ -22,7 +22,7 @@ public class PaymentResponse : BaseAuditableEntityResponse
     
     public string? Deeplink { get; set; }
     
-    public long OrderId { get; set; }
+    public long? OrderId { get; set; }
 
     public long CustomerId { get; set; }
 
@@ -31,4 +31,6 @@ public class PaymentResponse : BaseAuditableEntityResponse
     public string? Description { get; set; }
     
     public AccountResponse? Customer { get; set; }
+    
+    public PaymentType Type { get; set; }
 }

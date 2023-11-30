@@ -3,6 +3,7 @@ using LockerService.Application.EventBus.RabbitMq.Events.Lockers;
 using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using LockerService.Application.Features.Orders.Commands;
 using LockerService.Application.Features.Orders.Models;
+using LockerService.Domain;
 using LockerService.Domain.Entities.Settings;
 using LockerService.Shared.Extensions;
 
@@ -81,6 +82,25 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
 
         var sender = await GetOrCreateCustomer(command.SenderPhone, orderSettings);
         
+        // Check sender balance 
+        if (sender.Wallet == null || sender.Wallet.Balance < orderSettings.ReservationFee)
+        {
+            throw new ApiException(ResponseCode.WalletErrorInvalidBalance);
+        }
+        
+        // Charge reservation fee
+        var payment = new Payment();
+        payment.Status = PaymentStatus.Completed;
+        payment.Amount = orderSettings.ReservationFee;
+        payment.Type = PaymentType.Reserve;
+        payment.Content = PaymentType.Reserve.GetDescription();
+        payment.Customer = sender;
+        payment.Method = PaymentMethod.Wallet;
+        await _unitOfWork.PaymentRepository.AddAsync(payment);
+        
+        sender.Wallet.Balance -= payment.Amount;
+        await _unitOfWork.WalletRepository.UpdateAsync(sender.Wallet);
+
         var receiverPhone = command.ReceiverPhone;
         var receiver = !string.IsNullOrEmpty(receiverPhone) && !Equals(sender.PhoneNumber, receiverPhone)
             ? await GetOrCreateCustomer(receiverPhone, orderSettings)
@@ -104,7 +124,8 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             SendBox = availableBox,
             ReceiveBox = Equals(command.Type, OrderType.Storage) ? availableBox : null,
             IntendedReceiveAt = command.IntendedReceiveAt,
-            CustomerNote = command.CustomerNote
+            CustomerNote = command.CustomerNote,
+            ReservationFee = orderSettings.ReservationFee
         };
         
         if (Equals(command.Type, OrderType.Laundry))
@@ -278,10 +299,10 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
 
         if (customer == null)
         {
-            customer = new Account
+            customer = new Account()
             {
                 Role = Role.Customer,
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
             };
             await _unitOfWork.AccountRepository.AddAsync(customer);
         }

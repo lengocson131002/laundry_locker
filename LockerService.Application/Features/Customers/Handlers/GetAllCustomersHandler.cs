@@ -32,7 +32,11 @@ public class GetAllCustomersHandler : IRequestHandler<GetAllCustomersQuery, Pagi
         var query = await _unitOfWork.AccountRepository.GetAsync(
             predicate: request.GetExpressions(),
             orderBy: request.GetOrder(),
-            disableTracking: true
+            includes: new List<Expression<Func<Account, object>>>()
+            {
+                cus => cus.Wallet
+            },
+        disableTracking: true
         );
 
         return new PaginationResponse<Account, CustomerResponse>(

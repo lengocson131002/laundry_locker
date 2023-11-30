@@ -1,6 +1,7 @@
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Infrastructure.Persistence.Contexts;
 using Microsoft.Extensions.DependencyInjection;
+using Org.BouncyCastle.Crypto.Digests;
 
 namespace LockerService.Infrastructure.Persistence.Repositories;
 
@@ -48,9 +49,12 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     private IShippingPriceRepository? _shippingPriceRepository;
     
+    private IWalletRepository? _walletRepository;
+
     private readonly ApplicationDbContext _dbContext;
 
     private readonly IServiceScopeFactory _scopeFactory;
+
     public UnitOfWork(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory) : base(dbContext)
     {
         _dbContext = dbContext;
@@ -105,4 +109,6 @@ public class UnitOfWork :  BaseUnitOfWork, IUnitOfWork
 
     public IShippingPriceRepository ShippingPriceRepository =>
         _shippingPriceRepository ??= new ShippingPriceRepository(_dbContext);
+
+    public IWalletRepository WalletRepository => _walletRepository ??= new WalletRepository(_dbContext);
 }

@@ -128,8 +128,9 @@ public class OrderController : ApiControllerBase
     /// <param name="command"></param>
     /// <returns></returns>
     [HttpPut("{id:long}/checkout")]
-    public async Task<ActionResult<PaymentResponse>> CheckoutOrder([FromRoute] long id, [FromBody] CheckoutOrderCommand command)
+    public async Task<ActionResult<PaymentResponse>> CheckoutOrder([FromRoute] long id)
     {
+        var command = new CheckoutOrderCommand();
         command.OrderId = id;
         return await Mediator.Send(command);
     }
@@ -161,7 +162,7 @@ public class OrderController : ApiControllerBase
 
 
     /// <summary>
-    /// [Laundromat] Process when 
+    /// [Laundromat] Process when order is overtime
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

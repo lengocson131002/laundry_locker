@@ -44,4 +44,5 @@ public interface IUnitOfWork : IBaseUnitOfWork
 
     IShippingPriceRepository ShippingPriceRepository { get; }
 
+    IWalletRepository WalletRepository { get; }
 }

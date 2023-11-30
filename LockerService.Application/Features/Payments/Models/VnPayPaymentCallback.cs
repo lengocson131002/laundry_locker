@@ -1,4 +1,4 @@
-namespace LockerService.Application.Features.Payments.Commands;
+namespace LockerService.Application.Features.Payments.Models;
 
 public class VnPayPaymentCallback : IRequest
 {

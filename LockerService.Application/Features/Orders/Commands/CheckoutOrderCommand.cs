@@ -6,7 +6,4 @@ public class CheckoutOrderCommand : IRequest<PaymentResponse>
 {
     [JsonIgnore]
     public long OrderId { get; set; }
-    
-    public PaymentMethod Method { get; set; }
-    
 }
