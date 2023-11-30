@@ -46,7 +46,6 @@ public class Order : BaseAuditableEntity
     // Thời gian nhận thật sự
     public DateTimeOffset? ReceiveAt { get; set; }
     
-    // Thời gian nhận thật sự
     public DateTimeOffset? CompletedAt { get; set; }
 
     public OrderStatus Status { get; set; } = OrderStatus.Initialized;
@@ -79,7 +78,7 @@ public class Order : BaseAuditableEntity
         get
         {
             var calculateAt = IsFinished 
-                ? CompletedAt ?? DateTimeOffset.UtcNow 
+                ? ReceiveAt ?? DateTimeOffset.UtcNow 
                 : DateTimeOffset.UtcNow;
 
             if (IsStorage || calculateAt < IntendedOvertime || IntendedOvertime == null)
@@ -103,7 +102,7 @@ public class Order : BaseAuditableEntity
             if (IsStorage)
             {
                 var calculateAt = IsFinished 
-                    ? CompletedAt ?? DateTimeOffset.UtcNow 
+                    ? ReceiveAt ?? DateTimeOffset.UtcNow 
                     : DateTimeOffset.UtcNow;
                 
                 var orderDuration = calculateAt - CreatedAt;
@@ -180,7 +179,7 @@ public class Order : BaseAuditableEntity
     public bool UpdatedInfo => OrderType.Storage.Equals(Type) || (Details.Any() && Details.All(detail => detail.Quantity != null));
 
     /**
-     * Order status, which is current active
+     * Order status, which has not finished yet
      */
     [Projectable]
     public bool IsActive => !IsFinished;
@@ -189,7 +188,7 @@ public class Order : BaseAuditableEntity
      * Order status, which takes a box in the locker
      */
     [Projectable]
-    public bool IsBusyOrder => IsInitialized || IsReserved || IsWaiting || IsReturned || IsOvertime;
+    public bool IsBusyOrder => IsReserved || IsWaiting || IsReturned || IsOvertime;
     
     [Projectable] 
     public bool DeliverySupported => DeliveryAddressId != null;

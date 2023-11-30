@@ -56,8 +56,9 @@ public class CancelOrderHandler : IRequestHandler<CancelOrderCommand, OrderRespo
         var previousStatus = order.Status;
         
         order.Status = OrderStatus.Canceled;
-        order.CompletedAt = DateTimeOffset.UtcNow;
+        order.ReceiveAt = DateTimeOffset.UtcNow;
         order.TotalPrice = order.ReservationFee;
+        
         await _unitOfWork.OrderRepository.UpdateAsync(order);
         await _unitOfWork.SaveChangesAsync();
         

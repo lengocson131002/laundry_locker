@@ -245,7 +245,7 @@ public static class ConfigureServices
             q.AddTrigger(options =>
                 options.ForJob(orderOvertimeJobKey)
                     .WithIdentity($"{OrderOvertimeJob.OrderOvertimeJobKey}-trigger")
-                    .WithCronSchedule("0 0/1 * ? * * *", x => x.InTimeZone(TimeZoneInfo.Utc))
+                    .WithCronSchedule("0 0/5 * ? * * *", x => x.InTimeZone(TimeZoneInfo.Utc))
             );
         });
 

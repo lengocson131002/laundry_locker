@@ -57,8 +57,9 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, Paymen
         {
             var prevStatus = order.Status;
             order.Status = OrderStatus.Completed;
-            order.CompletedAt = DateTimeOffset.UtcNow;
+            order.ReceiveAt = DateTimeOffset.UtcNow;
             order.TotalPrice = order.CalculateTotalPrice();
+            
             await _unitOfWork.OrderRepository.UpdateAsync(order);
    
             await _rabbitMqBus.PublishAsync(new OrderCompletedEvent()

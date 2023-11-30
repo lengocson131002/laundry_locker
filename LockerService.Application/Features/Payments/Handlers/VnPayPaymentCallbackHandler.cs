@@ -67,7 +67,7 @@ public class VnPayPaymentCallbackHandler : IRequestHandler<VnPayPaymentCallback>
         // Update order status
         var currStatus = order.Status;
         order.Status = OrderStatus.Completed;
-        order.CompletedAt = DateTimeOffset.UtcNow;
+        order.ReceiveAt = DateTimeOffset.UtcNow;
         order.TotalPrice = order.CalculateTotalPrice();
 
         await _unitOfWork.OrderRepository.UpdateAsync(order);
