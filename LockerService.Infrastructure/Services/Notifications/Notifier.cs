@@ -104,6 +104,11 @@ public class Notifier : INotifier
         {
             mobileNotificationService,
         });
+        
+        _provider.Attach(NotificationType.CustomerDepositCompleted, new List<INotificationService>()
+        {
+            mobileNotificationService,
+        });
     }
     
     public async Task NotifyAsync(Notification notification)

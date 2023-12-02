@@ -219,7 +219,7 @@ public class Notification : BaseAuditableEntity
                     : string.Empty;
                 
                 Title = "Đơn hàng đã hủy";
-                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã bị hủy. Lý do hủy: {cancelReason}";
+                Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã bị hủy.";
                 Level = NotificationLevel.Information;
                 ReferenceId = order.Id.ToString();
                 break;
@@ -268,6 +268,21 @@ public class Notification : BaseAuditableEntity
                 Content = $"Đơn hàng #ID: {order.Id} - PinCode: {order.PinCode} đã được đưa về cửa hàng vì lý do quá hạn. Vui lòng liên hệ cửa hàng để nhận để nhận";
                 Level = NotificationLevel.Critical;
                 ReferenceId = order.Id.ToString();
+                break;
+            }
+
+            case NotificationType.CustomerDepositCompleted:
+            {
+                if (data == null || data is not Payment)
+                {
+                    throw new Exception($"[Notification] Data payment is required. Type: {Type}");
+                }
+
+                var payment = (Payment)data;
+                Title = $"Nạp tiền vào ví thành công";
+                Content = $"Bạn đã nạp {payment.Amount}VND vào ví thành công.";
+                Level = NotificationLevel.Information;
+                ReferenceId = payment.Id.ToString();
                 break;
             }
             

@@ -5,5 +5,6 @@ public enum EntityType
     Order = 0,
     Account = 1,
     Locker = 2,
-    Service = 3
+    Service = 3,
+    Payment = 4
 }

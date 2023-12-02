@@ -76,7 +76,10 @@ public class Payment : BaseAuditableEntity
 
     [Projectable]
     public bool Completed => Equals(Status, PaymentStatus.Completed);
-
+    
     [Projectable]
     public bool Created => Equals(Status, PaymentStatus.Created);
+    
+    [Projectable]
+    public bool Finished => Equals(Status, PaymentStatus.Completed) || Equals(Status, PaymentStatus.Failed);
 }

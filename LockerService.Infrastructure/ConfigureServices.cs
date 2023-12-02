@@ -9,6 +9,7 @@ using LockerService.Infrastructure.EventBus.RabbitMq;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Accounts;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Lockers;
 using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Orders;
+using LockerService.Infrastructure.EventBus.RabbitMq.Consumers.Payments;
 using LockerService.Infrastructure.Persistence.Contexts;
 using LockerService.Infrastructure.Persistence.Data;
 using LockerService.Infrastructure.Persistence.Interceptors;
@@ -194,6 +195,9 @@ public static class ConfigureServices
             config.AddConsumer<OtpCreatedConsumer>();
             config.AddConsumer<StaffCreatedConsumer>();
             
+            // Payments
+            config.AddConsumer<PaymentFinishedConsumer>();
+            
             using var sc = services.BuildServiceProvider().CreateScope();
             var settings = sc.ServiceProvider.GetRequiredService<RabbitMqSettings>();
             config.UsingRabbitMq((ctx, cfg) =>
@@ -339,6 +343,20 @@ public static class ConfigureServices
         
         // Resource authorization
         services.AddScoped<IResourceAuthorizeService, ResourceAuthorizeService>();
+        
+        // Strategy design pattern
+        var strategies = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type => typeof(IPaymentStrategy).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract);
+
+        foreach (var strategy in strategies)
+        {
+            services.AddScoped(
+                typeof(IPaymentStrategy), 
+                strategy);
+        }
+
+        services.AddScoped<IPaymentStrategyContext, PaymentStrategyContext>();
         
         return services;
     }

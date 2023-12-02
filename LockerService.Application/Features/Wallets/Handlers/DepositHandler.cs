@@ -16,12 +16,14 @@ public class DepositHandler : IRequestHandler<DepositCommand, PaymentResponse>
 
     private readonly IPaymentService _paymentService;
 
+    private readonly ILogger<DepositHandler> _logger;
 
-    public DepositHandler(IUnitOfWork unitOfWork, IMapper mapper, IPaymentService paymentService)
+    public DepositHandler(IUnitOfWork unitOfWork, IMapper mapper, IPaymentService paymentService, ILogger<DepositHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _paymentService = paymentService;
+        _logger = logger;
     }
 
     public async Task<PaymentResponse> Handle(DepositCommand request, CancellationToken cancellationToken)
@@ -39,12 +41,15 @@ public class DepositHandler : IRequestHandler<DepositCommand, PaymentResponse>
             // Create customer wall if not exist
             if (customer.Wallet == null)
             {
+                _logger.LogInformation("Customer's wallet not found. Create wallet");
                 customer.Wallet = new Wallet();
+                await _unitOfWork.WalletRepository.AddAsync(customer.Wallet);
             }
         }
 
         if (customer == null)
         {
+            _logger.LogInformation("Customer not found. Create customer account");
             customer = new Account();
             customer.Role = Role.Customer;
             customer.PhoneNumber = request.PhoneNumber;
@@ -58,6 +63,7 @@ public class DepositHandler : IRequestHandler<DepositCommand, PaymentResponse>
         var payment = await CreateDepositPayment(customer, request.Amount, request.Method);
         await _unitOfWork.PaymentRepository.AddAsync(payment);
         
+        // Save all changes
         await _unitOfWork.SaveChangesAsync();
         
         // Set timeout to clear payment

@@ -59,6 +59,9 @@ public enum NotificationType
     
     [Description("[Customer] Your order is overtime proccessed")]
     CustomerOrderOverTimeProcessing = 13,
+    
+    [Description("[Customer] You deposited successfully")]
+    CustomerDepositCompleted = 14
  
 }
 
