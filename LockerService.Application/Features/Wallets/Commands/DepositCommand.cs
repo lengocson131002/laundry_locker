@@ -7,6 +7,9 @@ public class DepositCommandValidator: AbstractValidator<DepositCommand>
 {
     public DepositCommandValidator()
     {
+        RuleFor(req => req.Amount)
+            .GreaterThan(10000);
+        
         RuleFor(req => req.PhoneNumber)
             .Must(x => x == null || x.IsValidPhoneNumber())
             .WithMessage("Invalid phone number");
