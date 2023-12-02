@@ -55,37 +55,12 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, Paymen
         }
 
         // Create payment
-        var totalPrice = order.CalculateTotalPrice();
-        var prepaidPrice = order.ReservationFee;
-
         var wallet = order.Sender.Wallet;
         if (wallet == null)
         {
             throw new ApiException(ResponseCode.WalletErrorInvalidBalance);
         }
-        
-        var chargedPrice = totalPrice > prepaidPrice ? totalPrice - prepaidPrice : 0;
-        if (totalPrice > prepaidPrice)
-        {
-            if (wallet.Balance < chargedPrice)
-            {
-                throw new ApiException(ResponseCode.WalletErrorInvalidBalance);
-            }
-            wallet.Balance -= chargedPrice;
-            
-        }
-        else
-        {
-            wallet.Balance += prepaidPrice - totalPrice;
-        }
-       
-        var payment = new Payment();
-        payment.Status = PaymentStatus.Completed;
-        payment.Amount = chargedPrice;
-        payment.Type = PaymentType.Checkout;
-        payment.Content = PaymentType.Checkout.GetDescription();
-        payment.Customer = order.Sender;
-        payment.Method = PaymentMethod.Wallet;
+        var payment = HandleChargeFee(order, wallet);
         await _unitOfWork.PaymentRepository.AddAsync(payment);
         
         // Update sender's wallet
@@ -108,8 +83,36 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, Paymen
         // Save changes
         await _unitOfWork.SaveChangesAsync();
         
-        
         return _mapper.Map<PaymentResponse>(payment);
     }
-    
+
+    private Payment HandleChargeFee(Order order, Wallet wallet)
+    {
+        var totalPrice = order.CalculateTotalPrice();
+        var prepaidPrice = order.ReservationFee;
+        var chargedPrice = totalPrice > prepaidPrice ? totalPrice - prepaidPrice : 0;
+        if (totalPrice > prepaidPrice)
+        {
+            if (wallet.Balance < chargedPrice)
+            {
+                throw new ApiException(ResponseCode.WalletErrorInvalidBalance);
+            }
+            wallet.Balance -= chargedPrice;
+            
+        }
+        else
+        {
+            wallet.Balance += prepaidPrice - totalPrice;
+        }
+       
+        var payment = new Payment();
+        payment.Status = PaymentStatus.Completed;
+        payment.Amount = chargedPrice;
+        payment.Type = PaymentType.Checkout;
+        payment.Content = PaymentType.Checkout.GetDescription();
+        payment.Customer = order.Sender;
+        payment.Method = PaymentMethod.Wallet;
+
+        return payment;
+    }
 }
