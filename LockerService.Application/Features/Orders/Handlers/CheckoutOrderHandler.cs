@@ -4,7 +4,6 @@ using LockerService.Application.EventBus.RabbitMq.Events.Orders;
 using LockerService.Application.Features.Orders.Commands;
 using LockerService.Application.Features.Payments.Models;
 using LockerService.Domain;
-using LockerService.Shared.Constants;
 using LockerService.Shared.Extensions;
 
 namespace LockerService.Application.Features.Orders.Handlers;

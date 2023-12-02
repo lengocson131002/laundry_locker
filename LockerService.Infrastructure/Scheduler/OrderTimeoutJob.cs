@@ -58,6 +58,7 @@ public class OrderTimeoutJob : IJob
         }
         
         order.Status = OrderStatus.Canceled;
+        order.ReceiveAt = DateTimeOffset.UtcNow;
         order.CancelReason = OrderCancelReason.Timeout;
         
         await _unitOfWork.OrderRepository.UpdateAsync(order);
