@@ -46,8 +46,6 @@ public class Order : BaseAuditableEntity
     // Thời gian nhận thật sự
     public DateTimeOffset? ReceiveAt { get; set; }
     
-    public DateTimeOffset? CompletedAt { get; set; }
-
     public OrderStatus Status { get; set; } = OrderStatus.Initialized;
 
     public OrderCancelReason? CancelReason { get; set; }
