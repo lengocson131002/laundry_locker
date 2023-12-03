@@ -189,5 +189,6 @@ public enum ResponseCode
     
     [Description("Customer's wallet is not found")] WalletErrorNotFound= 2002,
 
+    [Description("Minimun deposit amount: {0}")] WalletErrorInvalidDepositAmount = 2003
 
 }

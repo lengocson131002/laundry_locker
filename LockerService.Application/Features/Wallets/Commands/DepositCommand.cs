@@ -8,7 +8,7 @@ public class DepositCommandValidator: AbstractValidator<DepositCommand>
     public DepositCommandValidator()
     {
         RuleFor(req => req.Amount)
-            .GreaterThanOrEqualTo(10000);
+            .GreaterThanOrEqualTo(0);
         
         RuleFor(req => req.PhoneNumber)
             .Must(x => x == null || x.IsValidPhoneNumber())

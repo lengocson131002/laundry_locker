@@ -3,6 +3,7 @@ using LockerService.Application.Common.Services.Payments;
 using LockerService.Application.Features.Payments.Models;
 using LockerService.Application.Features.Wallets.Commands;
 using LockerService.Domain;
+using LockerService.Domain.Entities.Settings;
 using LockerService.Shared.Constants;
 using LockerService.Shared.Extensions;
 
@@ -18,16 +19,36 @@ public class DepositHandler : IRequestHandler<DepositCommand, PaymentResponse>
 
     private readonly ILogger<DepositHandler> _logger;
 
-    public DepositHandler(IUnitOfWork unitOfWork, IMapper mapper, IPaymentService paymentService, ILogger<DepositHandler> logger)
+    private readonly ISettingService _settingService;
+
+    public DepositHandler(
+        IUnitOfWork unitOfWork, 
+        IMapper mapper, 
+        IPaymentService paymentService, 
+        ILogger<DepositHandler> logger, 
+        ISettingService settingService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _paymentService = paymentService;
         _logger = logger;
+        _settingService = settingService;
     }
 
     public async Task<PaymentResponse> Handle(DepositCommand request, CancellationToken cancellationToken)
     {
+        // Get payment settings
+        var paymentSettings = await _settingService.GetSettings<PaymentSettings>(cancellationToken);
+
+        // Validate deposit amount
+        var minDeposit = paymentSettings.MinDeposit;
+        if (request.Amount < minDeposit)
+        {
+            throw new ApiException(
+                ResponseCode.WalletErrorInvalidDepositAmount, 
+                string.Format(ResponseCode.WalletErrorInvalidDepositAmount.GetDescription(), paymentSettings.MinDeposit));
+        }
+        
         // Get customer account
         var customer = await _unitOfWork.AccountRepository.GetCustomerByPhoneNumber(request.PhoneNumber);
         if (customer != null)
@@ -57,8 +78,7 @@ public class DepositHandler : IRequestHandler<DepositCommand, PaymentResponse>
             
             await _unitOfWork.AccountRepository.AddAsync(customer);
         }
-
-                    
+        
         // Create payment
         var payment = await CreateDepositPayment(customer, request.Amount, request.Method);
         await _unitOfWork.PaymentRepository.AddAsync(payment);
@@ -67,7 +87,8 @@ public class DepositHandler : IRequestHandler<DepositCommand, PaymentResponse>
         await _unitOfWork.SaveChangesAsync();
         
         // Set timeout to clear payment
-        await _paymentService.SetPaymentTimeOut(payment, DateTimeOffset.UtcNow.AddMinutes(PaymentConstants.PaymentTimeoutInMinutes));
+        var timeoutAt = DateTimeOffset.UtcNow.AddMinutes(paymentSettings.PaymentTimeoutInMinutes);
+        await _paymentService.SetPaymentTimeOut(payment, timeoutAt);
         
         return _mapper.Map<PaymentResponse>(payment);
     }
