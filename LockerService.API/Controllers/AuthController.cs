@@ -4,6 +4,7 @@ using LockerService.Application.Features.Accounts.Models;
 using LockerService.Application.Features.Auth.Commands;
 using LockerService.Application.Features.Auth.Models;
 using LockerService.Application.Features.Auth.Queries;
+using LockerService.Application.Features.Customers.Models;
 using LockerService.Application.Features.Tokens.Models;
 using LockerService.Domain.Enums;
 
@@ -88,7 +89,7 @@ public class AuthController : ApiControllerBase
     /// <returns></returns>
     [HttpGet("customer/profile")]
     [AuthorizeRoles(Role.Customer)]
-    public async Task<ActionResult<AccountResponse>> GetCustomerProfile()
+    public async Task<ActionResult<CustomerDetailResponse>> GetCustomerProfile()
     {
         return await Mediator.Send(new GetCustomerProfileQuery());
     }

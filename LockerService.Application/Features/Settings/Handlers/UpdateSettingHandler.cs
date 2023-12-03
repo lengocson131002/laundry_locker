@@ -21,48 +21,57 @@ public class UpdateSettingHandler : IRequestHandler<UpdateSettingsCommand, Setti
     public async Task<SettingsResponse> Handle(UpdateSettingsCommand request, CancellationToken cancellationToken)
     {
         var settingsResponse = new SettingsResponse(); 
+        
+        // Update general settings
         if (request.InformationSettings != null)
         {
             var informationSettings = _mapper.Map<InformationSettings>(request.InformationSettings);
             await _settingService.UpdateSettings(informationSettings, cancellationToken);
-            settingsResponse.InformationSettings = informationSettings;
         }
 
+        // Update account settings
         if (request.AccountSettings != null)
         {
             var accSettings = _mapper.Map<AccountSettings>(request.AccountSettings);
             await _settingService.UpdateSettings(accSettings, cancellationToken);
-            settingsResponse.AccountSettings = accSettings;
         }
 
+        // Update order settings
         if (request.OrderSettings != null)
         {
             var orderSettings = _mapper.Map<OrderSettings>(request.OrderSettings);
             await _settingService.UpdateSettings(orderSettings, cancellationToken);
-            settingsResponse.OrderSettings = orderSettings;
         }
 
+        // Update zalo oauth settings
         if (request.ZaloAuthSettings != null)
         {
             var zaloAuthSettings = _mapper.Map<ZaloAuthSettings>(request.ZaloAuthSettings);
             await _settingService.UpdateSettings(zaloAuthSettings, cancellationToken);
-            settingsResponse.ZaloAuthSettings = zaloAuthSettings;
         }
 
+        // Update time settings
         if (request.TimeSettings != null)
         {
             var timeSettings = _mapper.Map<TimeSettings>(request.TimeSettings);
             await _settingService.UpdateSettings(timeSettings, cancellationToken);
-            settingsResponse.TimeSettings = timeSettings;
         }
-
+        
+        // Update lockers settings
         if (request.LockerSettings != null)
         {
             var lockerSettings = _mapper.Map<LockerSettings>(request.LockerSettings);
             await _settingService.UpdateSettings(lockerSettings, cancellationToken);
-            settingsResponse.LockerSettings = lockerSettings;
         }
 
-        return settingsResponse;
+        // Update payment settings
+        if (request.PaymentSettings != null)
+        {
+            var paymentSettings = _mapper.Map<PaymentSettings>(request.PaymentSettings);
+            await _settingService.UpdateSettings(paymentSettings, cancellationToken);
+        }
+
+        var response = _mapper.Map<SettingsResponse>(request);
+        return response;
     }
 }

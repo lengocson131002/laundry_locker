@@ -16,6 +16,7 @@ using LockerService.Application.Features.Payments.Models;
 using LockerService.Application.Features.Services.Commands;
 using LockerService.Application.Features.Services.Models;
 using LockerService.Application.Features.Settings.Commands;
+using LockerService.Application.Features.Settings.Models;
 using LockerService.Application.Features.ShippingPrices.Models;
 using LockerService.Application.Features.Staffs.Models;
 using LockerService.Application.Features.Stores.Commands;
@@ -108,6 +109,9 @@ public class MappingProfiles : Profile
         CreateMap<ZaloAuthSettingsCommand, ZaloAuthSettings>();
         CreateMap<TimeSettingsCommand, TimeSettings>();
         CreateMap<LockerSettingsCommand, LockerSettings>();
+        CreateMap<PaymentSettingsCommand, PaymentSettings>();
+        CreateMap<UpdateSettingsCommand, SettingsResponse>();
+        
         
         // Notifications
         CreateMap<Notification, NotificationModel>();

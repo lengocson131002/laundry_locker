@@ -16,4 +16,6 @@ public class SettingsResponse
     public TimeSettings TimeSettings { get; set; } = default!;
 
     public LockerSettings LockerSettings { get; set; } = default!;
+
+    public PaymentSettings PaymentSettings { get; set; } = default!;
 }

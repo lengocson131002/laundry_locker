@@ -4,7 +4,7 @@ using LockerService.Application.Features.Customers.Models;
 
 namespace LockerService.Application.Features.Auth.Handlers;
 
-public class GetCustomerProfileHandler : IRequestHandler<GetCustomerProfileQuery, CustomerResponse>
+public class GetCustomerProfileHandler : IRequestHandler<GetCustomerProfileQuery, CustomerDetailResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
@@ -26,7 +26,7 @@ public class GetCustomerProfileHandler : IRequestHandler<GetCustomerProfileQuery
         _mapper = mapper;
     }
 
-    public async Task<CustomerResponse> Handle(GetCustomerProfileQuery request, CancellationToken cancellationToken)
+    public async Task<CustomerDetailResponse> Handle(GetCustomerProfileQuery request, CancellationToken cancellationToken)
     {
         var currentAccountId = _currentPrincipalService.CurrentSubjectId;
         if (currentAccountId == null)
@@ -40,6 +40,6 @@ public class GetCustomerProfileHandler : IRequestHandler<GetCustomerProfileQuery
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
         
-        return _mapper.Map<CustomerResponse>(customer);
+        return _mapper.Map<CustomerDetailResponse>(customer);
     }
 }

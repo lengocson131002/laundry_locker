@@ -29,6 +29,11 @@ public class UpdateSettingsCommandValidator : AbstractValidator<UpdateSettingsCo
         RuleFor(model => model.LockerSettings)
             .SetInheritanceValidator(v => v.Add(new LockerSettingCommandValidator()))
             .When(model => model.LockerSettings != null);
+
+        RuleFor(model => model.PaymentSettings)
+            .SetInheritanceValidator(v => v.Add(new PaymentSettingCommandValidator()))
+            .When(model => model.PaymentSettings != null);
+        
     }
 }
 
@@ -45,4 +50,6 @@ public class UpdateSettingsCommand : IRequest<SettingsResponse>
     public TimeSettingsCommand? TimeSettings { get; set; } = default!;
 
     public LockerSettingsCommand? LockerSettings { get; set; } = default!;
+
+    public PaymentSettingsCommand? PaymentSettings { get; set; } = default!;
 }
