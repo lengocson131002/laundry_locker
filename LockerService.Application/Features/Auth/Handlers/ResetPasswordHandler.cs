@@ -39,6 +39,12 @@ public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, Status
             throw new ApiException(ResponseCode.TokenErrorInvalidOrExpiredToken);
         }
         
+        // Check password exist
+        if (account.Password != null && BCryptUtils.Verify(request.Password, account.Password))
+        {
+            throw new ApiException(ResponseCode.AuthErrorNewPasswordMustBeDifferent);
+        }
+        
         // update password
         account.Status = AccountStatus.Active;
         account.Password = BCryptUtils.Hash(request.Password);

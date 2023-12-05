@@ -280,7 +280,7 @@ public class Notification : BaseAuditableEntity
 
                 var payment = (Payment)data;
                 Title = $"Nạp tiền vào ví thành công";
-                Content = $"Bạn đã nạp {payment.Amount}VND vào ví thành công.";
+                Content = $"Bạn đã nạp {payment.Amount:n0}VND vào ví thành công.";
                 Level = NotificationLevel.Information;
                 ReferenceId = payment.Id.ToString();
                 break;

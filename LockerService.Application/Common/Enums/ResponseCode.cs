@@ -4,86 +4,87 @@ namespace LockerService.Application.Common.Enums;
 
 public enum ResponseCode
 {
-    [Description("Common Error")] CommonError = 1,
+    [Description("Có lỗi xảy ra")] CommonError = 1,
 
-    [Description("Validation Error")] ValidationError = 2,
+    [Description("Lỗi định dạng dữ liệu")] ValidationError = 2,
 
-    [Description("Mapping Error")] MappingError = 3,
+    [Description("Lỗi mapping")] MappingError = 3,
     
-    [Description("Unauthorized")] Unauthorized = 4,
+    [Description("Tài khoản không được xác thực")] Unauthorized = 4,
     
-    [Description("Current account can't access this resource")] Forbidden = 5,
+    [Description("Tài khoản không được phép truy cập tài nguyên này")] Forbidden = 5,
 
     // File 
     
-    [Description("File not found")] FileErrorNotFound = 10,
+    [Description("Không tìm thấy file yêu cầu")] FileErrorNotFound = 10,
 
-    [Description("Delete file failed")] FileErrorDeleteFailed = 11,
+    [Description("Đã xảy ra lỗi khi xóa file. Vui lòng thử lại")] FileErrorDeleteFailed = 11,
     
-    [Description("Upload file failed")] FileErrorUploadFailed = 12,
+    [Description("Đã xảy ra lỗi khi upload file. Vui lòng thử lại")] FileErrorUploadFailed = 12,
     
     // Auth
         
-    [Description("Invalid username or password")] AuthErrorInvalidUsernameOrPassword = 20,
+    [Description("Username hoặc Mật khẩu không chính xác. Vui lòng thử lại")] AuthErrorInvalidUsernameOrPassword = 20,
     
-    [Description("Invalid refresh token")] AuthErrorInvalidRefreshToken = 21,
+    [Description("Refresh token không hợp lệ")] AuthErrorInvalidRefreshToken = 21,
     
     [Description("Invalid google ID token")] AuthErrorInvalidGoogleIdToken = 22,
     
-    [Description("Account not found")] AuthErrorAccountNotFound = 23,
+    [Description("Không tìm thấy tài khoản")] AuthErrorAccountNotFound = 23,
     
-    [Description("Invalid username or otp")] AuthErrorInvalidUsernameOrOtp = 24,
+    [Description("Username hoặc OTP không hợp lệ. Vui lòng thử lại")] AuthErrorInvalidUsernameOrOtp = 24,
     
-    [Description("Current Password Incorrect")] AuthErrorCurrentPasswordIncorrect = 25,
+    [Description("Mật khẩu hiện tại không chính xác. Vui lòng thử lại")] AuthErrorCurrentPasswordIncorrect = 25,
     
-    [Description("The new password must be different from the current password")] AuthErrorNewPasswordMustBeDifferent = 26,
+    [Description("Mật khẩu mới phải khác với mật khẩu hiện tại. Vui lòng thử lại")] AuthErrorNewPasswordMustBeDifferent = 26,
     
-    [Description("The account is inactive")] AuthErrorAccountInactive = 27,
+    [Description("Tài khoản bị vô hiệu hóa. Vui lòng liên hệ quản trị viên để mở")] AuthErrorAccountInactive = 27,
     
-    [Description("Update password request")] AuthErrorUpdatePasswordRequest = 28,
+    [Description("Tài khoản cần được cập nhật mật khẩu")] AuthErrorUpdatePasswordRequest = 28,
+    
   
     // Locker
-    [Description("Locker not found")] LockerErrorNotFound = 101,
+    [Description("Không tìm thấy Locker yêu cầu")] LockerErrorNotFound = 101,
     
-    [Description("Locker' status is not allow to do this function")] LockerErrorInvalidStatus = 102,
+    [Description("Trạng thái hiện tại của Locker không cho phép thực hiện thao tác này")] LockerErrorInvalidStatus = 102,
 
-    [Description("Update boxes failed, please scan enough box")] LockerErrorInvalidNumberOfBoxes = 103,
+    [Description("Cập nhật ô tủ thất bại. Vui lòng thử lại")] LockerErrorInvalidNumberOfBoxes = 103,
     
-    [Description("Add new box failed, scan enough box!")] LockerErrorOverBoxCount = 104,
+    [Description("Thêm ô tủ thâất bại. Vui lòng thử lại")] LockerErrorOverBoxCount = 104,
     
-    [Description("Config locker service before being active")] LockerErrorServiceRequired = 105,
+    [Description("Cần cập nhật dịch vụ cho Locker trước khi ")] LockerErrorServiceRequired = 105,
 
-    [Description("Existed locker's MAC address")] LockerErrorExistedMacAddress = 106,
+    [Description("Địa chỉ MAC đã tồn tại. Vui lòng thử lại")] LockerErrorExistedMacAddress = 106,
     
-    [Description("Existed locker's name")] LockerErrorExistedName = 107,
+    [Description("Tên Locker đã tồn tại. Vui lòng thử lại")] LockerErrorExistedName = 107,
     
-    [Description("Locker is currently not active")] LockerErrorNotActive = 108,
+    [Description("Không tìm thấy Locker. Vui lòng thử lại")] LockerErrorNotActive = 108,
     
-    [Description("No any available box. Please try later")] LockerErrorNoAvailableBox = 109,
+    [Description("Không còn ô tủ trống. Vui lòng quay lại sau")] LockerErrorNoAvailableBox = 109,
     
-    [Description("Box not found")] LockerErrorBoxNotFound = 110,
+    [Description("Không tìm thấy ô tủ")] LockerErrorBoxNotFound = 110,
     
-    [Description("Box status is not allowed to do this function")] LockerErrorInvalidBoxStatus = 111,
+    [Description("Trạng thái hiện tại của Ô tủ không cho phép thực hiện thao tác này.ép thực hiện thao tác này. Vui lòng thử lại")] LockerErrorInvalidBoxStatus = 111,
     
-    [Description("Order type not supported")] LockerErrorUnsupportedOrderType = 112,
+    [Description("Loại đơn hàng không đuợc hỗ trợ. Vui lòng thử lại")] LockerErrorUnsupportedOrderType = 112,
 
 
     // Service
-    [Description("Service not found")] ServiceErrorNotFound = 201,
+    [Description("Không tìm thấy dịch vụ được yêu cầu")] ServiceErrorNotFound = 201,
     
-    [Description("Service's fee is required")] ServiceErrorMissingFee = 202,
+    [Description("Cần cập nhật giá tiền cho mỗi dịch vụ trong một đơn hàng")] ServiceErrorMissingFee = 202,
 
-    [Description("Existed service name")] ServiceErrorExistedName = 203,
+    [Description("Tên dịch vụ đã tồn tại. Vui lòng thử lại")] ServiceErrorExistedName = 203,
     
-    [Description("Service's status is not allowed to do this function")] ServiceErrorInvalidStatus = 204,
+    [Description("Trạng thái hiện tại của Dịch vụ không cho phép thực hiện thao tác này")] ServiceErrorInvalidStatus = 204,
     
 
     // Order
-    [Description("Service is not available")] OrderErrorServiceIsNotAvailable = 403,
+    [Description("Dịch vụ không tìm thấy hoặc không hoạt động")] OrderErrorServiceIsNotAvailable = 403,
     
-    [Description("Order is not found")] OrderErrorNotFound = 404,
+    [Description("Không tìm thấy Đơn hàng")] OrderErrorNotFound = 404,
     
-    [Description("Order'status is not allowed to do this function")] OrderErrorInvalidStatus = 405,
+    [Description("Trạng thái hiện tại của Đơn hàng không cho phép thực hiện thao tác này")] OrderErrorInvalidStatus = 405,
     
     [Description("Order'amount is required for ByUnitPrice Service")] OrderErrorAmountIsRequired = 406,
     
@@ -93,102 +94,102 @@ public enum ResponseCode
     
     [Description("FeeType of this order's service is missing")] OrderErrorServiceFeeTypeIsMissing = 409,
     
-    [Description("Inactive account is not allowed to create order")] OrderErrorInactiveAccount = 410,
+    [Description("Tài khoản bị vô hiệu hóa không được tạo đơn hàng")] OrderErrorInactiveAccount = 410,
     
-    [Description("Phone number {0} can't create order because it has currently had over allowed active order count is {1}")] OrderErrorExceedAllowOrderCount = 411,
+    [Description("Số điện thoại {0} không thể tạo order vì đang có số Đơn hàng còn hoạt động vượt mức cho phép là {1} đơn hàng")] OrderErrorExceedAllowOrderCount = 411,
 
-    [Description("Invalid receive time")] OrderErrorInvalidReceiveTime = 412,
+    [Description("Thời gian nhận không hợp lệ")] OrderErrorInvalidReceiveTime = 412,
 
     // Address
-    [Description("Province not found")] AddressErrorProvinceNotFound = 501,
+    [Description("Không tìm thấy tỉnh/thành phố")] AddressErrorProvinceNotFound = 501,
     
-    [Description("District not found")] AddressErrorDistrictNotFound = 502,
+    [Description("Không tìm thấy quận huyện")] AddressErrorDistrictNotFound = 502,
 
-    [Description("Ward not found")] AddressErrorWardNotFound = 503,
+    [Description("Không tìm thấy xã/phường")] AddressErrorWardNotFound = 503,
 
 
     // Hardware
-    [Description("Hardware not found")] HardwareErrorNotFound = 601,
+    [Description("Không tìm thấy phần cứng")] HardwareErrorNotFound = 601,
     
     // Staff
-    [Description("Staff is not found")] StaffErrorNotFound = 701,
+    [Description("Không tìm thấy nhân viên")] StaffErrorNotFound = 701,
     
-    [Description("Staff's status is not allowed to do this function")] StaffErrorInvalidStatus = 702,
+    [Description("Trạng thái hiện tại của Nhân viên không cho phép thực hiện thao tác này")] StaffErrorInvalidStatus = 702,
     
-    [Description("Staff is belonging to a store")] StaffErrorBelongToAStore = 703,
+    [Description("Nhân viên thuộc về một cửa hàng")] StaffErrorBelongToAStore = 703,
     
-    [Description("Staff has been assigned to this locker before")] StaffErrorAssignedBefore = 704,
+    [Description("Nhân viên đã được gán quyền quản lý Locker trước đó")] StaffErrorAssignedBefore = 704,
     
-    [Description("Staff has been assigned to the locker(s) in this store")] StaffErrorInAssignment = 705,
+    [Description("Nhân viên đã được gán quyền quản lý Locker trước đó")] StaffErrorInAssignment = 705,
 
-    [Description("Staff with request phone number existed")] StaffErrorExisted = 706,
+    [Description("Số điện thoại nhân viên đã tồn tại")] StaffErrorExisted = 706,
 
     // Store
-    [Description("Store not found")] StoreErrorNotFound = 801,
+    [Description("Không tìm thấy cửa hàng")] StoreErrorNotFound = 801,
     
-    [Description("Store's status is invalid")] StoreErrorInvalidStatus = 802,
+    [Description("Trạng thái hiện tại của cửa hàng không cho phép thực hiện thao tác này")] StoreErrorInvalidStatus = 802,
     
-    [Description("Staff and Locker do not belong to the same store")] StoreErrorStaffAndLockerNotInSameStore = 803,
+    [Description("Nhân viên và Locker cần chung một cửa hàng")] StoreErrorStaffAndLockerNotInSameStore = 803,
     
     // Staff Locker
-    [Description("Assignment not found")] StaffLockerErrorNotFound = 901,
+    [Description("Không tìm thấy lệnh giao nhiệm vụ")] StaffLockerErrorNotFound = 901,
     
-    [Description("Staff assigned to locker")] StaffLockerErrorExisted = 902,
+    [Description("Nhân viên đã được giao nhiệm vụ quản lý Locker")] StaffLockerErrorExisted = 902,
     
-    [Description("Staff has no permission on the request locker")] StaffLockerErrorNoPermission = 903,
+    [Description("Nhân viên không có quyền thao tác với Locker")] StaffLockerErrorNoPermission = 903,
 
     // Account
-    [Description("Username existed")] AccountErrorUsernameExisted = 1001,
+    [Description("Username đã tồn tại")] AccountErrorUsernameExisted = 1001,
     
-    [Description("Phone Number existed")] AccountErrorPhoneNumberExisted = 1002,
+    [Description("Số điện thoại đã tồn tại")] AccountErrorPhoneNumberExisted = 1002,
     
-    [Description("Account's status is not allowed to do this function")] AccountErrorInvalidStatus = 1003,
+    [Description("Trạng thái hiện tại của Tài khoản không cho phép thực hiện thao tác này")] AccountErrorInvalidStatus = 1003,
 
     
     // OrderDetail
-    [Description("Order item detail not found")] OrderDetailErrorNotFound = 1201,
+    [Description("Không tìm thấy chi tiết đơn hàng")] OrderDetailErrorNotFound = 1201,
     
-    [Description("Please update order's details")] OrderDetailErrorInfoRequired = 1202,
+    [Description("Vui lòng cập nhật chi tiết của đơn hàng")] OrderDetailErrorInfoRequired = 1202,
     
-    [Description("Order item detail existed")] OrderDetailErrorExisted = 1203,
+    [Description("Chi tiết đơn hàng đã tồn tại")] OrderDetailErrorExisted = 1203,
     
-    [Description("Order details is required")] OrderDetailErrorRequired = 1204,
+    [Description("Chi tiết của đơn hàng là bắt buộc")] OrderDetailErrorRequired = 1204,
 
     // Notification 
-    [Description("Notification not found")] NotificationErrorNotFound = 1301,
+    [Description("Không tìm thấy thông báo")] NotificationErrorNotFound = 1301,
     
-    [Description("Notification's status is not allowed to do this function")] NotificationErrorInvalidStatus = 1302,
+    [Description("Trạng thái hiện tại của Thông báo không cho phép thực hiện thao tác này")] NotificationErrorInvalidStatus = 1302,
     
     // Laundry Item
-    [Description("Laundry item not found")] LaundryItemErrorNotFound = 1401,
+    [Description("Không tìm thấy đồ giặt này")] LaundryItemErrorNotFound = 1401,
     
     // Token
-    [Description("Invalid or expired token")] TokenErrorInvalidOrExpiredToken = 1501,
+    [Description("Mã không hợp lệ hoặc đã hết hạn")] TokenErrorInvalidOrExpiredToken = 1501,
 
     // Bill
-    [Description("Bill not found")] BillErrorNotFound = 1601,
+    [Description("Không tìm hóa đơn")] BillErrorNotFound = 1601,
     
     // Payment
-    [Description("Payment not found")] PaymentErrorNotFound = 1701,
+    [Description("Không tìm thấy giao dịch thanh toán")] PaymentErrorNotFound = 1701,
     
-    [Description("Unsupported payment method")] PaymentErrorUnsupportedPaymentMethod = 1702,
+    [Description("Phương thức thanh toán không được hỗ trợ. Vui lòng chọn phương thức khác")] PaymentErrorUnsupportedPaymentMethod = 1702,
 
 
     // Store service configuration
-    [Description("Store has been configed this service before")] StoreServiceErrorExisted = 1801,
+    [Description("Cửa hàng đã được thiết lập dịch vụ này trước đó")] StoreServiceErrorExisted = 1801,
     
-    [Description("Store has not been configed this service before")] StoreServiceErrorNotGFound = 1802,
+    [Description("Cửa hàng chưa được thiết lập dịch vụ này trước đó")] StoreServiceErrorNotGFound = 1802,
 
     // Shipping price
-    [Description("Existed shipping price's from length")] ShippingPriceErrorExisted = 1901,
+    [Description("Giá ship đã được xác định cho khoảng cách này")] ShippingPriceErrorExisted = 1901,
     
-    [Description("Shipping price not found")] ShippingPriceErrorNotFound = 1902,
+    [Description("Không tìm thấy giá ship")] ShippingPriceErrorNotFound = 1902,
 
     // Wallet
-    [Description("Customer's balance is not enough")] WalletErrorInvalidBalance= 2001,
+    [Description("Số dư không đủ để thử hiện thao tác này")] WalletErrorInvalidBalance= 2001,
     
-    [Description("Customer's wallet is not found")] WalletErrorNotFound= 2002,
+    [Description("Không tìm thấy ví của khách hàng")] WalletErrorNotFound= 2002,
 
-    [Description("Minimun deposit amount: {0}")] WalletErrorInvalidDepositAmount = 2003
+    [Description("Số tiền cho phép nạp tối thiểu: {0}")] WalletErrorInvalidDepositAmount = 2003
 
 }

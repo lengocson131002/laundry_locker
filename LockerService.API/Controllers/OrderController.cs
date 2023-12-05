@@ -219,7 +219,8 @@ public class OrderController : ApiControllerBase
     {
         if (string.IsNullOrWhiteSpace(request.SortColumn))
         {
-            request.SortColumn = "CreatedAt";
+            // Get the latest updated order
+            request.SortColumn = "UpdatedAt";
             request.SortDir = SortDirection.Desc;
         }
         return await Mediator.Send(request);
