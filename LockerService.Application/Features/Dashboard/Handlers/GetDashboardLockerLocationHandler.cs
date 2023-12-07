@@ -7,16 +7,29 @@ namespace LockerService.Application.Features.Dashboard.Handlers;
 public class GetDashboardLockerLocationHandler : IRequestHandler<DashboardLockerLocationQuery, ListResponse<DashboardLockerLocationItem>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper; 
+    private readonly IMapper _mapper;
+    private readonly ICurrentAccountService _currentAccountService;
 
-    public GetDashboardLockerLocationHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetDashboardLockerLocationHandler(IUnitOfWork unitOfWork, IMapper mapper, ICurrentAccountService currentAccountService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _currentAccountService = currentAccountService;
     }
 
     public async Task<ListResponse<DashboardLockerLocationItem>> Handle(DashboardLockerLocationQuery request, CancellationToken cancellationToken)
     {
+       
+        /*
+         * Check current logged in user
+         * if Store Staff, get only their store's locker
+         */
+        var currentLoggedInAccount = await _currentAccountService.GetCurrentAccount();
+        if (currentLoggedInAccount != null && currentLoggedInAccount.IsStoreStaff)
+        {
+            request.StoreId = currentLoggedInAccount.StoreId;
+        }
+        
         var lockers = await _unitOfWork.LockerRepository
             .Get(
                 predicate: locker => (request.StoreId == null ||  request.StoreId == locker.StoreId) 

@@ -11,5 +11,8 @@ public enum PaymentType
     Reserve = 1,
     
     [Description("Nạp tiền vào ví")]
-    Deposit = 2
+    Deposit = 2,
+    
+    [Description("Hoàn trả")]
+    Refund = 3,
 }

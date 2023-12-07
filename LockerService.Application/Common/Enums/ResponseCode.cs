@@ -186,7 +186,7 @@ public enum ResponseCode
     [Description("Không tìm thấy giá ship")] ShippingPriceErrorNotFound = 1902,
 
     // Wallet
-    [Description("Số dư không đủ để thử hiện thao tác này")] WalletErrorInvalidBalance= 2001,
+    [Description("Số dư không đủ để thử hiện thao tác này. Vui lòng nạp thêm tiền vào ví. Xin cảm ơn")] WalletErrorInvalidBalance= 2001,
     
     [Description("Không tìm thấy ví của khách hàng")] WalletErrorNotFound= 2002,
 
