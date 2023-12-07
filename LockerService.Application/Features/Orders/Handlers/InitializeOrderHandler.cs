@@ -91,7 +91,7 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         // Charge reservation fee
         var payment = new Payment();
         payment.Status = PaymentStatus.Completed;
-        payment.Amount = orderSettings.ReservationFee;
+        payment.Amount = -orderSettings.ReservationFee;
         payment.Type = PaymentType.Reserve;
         payment.Content = PaymentType.Reserve.GetDescription();
         payment.Customer = sender;

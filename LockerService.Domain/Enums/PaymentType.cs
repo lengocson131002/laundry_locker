@@ -13,6 +13,6 @@ public enum PaymentType
     [Description("Nạp tiền vào ví")]
     Deposit = 2,
     
-    [Description("Hoàn trả")]
+    [Description("Hoàn trả tiền cọc thừa")]
     Refund = 3,
 }

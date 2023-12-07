@@ -70,23 +70,24 @@ public class Order : BaseAuditableEntity
     // Phí đặt cọc trước
     public decimal ReservationFee { get; set; }
 
-    // Thời gian quá giờ đối với dịch vụ giặt sấy
+    // Thời gian quá giờ
     public float ExtraCount
     {
         get
         {
-            var calculateAt = IsFinished 
-                ? ReceiveAt ?? DateTimeOffset.UtcNow 
-                : DateTimeOffset.UtcNow;
-
-            if (IsStorage || calculateAt < IntendedOvertime || IntendedOvertime == null)
-            {
-                return 0;
-            }
-
-            var extraTimespan = calculateAt - IntendedOvertime.Value;
-            var extraInHours = (float)extraTimespan.TotalMinutes / 60;
-            return (float)Math.Round(extraInHours, 2, MidpointRounding.AwayFromZero);
+            // var calculateAt = IsFinished 
+            //     ? ReceiveAt ?? DateTimeOffset.UtcNow 
+            //     : DateTimeOffset.UtcNow;
+            //
+            // if (IsStorage || calculateAt < IntendedOvertime || IntendedOvertime == null)
+            // {
+            //     return 0;
+            // }
+            //
+            // var extraTimespan = calculateAt - IntendedOvertime.Value;
+            // var extraInHours = (float)extraTimespan.TotalMinutes / 60;
+            // return (float)Math.Round(extraInHours, 2, MidpointRounding.AwayFromZero);
+            return 0;
         }
     }
 

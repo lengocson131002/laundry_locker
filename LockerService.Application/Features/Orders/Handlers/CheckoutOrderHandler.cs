@@ -87,28 +87,33 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, Paymen
 
     private Payment HandleChargeFee(Order order, Wallet wallet)
     {
+        var payment = new Payment();
+        
         var totalPrice = order.CalculateTotalPrice();
         var prepaidPrice = order.ReservationFee;
-        var chargedPrice = totalPrice > prepaidPrice ? totalPrice - prepaidPrice : 0;
         if (totalPrice > prepaidPrice)
         {
+            var chargedPrice = totalPrice - prepaidPrice;
             if (wallet.Balance < chargedPrice)
             {
                 throw new ApiException(ResponseCode.WalletErrorInvalidBalance);
             }
+
+            payment.Type = PaymentType.Checkout;
+            payment.Amount = -chargedPrice;
             wallet.Balance -= chargedPrice;
             
         }
         else
         {
-            wallet.Balance += prepaidPrice - totalPrice;
+            var refundedPrice = prepaidPrice - totalPrice;
+            payment.Type = PaymentType.Refund;
+            payment.Amount = +refundedPrice;
+            wallet.Balance += refundedPrice;
         }
        
-        var payment = new Payment();
         payment.Status = PaymentStatus.Completed;
-        payment.Amount = chargedPrice;
-        payment.Type = PaymentType.Checkout;
-        payment.Content = PaymentType.Checkout.GetDescription();
+        payment.Content = payment.Type.GetDescription();
         payment.Customer = order.Sender;
         payment.Method = PaymentMethod.Wallet;
 
