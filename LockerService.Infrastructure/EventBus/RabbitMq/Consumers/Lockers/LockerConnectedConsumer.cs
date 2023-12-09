@@ -1,3 +1,4 @@
+using AutoMapper;
 using LockerService.Application.Common.Persistence.Repositories;
 using LockerService.Domain.Enums;
 using LockerService.Infrastructure.Settings;
@@ -13,12 +14,15 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
     private readonly ApiKeySettings _apiKeySettings;
     private readonly ServerSettings _serverSettings;
     private readonly INotifier _notifier;
+    private readonly IMapper _mapper;
+    
     public LockerConnectedConsumer(
         ILogger<LockerConnectedConsumer> logger, 
         IUnitOfWork unitOfWork, 
         IMqttBus mqttBus, 
         ApiKeySettings apiKeySettings, 
-        ServerSettings serverSettings, INotifier notifier)
+        ServerSettings serverSettings, INotifier notifier, 
+        IMapper mapper)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -26,6 +30,7 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
         _apiKeySettings = apiKeySettings;
         _serverSettings = serverSettings;
         _notifier = notifier;
+        _mapper = mapper;
     }
 
     public async Task Consume(ConsumeContext<LockerConnectedEvent> context)
@@ -43,6 +48,7 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
                     locker => locker.Location.District,
                     locker => locker.Location.Ward,
                     locker => locker.Store,
+                    locker => locker.Boxes
                 })
             .FirstOrDefaultAsync();
         
@@ -72,6 +78,8 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
         await _unitOfWork.SaveChangesAsync();
         
         // Send info back to locker
+        var boxes = locker.Boxes.Where(box => box.IsActive).ToList();
+        
         await _mqttBus.PublishAsync(new MqttUpdateLockerInfoEvent()
         {
             LockerId = locker.Id,
@@ -80,6 +88,7 @@ public class LockerConnectedConsumer : IConsumer<LockerConnectedEvent>
             LockerStatus = locker.Status,
             ApiHost = _serverSettings.Host,
             ApiKey = _apiKeySettings.Key,
+            Boxes = _mapper.Map<List<Box>, List<MqttBoxInformation>>(boxes)
         });
         
         // Push notification admins and store's staff

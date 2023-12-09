@@ -37,6 +37,10 @@ public class Box : BaseAuditableEntity
 
     public string? Description { get; set; }
     
+    public int? BoardNo { get; set; }
+    
+    public int? Pin { get; set; }
+    
     public Box()
     {
         IsActive = true;
@@ -47,5 +51,14 @@ public class Box : BaseAuditableEntity
         IsActive = true;
         LockerId = lockerId;
         Number = number;
+    }
+    
+    public Box(long lockerId, int number, int boardNo, int pin)
+    {
+        IsActive = true;
+        LockerId = lockerId;
+        Number = number;
+        BoardNo = boardNo;
+        Pin = pin;
     }
 }

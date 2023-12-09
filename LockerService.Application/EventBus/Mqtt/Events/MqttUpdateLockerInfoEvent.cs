@@ -16,4 +16,17 @@ public class MqttUpdateLockerInfoEvent : MqttBaseMessage
     
     [JsonIgnore]
     public override string Topic => string.Format(MqttTopics.UpdateInfoTopic, LockerCode);
+
+    public IList<MqttBoxInformation> Boxes { get; set; } = new List<MqttBoxInformation>();
+}
+
+public class MqttBoxInformation
+{
+    public int Number { get; set; }
+    
+    public bool IsActive { get; set; }
+    
+    public int? BoardNo { get; set; }
+    
+    public int? Pin { get; set; }
 }

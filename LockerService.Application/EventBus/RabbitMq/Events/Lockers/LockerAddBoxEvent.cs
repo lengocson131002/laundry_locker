@@ -6,4 +6,7 @@ public class LockerAddBoxEvent : RabbitMqBaseEvent
     
     public int BoxNumber { get; set; }
     
+    public int BoardNo { get; set; }
+
+    public int Pin { get; set; }
 }

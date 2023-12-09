@@ -30,12 +30,14 @@ public class LockerAddBoxConsumer : IConsumer<LockerAddBoxEvent>
         var box = await _unitOfWork.BoxRepository.FindBox(locker.Id, message.BoxNumber);
         if (box == null)
         {
-            box = new Box(locker.Id, message.BoxNumber);
+            box = new Box(locker.Id, message.BoxNumber, message.BoardNo, message.Pin);
             await _unitOfWork.BoxRepository.AddAsync(box);
         }
         else
         {
             box.IsActive = true;
+            box.BoardNo = message.BoardNo;
+            box.Pin = message.Pin;
             await _unitOfWork.BoxRepository.UpdateAsync(box);
         }
         

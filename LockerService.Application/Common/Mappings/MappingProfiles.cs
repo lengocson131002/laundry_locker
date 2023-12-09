@@ -48,6 +48,7 @@ public class MappingProfiles : Profile
         CreateMap<LockerTimeline, LockerTimelineResponse>();
         CreateMap<Box, BoxResponse>();
         CreateMap<Locker, DashboardLockerLocationItem>();
+        CreateMap<Box, MqttBoxInformation>();
         
         // Service
         CreateMap<AddServiceCommand, Service>();

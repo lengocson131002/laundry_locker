@@ -6,6 +6,10 @@ public class MqttAddBoxEvent : MqttBaseMessage
     
     public int BoxNumber { get; set; }
     
+    public int BoardNo { get; set; }
+
+    public int Pin { get; set; }
+    
     [JsonIgnore] 
     public override string Topic => MqttTopics.AddBoxTopic;
 }

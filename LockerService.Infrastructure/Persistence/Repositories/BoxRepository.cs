@@ -57,6 +57,8 @@ public class BoxRepository : BaseRepository<Box>, IBoxRepository
                     UpdatedAt = box.UpdatedAt,
                     LockerId = box.LockerId,
                     Description = box.Description,
+                    BoardNo = box.BoardNo,
+                    Pin = box.Pin,
                     LastOrder = orders.OrderByDescending(or => or.CreatedAt).First(),
                 });
     }

@@ -126,7 +126,9 @@ public class MqttClientService : IMqttClientService
         await _rabbitMqBus.PublishAsync(new LockerAddBoxEvent()
         {
             LockerCode = @event.LockerCode,
-            BoxNumber = @event.BoxNumber
+            BoxNumber = @event.BoxNumber,
+            BoardNo = @event.BoardNo,
+            Pin = @event.Pin
         });
     }
 
