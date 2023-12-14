@@ -116,6 +116,7 @@ public class CheckoutOrderHandler : IRequestHandler<CheckoutOrderCommand, Paymen
         payment.Content = payment.Type.GetDescription();
         payment.Customer = order.Sender;
         payment.Method = PaymentMethod.Wallet;
+        payment.OrderId = order.Id;
 
         return payment;
     }

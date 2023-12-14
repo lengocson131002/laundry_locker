@@ -81,25 +81,6 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
         var orderSettings = await _settingService.GetSettings<OrderSettings>(cancellationToken);
 
         var sender = await GetOrCreateCustomer(command.SenderPhone, orderSettings);
-        
-        // Check sender balance 
-        if (sender.Wallet == null || sender.Wallet.Balance < orderSettings.ReservationFee)
-        {
-            throw new ApiException(ResponseCode.WalletErrorInvalidBalance);
-        }
-        
-        // Charge reservation fee
-        var payment = new Payment();
-        payment.Status = PaymentStatus.Completed;
-        payment.Amount = -orderSettings.ReservationFee;
-        payment.Type = PaymentType.Reserve;
-        payment.Content = PaymentType.Reserve.GetDescription();
-        payment.Customer = sender;
-        payment.Method = PaymentMethod.Wallet;
-        await _unitOfWork.PaymentRepository.AddAsync(payment);
-        
-        sender.Wallet.Balance -= payment.Amount;
-        await _unitOfWork.WalletRepository.UpdateAsync(sender.Wallet);
 
         var receiverPhone = command.ReceiverPhone;
         var receiver = !string.IsNullOrEmpty(receiverPhone) && !Equals(sender.PhoneNumber, receiverPhone)
@@ -127,6 +108,26 @@ public class InitializeOrderHandler : IRequestHandler<InitializeOrderCommand, Or
             CustomerNote = command.CustomerNote,
             ReservationFee = orderSettings.ReservationFee
         };
+        
+        // Check sender balance 
+        if (sender.Wallet == null || sender.Wallet.Balance < orderSettings.ReservationFee)
+        {
+            throw new ApiException(ResponseCode.WalletErrorInvalidBalance);
+        }
+        
+        // Charge reservation fee
+        var payment = new Payment();
+        payment.Status = PaymentStatus.Completed;
+        payment.Amount = -orderSettings.ReservationFee;
+        payment.Type = PaymentType.Reserve;
+        payment.Content = PaymentType.Reserve.GetDescription();
+        payment.Customer = sender;
+        payment.Method = PaymentMethod.Wallet;
+        payment.Order = order;
+        await _unitOfWork.PaymentRepository.AddAsync(payment);
+        
+        sender.Wallet.Balance -= payment.Amount;
+        await _unitOfWork.WalletRepository.UpdateAsync(sender.Wallet);
         
         if (Equals(command.Type, OrderType.Laundry))
         {
