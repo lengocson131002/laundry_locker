@@ -196,7 +196,7 @@ public class NotificationAdapter : INotificationAdapter
                         extra_at = returnedOrder.IntendedOvertime != null 
                             ? returnedOrder.IntendedOvertime.Value.ToString(timeSettings.TimeZone, DateTimeConstants.DateTimeFormat)
                             : string.Empty,
-                        extra_fee = returnedOrder.ExtraFee,
+                        // extra_fee = returnedOrder.ExtraFee,
                         locker_name = returnedOrderLocker.Name,
                         locker_address = returnedOrderLocker.Location.ToString()
                     }
